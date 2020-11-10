@@ -1,0 +1,19 @@
+Package: AnalysisEvolExp2020
+Title: Analyze Fitness Data From Experimental Evolution
+Version: 0.0.0.9000
+Authors@R: 
+    c(person(given = "Nicolas",
+           family = "Rode",
+           role = c("aut", "cre"),
+           email = "nicolas.rode"),
+      person(given = "Laure",
+           family = "Olazcuaga",
+           role = c("aut"),
+           email = "olaz.laure@gmail.com"))
+Description: This research compendium describes how to analyze fitness data from an experimental evolution experiment conducted in D. suzukii from 2017 to 2019.
+License: MIT + file LICENSE
+ByteCompile: true
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
