@@ -3,11 +3,11 @@ Title: Analyze Fitness Data From Experimental Evolution
 Version: 0.0.0.9000
 Authors@R: 
     c(person(given = "Nicolas",
-           family = "Rode",
+           family = "RODE",
            role = c("aut", "cre"),
-           email = "nicolas.rode"),
+           email = "nicolas.rode@inrae.fr"),
       person(given = "Laure",
-           family = "Olazcuaga",
+           family = "OLAZCUAGA",
            role = c("aut"),
            email = "olaz.laure@gmail.com"))
 Description: This research compendium describes how to analyze fitness data from an experimental evolution experiment conducted in D. suzukii from 2017 to 2019.
