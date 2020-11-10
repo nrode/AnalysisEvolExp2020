@@ -1,26 +1,46 @@
 #' Title
 #'
+#' @param dataset Fitness dataset
+#' @param generation Generation considered for the subset
+#'
 #' @return
 #' @export
 #'
 #' @examples
-#'
-loadfitnessfitnessdata <- function(){
+#'data_G29 <- loadfitnessdata(dataset = "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv", generation = "29")
+
+loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1"){
 
   ## Path using the here function so that the command line is reproducible across platforms
-  data_complet <- read.table(file=here::here("data","Selection_Phenotypage_G0_G7_G8.csv"), sep=";", header=T)
+  data_complet <- read.table(file=here::here("data", dataset), sep=";", header=T)
 
-  data_complet <- data_complet[data_complet$Traitement=="Strawberry"|
-                                 data_complet$Traitement=="Cherry"|
-                                 data_complet$Traitement=="Cranberry",]
-  data_G0 <- subset(data_complet, Generation == "G1")
+  ## Take the right generation (G1, G7 or )
+  data <- subset(data_complet, Generation == generation)
 
-  data_G0$Nb_adultes<-as.numeric(as.character(data_G0$Nb_adultes))
+  if(generation!=29){
+    ## Update variables
+    data$Nb_adultes <- as.numeric(as.character(data$Nb_adultes))
+    data$Nb_oeufs <- as.numeric(as.character(data$Nb_oeufs))
 
-  names(data_G0)[names(data_G0) == "Nb_adultes"] <- "Nb_adults"
-  names(data_G0)[names(data_G0) == "Nb_oeufs"] <- "Nb_eggs"
-  names(data_G0)[names(data_G0) == "Fruit_S"] <- "Fruit_s"
-  names(data_G0)[names(data_G0) == "Traitement"] <- "Treatment"
-  data_G0$Treatment <- factor(data_G0$Treatment)
-  return(data_G0)
+    names(data)[names(data) == "Nb_adultes"] <- "Nb_adults"
+    names(data)[names(data) == "Nb_oeufs"] <- "Nb_eggs"
+    names(data)[names(data) == "Fruit_S"] <- "Fruit_s"
+    names(data)[names(data) == "Traitement"] <- "Treatment"
+    names(data)[names(data) == "Lignee"] <- "Line"
+  } else{
+    names(data)[names(data) == "Lines"] <- "Line"
+  }
+
+  ## Subset dataset
+  data <- data[data$Treatment=="Strawberry"|
+                 data$Treatment=="Cherry"|
+                 data$Treatment=="Cranberry",]
+  ## Create the SA variable
+  data$SA <- as.factor(ifelse (as.character(data$Treatment)==as.character(data$Fruit_S),1,0))
+
+  ## Compute emergence rate
+  data$Emergence_rate <- data$Nb_adults/data$Nb_eggs
+  data$Treatment <- factor(data$Treatment)
+  data <- droplevels(data)
+  return(data)
 }
