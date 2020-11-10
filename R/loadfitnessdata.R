@@ -1,5 +1,6 @@
-#' Title
+#' @title Fitness Data Import Function
 #'
+#' @description Reads a fitness data file in table format and subset it to return the dataframe with the right generation
 #' @param dataset Fitness dataset
 #' @param generation Generation considered for the subset
 #'
@@ -12,7 +13,7 @@
 loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1"){
 
   ## Path using the here function so that the command line is reproducible across platforms
-  data_complet <- read.table(file=here::here("data", dataset), sep=";", header=T)
+  data_complet <- read.table(file=here::here("data", dataset), sep=";", header=TRUE)
 
   ## Take the right generation (G1, G7 or )
   data <- subset(data_complet, Generation == generation)
@@ -31,16 +32,26 @@ loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", gene
     names(data)[names(data) == "Lines"] <- "Line"
   }
 
+  ## Update name
+  names(data)[names(data) == "Bloc"] <- "Block"
+
   ## Subset dataset
   data <- data[data$Treatment=="Strawberry"|
                  data$Treatment=="Cherry"|
                  data$Treatment=="Cranberry",]
+
+  ## Keep only some columns
+  data <- data[, c("Treatment", "Line", "Fruit_s", "Nb_eggs", "Nb_adults")]
+
   ## Create the SA variable
-  data$SA <- as.factor(ifelse (as.character(data$Treatment)==as.character(data$Fruit_S),1,0))
+  data$SA <- as.factor(ifelse(as.character(data$Treatment)==as.character(data$Fruit_s),1,0))
 
   ## Compute emergence rate
   data$Emergence_rate <- data$Nb_adults/data$Nb_eggs
   data$Treatment <- factor(data$Treatment)
   data <- droplevels(data)
+
+
+
   return(data)
 }
