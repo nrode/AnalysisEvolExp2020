@@ -9,6 +9,11 @@ rrtools::use_compendium("/Users/rodenico/Documents/Pro/Articles/2020_EvolExp/Ana
 usethis::use_r("loadfitnessdata")
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
+usethis::use_r("sim_fitnessdata")
+usethis::use_r("boot_fitnessdata")
+usethis::use_r("computemeanvar_fitnessdata")
+usethis::use_r("computemeanvar_fitnessdifferencedata")
+
 
 
 

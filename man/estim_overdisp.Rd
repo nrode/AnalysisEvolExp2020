@@ -4,10 +4,12 @@
 \alias{estim_overdisp}
 \title{Analyze A Dataset Using A Negative Binomial Distribution}
 \usage{
-estim_overdisp(fruit, data, generation)
+estim_overdisp(colfactorlevel, colfactor, data, generation)
 }
 \arguments{
-\item{fruit}{Type of fruit considered}
+\item{colfactorlevel}{Level of factor considered (e.g. cherry)}
+
+\item{colfactor}{Factor considered (e.g. fruit)}
 
 \item{data}{Dataset considered}
 
@@ -20,6 +22,6 @@ estim_overdisp(fruit, data, generation)
 Analyze a dataset using a negative binomial distribution and returns the fitted mean, variance and overdispersion
 }
 \examples{
-estim_overdisp(data=data_G0, fruit="Cherry", generation="G0")
+estim_overdisp(data=data_G0, colfactor="Treatment", colfactorlevel="Cherry", generation="G0")
 
 }
