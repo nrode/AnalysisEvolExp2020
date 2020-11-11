@@ -16,7 +16,8 @@ editor_options:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+devtools::load_all()
 ```
 
 # Import data
@@ -102,7 +103,8 @@ overdispG29 <- as.data.frame(t(sapply(levels(data_G7$Treatment), estim_overdisp,
 
 ## Combine datasets
 overdisp <- rbind(overdispG0, overdispG7, overdispG29)
-names(overdisp) <- c("fruit", "generation", "fitted_mean_nb_adults", "fitted_theta", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp")
+colnames(overdisp) <- c("fruit", "generation", "fitted_mean_nb_adults", "fitted_theta", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp")
+rownames(overdisp) <- 1:nrow(overdisp)
 
 ## Sort final dataset
 overdisp[order(overdisp$fruit),]
