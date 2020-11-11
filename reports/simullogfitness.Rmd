@@ -74,15 +74,30 @@ summary(mpoislognormal)
 ## Compare Negative binomial and Poisson lognormal
 ```{r }
 
-## Simulate data of the same length
+## Simulate data with Negative Binomial distribution
 x.teo.negbin <- MASS::rnegbin(n=nrow(data_G0), mu=exp(coef(mnegbin)), theta=mnegbin$theta)
+x.teo.negbin <- rnbinom(n=nrow(data_G0), size=mnegbin$theta, mu=exp(coef(mnegbin)))
+
+## Simulate data with Poission lognormal distribution
 x.teo.poislognormal <- unlist(simulate(mpoislognormal))
 
-qqplot(data_G0$Nb_adults, x.teo.negbin, main="QQ-plot") ## QQ-plot
+## Plot observed and expected density distributions
+plot(prop.table(table(data_G0$Nb_adults)), ylab="Frequency")
+lines(0:70, dnbinom(0:70, mu=exp(coef(mnegbin)), size=mnegbin$theta), col = "red")
+
+## Plot empirical and expected cumulative distributions
+plot(ecdf(data_G0$Nb_adults), xlab="Data", ylab="CDF", main="", las=1)
+lines(0:70, pnbinom(0:70, mu=exp(coef(mnegbin)), size=mnegbin$theta), col = "red", lwd = 2, type = "s")
+## Add legend
+legend(0, 0.7, legend=c("Empirical", "Theoretical"), col=c("black", "red"), lwd=2, bty="n")
+
+## QQplot to compared Negative binomial and Poisson log normal distributions
+qqplot(data_G0$Nb_adults, x.teo.negbin, main="QQ-plot", xlab="Observed data", ylab="Simulated data", las=1) ## QQ-plot
 points(sort(data_G0$Nb_adults), sort(x.teo.poislognormal), pch=1, col='red')
 abline(0,1)
 ## Add legend
-legend(0, 100, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), pch=1, bty="n")
+legend(0, 70, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), pch=1, bty="n")
+
 
 ## Compare AIC
 AIC(mnegbin, mpoislognormal)
@@ -92,20 +107,138 @@ AIC(mnegbin, mpoislognormal)
 
 ```
 
-
 # Compare estimates
+## Compare estimates per fruit
 ```{r }
 
 ## Estimate parameters for each generation and each fruit
-overdispG0 <- as.data.frame(t(sapply(levels(data_G0$Treatment), estim_overdisp, data=data_G0, generation="G0")))
-overdispG7 <- as.data.frame(t(sapply(levels(data_G7$Treatment), estim_overdisp, data=data_G7[data_G7$SA==1,], generation="G7")))
-overdispG29 <- as.data.frame(t(sapply(levels(data_G7$Treatment), estim_overdisp, data=data_G29[data_G29$SA==1,], generation="G29")))
+overdispG0 <- as.data.frame(t(sapply(levels(data_G0$Treatment), estim_overdisp, colfactor="Treatment", data=data_G0, generation="G0")))
+overdispG7 <- as.data.frame(t(sapply(levels(data_G7$Treatment), estim_overdisp, colfactor="Treatment", data=data_G7[data_G7$SA==1,], generation="G7")))
+overdispG29 <- as.data.frame(t(sapply(levels(data_G29$Treatment), estim_overdisp, colfactor="Treatment", data=data_G29[data_G29$SA==1,], generation="G29")))
 
 ## Combine datasets
 overdisp <- rbind(overdispG0, overdispG7, overdispG29)
-colnames(overdisp) <- c("fruit", "generation", "fitted_mean_nb_adults", "fitted_theta", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp")
+colnames(overdisp) <- c("fruit", "generation", "fitted_mean_nb_adults", "fitted_theta", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_smaple")
 rownames(overdisp) <- 1:nrow(overdisp)
 
 ## Sort final dataset
 overdisp[order(overdisp$fruit),]
+```
+## Compare estimates per experimental population
+```{r }
+
+## Estimate parameters for each generation and each population
+overdispG0 <- as.data.frame(t(sapply(levels(data_G0$Treatment), estim_overdisp, colfactor="Treatment", data=data_G0, generation="G0")))
+overdispG7 <- as.data.frame(t(sapply(levels(data_G7$Line), estim_overdisp, colfactor="Line", data=data_G7[data_G7$SA==1,], generation="G7")))
+overdispG29 <- as.data.frame(t(sapply(levels(data_G29$Line), estim_overdisp, colfactor="Line", data=data_G29[data_G29$SA==1,], generation="G29")))
+
+## Combine datasets
+overdisp <- rbind(overdispG0, overdispG7, overdispG29)
+colnames(overdisp) <- c("factor", "generation", "number_tubes_counted", "fitted_mean_nb_adults", "fitted_theta", "observed_var_nb_adults", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_smaple")
+rownames(overdisp) <- 1:nrow(overdisp)
+
+overdisp <- data.frame(fruit=as.factor(substr(overdisp$factor, 1, 2)), overdisp)
+levels(overdisp$fruit) <- c("Cherry", "Cherry", "Cranberry", "Cranberry", "Strawberry", "Strawberry")
+## Sort final dataset
+overdisp[order(overdisp$fruit, overdisp$generation, overdisp$fitted_mean_nb_adults),]
+
+## Only population CE2 and CR2 do not pass the threshold of a standardized mean greater than 3
+```
+
+
+
+# Fitness estimation
+## Simulations
+```{r }
+N_ancestor=25
+ntubes_ancestor=30
+theta_ancestor=3
+
+
+computemeanvar_fitnessdata(seed=1, ntubes=ntubes_ancestor, N=N_ancestor, theta=theta_ancestor)
+
+
+
+```
+
+## Check the reliability of the bootstrap procedure
+```{r }
+sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdata, ntubes=ntubes_ancestor, N=N_ancestor, theta=theta_ancestor)))
+
+## Variance estimates ~ OK
+hist(sim$boot_varestimfitness, xlab="Variance estimate based on boostrap")
+abline(v=sim$deltamethod_varfitness, col="red")
+
+
+## 95% confidence interval is actually a 90% CI
+mean(sim$indic)
+
+## Check the influence of the number of tubes on power
+Ntube <- seq(4, 100, by=10)
+
+bias <- c()
+power <- c()
+for (ntubes_ancestor in Ntube){
+  sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdata, ntubes=ntubes_ancestor, N=N_ancestor, theta=theta_ancestor)))
+  bias <- c(bias, mean(sim$expected_meanfitness[!is.infinite(sim$bootstrapped_meanfitness)]-sim$bootstrapped_meanfitness[!is.infinite(sim$bootstrapped_meanfitness)]))
+  power <- c(power, mean(sim$indic))
+}
+
+## Small bias
+bias
+
+plot(Ntube, power, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
+axis(1, at=seq(0, 100, by=10))
+abline(h=0.95, col="red", lty=2)
+
+## 95% CI should be computed with c(0.025*delta, 0.975+0.025*(1-delta))
+```
+
+# Fitness difference estimation
+## Simulation
+```{r }
+## Formula for the computation
+#ln(a/b)-ln(c/d)=ln(a*d/b*c)
+#ln(a/20)-ln(c/20)=ln(a*20/c*20)=ln(a/c)=ln(a)-ln(c)
+
+## Compute the fitness difference for one seed
+computemeanvar_fitnessdifferencedata(seed=1, ntubes_ancestor=30, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)
+
+```
+
+
+## Check the reliability of the bootstrap procedure
+```{r }
+## Check the function for a set of realistic parameters
+sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdifferencedata, ntubes_ancestor=30, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)))
+
+## Variance estimates ~ OK
+hist(sim$boot_varestimfitnessdiff, xlab="Variance estimate based on boostrap")
+abline(v=sim$deltamethod_varfitnessdiff, col="red")
+
+## 95% confidence interval is actually a 90% CI
+mean(sim$indic)
+
+## Check the influence of the number of tubes on power
+Ntube <- seq(4, 100, by=10)
+
+bias <- c()
+power <- c()
+for (ntubes_tested in Ntube){
+  sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdifferencedata, ntubes_ancestor=30, N_ancestor=25, theta_ancestor=3, ntubes_derived=ntubes_tested, N_derived=30, theta_derived=3)))
+  bias <- c(bias, mean(sim$expected_meanfitnessdiff[!is.infinite(sim$bootstrapped_meanfitnessdiff)]-sim$bootstrapped_meanfitnessdiff[!is.infinite(sim$bootstrapped_meanfitnessdiff)]))
+  power <- c(power, mean(sim$indic))
+}
+
+## No bias
+bias
+
+plot(Ntube, power, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
+axis(1, at=seq(0, 100, by=10))
+abline(h=0.95, col="red", lty=2)
+
+## 95% CI should be computed with c(0.025*delta, 0.975+0.025*(1-delta))
+
+## Old code
+
 ```
