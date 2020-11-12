@@ -22,6 +22,7 @@ devtools::load_all()
 
 # Import data
 ```{r }
+#data
 
 ## Initial phenotyping
 data_G0 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1")
