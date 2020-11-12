@@ -118,7 +118,8 @@ overdispG29 <- as.data.frame(t(sapply(levels(data_G29$Treatment), estim_overdisp
 
 ## Combine datasets
 overdisp <- rbind(overdispG0, overdispG7, overdispG29)
-colnames(overdisp) <- c("fruit", "generation", "fitted_mean_nb_adults", "fitted_theta", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_smaple")
+colnames(overdisp) <- c("fruit", "generation", "number_tubes_counted", "fitted_mean_nb_adults", "fitted_theta", "observed_var_nb_adults", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_sample")
+
 rownames(overdisp) <- 1:nrow(overdisp)
 
 ## Sort final dataset
@@ -134,11 +135,13 @@ overdispG29 <- as.data.frame(t(sapply(levels(data_G29$Line), estim_overdisp, col
 
 ## Combine datasets
 overdisp <- rbind(overdispG0, overdispG7, overdispG29)
-colnames(overdisp) <- c("factor", "generation", "number_tubes_counted", "fitted_mean_nb_adults", "fitted_theta", "observed_var_nb_adults", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_smaple")
+colnames(overdisp) <- c("factor", "generation", "number_tubes_counted", "fitted_mean_nb_adults", "fitted_theta", "observed_var_nb_adults", "fitted_var_nb_adults", "obsoverdisp", "fittedoverdisp", "standardized_mean", "standardized_mean_small_sample")
+
 rownames(overdisp) <- 1:nrow(overdisp)
 
 overdisp <- data.frame(fruit=as.factor(substr(overdisp$factor, 1, 2)), overdisp)
 levels(overdisp$fruit) <- c("Cherry", "Cherry", "Cranberry", "Cranberry", "Strawberry", "Strawberry")
+
 ## Sort final dataset
 overdisp[order(overdisp$fruit, overdisp$generation, overdisp$fitted_mean_nb_adults),]
 
@@ -217,28 +220,32 @@ hist(sim$boot_varestimfitnessdiff, xlab="Variance estimate based on boostrap")
 abline(v=sim$deltamethod_varfitnessdiff, col="red")
 
 ## 95% confidence interval is actually a 90% CI
-mean(sim$indic)
+mean(sim$indicboot)
+mean(sim$indicnormapprox)
 
 ## Check the influence of the number of tubes on power
 Ntube <- seq(4, 100, by=10)
 
+## Initialize vector for bias and power
 bias <- c()
-power <- c()
+powerboot <- c()
+powernormapprox <- c()
+
 for (ntubes_tested in Ntube){
   sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdifferencedata, ntubes_ancestor=30, N_ancestor=25, theta_ancestor=3, ntubes_derived=ntubes_tested, N_derived=30, theta_derived=3)))
   bias <- c(bias, mean(sim$expected_meanfitnessdiff[!is.infinite(sim$bootstrapped_meanfitnessdiff)]-sim$bootstrapped_meanfitnessdiff[!is.infinite(sim$bootstrapped_meanfitnessdiff)]))
-  power <- c(power, mean(sim$indic))
+  powerboot <- c(powerboot, mean(sim$indicboot))
+  powernormapprox <- c(powernormapprox, mean(sim$indicnormapprox))
 }
 
 ## No bias
 bias
 
-plot(Ntube, power, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
+plot(Ntube, powerboot, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
+lines(Ntube, powernormapprox, col="red")
 axis(1, at=seq(0, 100, by=10))
 abline(h=0.95, col="red", lty=2)
-
+legend(0, 0.5, legend=c("Boostrapping", "Normal approximation"), col=1:2, bty="n", lwd=1)
 ## 95% CI should be computed with c(0.025*delta, 0.975+0.025*(1-delta))
-
-## Old code
 
 ```
