@@ -19,6 +19,7 @@ loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", gene
   data <- subset(data_complet, Generation == generation)
 
   if(generation!=29){
+
     ## Update variables
     data$Nb_adultes <- as.numeric(as.character(data$Nb_adultes))
     data$Nb_oeufs <- as.numeric(as.character(data$Nb_oeufs))
