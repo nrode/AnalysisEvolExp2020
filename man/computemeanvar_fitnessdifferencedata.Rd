@@ -2,7 +2,7 @@
 % Please edit documentation in R/computemeanvar_fitnessdifferencedata.R
 \name{computemeanvar_fitnessdifferencedata}
 \alias{computemeanvar_fitnessdifferencedata}
-\title{Compute the mean and variance in fitness using bootstrapping}
+\title{Fitness Difference Mean And Variance}
 \usage{
 computemeanvar_fitnessdifferencedata(
   seed = 1,
@@ -15,11 +15,21 @@ computemeanvar_fitnessdifferencedata(
 )
 }
 \arguments{
-\item{theta}{}
+\item{seed}{Seed used for simulation}
+
+\item{ntubes}{Number of tubes whose individuals have been counted}
+
+\item{N}{Mean of the negative binomial distribution (i.e. average number of individuals counted per tube)}
+
+\item{theta}{Overdispersion parameter of the negative binomial distribution (i.e. of the count of individuals per tube)}
 }
 \value{
 
 }
 \description{
-Compute the mean and variance in fitness using bootstrapping
+Compute the mean and variance of the fitness difference between evolved and ancestral populations using either the delta method or bootstrapping
+}
+\examples{
+computemeanvar_fitnessdifferencedata(seed=1, ntubes_ancestor=30, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)
+
 }

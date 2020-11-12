@@ -5,12 +5,17 @@ Authors@R:
     c(person(given = "Nicolas",
            family = "RODE",
            role = c("aut", "cre"),
-           email = "nicolas.rode@inrae.fr"),
+           email = "nicolas.rode@inrae.fr",
+           comment = c(ORCID = "YOUR-ORCID-ID")),
       person(given = "Laure",
            family = "OLAZCUAGA",
            role = c("aut"),
-           email = "olaz.laure@gmail.com"))
-Description: This research compendium describes how to analyze fitness data from an experimental evolution experiment conducted in D. suzukii from 2017 to 2019.
+           email = "olaz.laure@gmail.com",
+           comment = c(ORCID = "YOUR-ORCID-ID")))
+Description: This research compendium describes how to analyze fitness data
+    from an experimental evolution experiment conducted in D. suzukii from 2017 to 2019.
+URL: https://github.com/nrode/AnalysisEvolExp2020
+BugReports: https://github.com/nrode/AnalysisEvolExp2020/issues
 License: MIT + file LICENSE
 ByteCompile: true
 Encoding: UTF-8
