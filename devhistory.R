@@ -22,8 +22,6 @@ usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
 
 
-
-
 dir.create("data")
 dir.create("reports")
 
@@ -32,6 +30,8 @@ usethis::use_package("here")
 usethis::use_package("readr")
 usethis::use_package("MASS")
 usethis::use_package("fitdistrplus")
+usethis::use_package("ggplot2")
+usethis::use_package("lme4")
 
 ## Update NAMESPACE file
 devtools::document()

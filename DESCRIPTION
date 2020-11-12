@@ -26,4 +26,6 @@ Imports:
     here,
     readr,
     MASS,
-    fitdistrplus
+    fitdistrplus,
+    ggplot2,
+    lme4
