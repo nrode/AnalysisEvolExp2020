@@ -3,6 +3,9 @@
 ## Create compendium
 rrtools::use_compendium("/Users/rodenico/Documents/Pro/Articles/2020_EvolExp/AnalysisEvolExp2020", open = FALSE)
 
+## Add to .gitignore
+usethis::use_git_ignore(".DS_Store")
+
 ## Modify DESCRIPTION file
 
 ## Create a R directory and a file for functions
