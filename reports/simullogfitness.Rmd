@@ -1,6 +1,6 @@
 ---
 title: "Simulation of log fitness change"
-author: "Laure Olazuacuaga, Nicolas Rode"
+author: "Laure Olazcuaga, Nicolas Rode"
 date: "`r format(Sys.Date(), '%d-%B-%Y')`"
 output: 
   html_document:
