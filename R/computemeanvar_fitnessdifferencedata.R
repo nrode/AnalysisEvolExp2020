@@ -22,8 +22,7 @@ computemeanvar_fitnessdifferencedata <- function(seed=1, ntubes_ancestor=30, N_a
   boot_meanfitness_derived <- sapply(1:100, boot_fitnessdata, vecindpertube=fitness_derived)
   diff_meanfitness <- boot_meanfitness_derived-boot_meanfitness_ancestor
   ## Compute quantiles
-  delta <- 1
-  quant <- quantile(diff_meanfitness, c(0.025*delta, 0.975+0.025*(1-delta)))
+  quant <- quantile(diff_meanfitness, c(0.025, 0.975))
   quantnormaprox <- 1.96 * sqrt(var(fitness_derived) / (ntubes_derived*mean(fitness_derived)^2) + var(fitness_ancestor)/(ntubes_ancestor*mean(fitness_ancestor)^2))
   quantnormaprox <- c(`2.5%` = log(mean(fitness_derived) / mean(fitness_ancestor)) - quantnormaprox, `97.5%` = log(mean(fitness_derived) / mean(fitness_ancestor)) + quantnormaprox)
   indboot <- as.numeric(ifelse(quant[1]<log(N_derived/N_ancestor) & quant[2]>log(N_derived/N_ancestor), 1, 0))
