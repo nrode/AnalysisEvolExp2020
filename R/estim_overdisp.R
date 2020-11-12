@@ -7,10 +7,10 @@
 #' @param generation Generation considered
 #'
 #' @return "number_tubes_counted",
-#'  "fitted_mean_nb_adults",
-#'  "fitted_theta",
-#'   "observed_var_nb_adults",
-#'   "fitted_var_nb_adults",
+#' "fitted_mean_nb_adults",
+#' "fitted_theta",
+#' "observed_var_nb_adults",
+#' "fitted_var_nb_adults",
 #' "obsoverdisp=observed_var_nb_adults/observed_mean_adults",
 #' "fittedoverdisp==fitted_var_nb_adults/fitted_mean_nb_adults",
 #' "standardized_mean",

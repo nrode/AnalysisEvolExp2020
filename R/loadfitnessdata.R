@@ -50,8 +50,8 @@ loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", gene
   ## Compute emergence rate
   data$Emergence_rate <- data$Nb_adults/data$Nb_eggs
   data$Treatment <- factor(data$Treatment)
+  data$Line <- factor(data$Line)
   data <- droplevels(data)
-
 
 
   return(data)
