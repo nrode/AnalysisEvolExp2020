@@ -264,19 +264,19 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), 
 ```{r }
 ####### Longitudinal data 
 #Model
-mod_Lines<-lme4::lmer(fitness~ Line-1 + (1|Generation), weights = N, data = data_sum)
+mod_Lines<-lme4::lmer(fitness ~ Line-1 + (1|Generation), weights = N, data = data_sum)
 
 #Predict mean per model 
-dat_predict_lines <- expand.grid(Line=unique(data_sum$Line))
+dat_predict_lines <- expand.grid(Line = unique(data_sum$Line))
 
 #Add variables
-dat_predict_lines$Fruit_s<-c(rep("Cherry",9),rep("Cranberry",11),rep("Strawberry",9))
-dat_predict_lines$Step<-"first_prepool"
-dat_predict_lines$Step[c(9,16,29)]<-"pool"
-dat_predict_lines$Step[c(6:8, 15, 17:20, 26:28)]<-"second_postpool"
+dat_predict_lines$Fruit_s <- c(rep("Cherry", 9), rep("Cranberry", 11), rep("Strawberry", 9))
+dat_predict_lines$Step <- "first_prepool"
+dat_predict_lines$Step[c(9,16,29)] <- "pool"
+dat_predict_lines$Step[c(6:8, 15, 17:20, 26:28)] <- "second_postpool"
 
 #Extract estimate and standard error
-dat_predict_lines$fitness_temporal<-predict(mod_Lines, newdata = dat_predict_lines, 
+dat_predict_lines$fitness_temporal <- predict(mod_Lines, newdata = dat_predict_lines, 
                           re.form=NA, type="response")
 dat_predict_lines$se_fitness_temporal<-summary(mod_Lines)$coefficients[, 2]
 
@@ -285,17 +285,17 @@ dat_predict_lines<-dat_predict_lines[dat_predict_lines$Step!="pool",]
 
 ####### Phenotyping steps 
 #Compute fitness
-data_fitness_pheno<-computefitness(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+data_fitness_pheno <- computefitness(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
 
 #Remove allopatric data
-data_fitness_pheno<-data_fitness_pheno[data_fitness_pheno$Fruit_s==data_fitness_pheno$Treatment,]
-data_fitness_pheno<-data_fitness_pheno[,c("Line", "Fruit_s", "fitness_pheno", "se_fitness_pheno")]
+data_fitness_pheno <- data_fitness_pheno[data_fitness_pheno$Fruit_s==data_fitness_pheno$Treatment,]
+data_fitness_pheno <- data_fitness_pheno[, c("Line", "Fruit_s", "fitness_pheno", "se_fitness_pheno")]
 
 ####### Merge data
 data_compare_longitudinal_pheno <- merge(dat_predict_lines,data_fitness_pheno,by=c("Line", "Fruit_s"))
 data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
 
-## Test correlation between measures
+## Does not seem to be a correlation between measures
 cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="first_prepool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="first_prepool"])
 
 cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="second_postpool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="second_postpool"])
