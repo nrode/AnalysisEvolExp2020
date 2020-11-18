@@ -286,7 +286,7 @@ DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() +
  DYNAMIQUE_THREE_JOIN
 
 
-cowplot::save_plot(file=here::here("figures", "Fitness_evolexp_Model_Pop.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
+cowplot::save_plot(file=here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
 
 
 
@@ -459,7 +459,7 @@ SYMP_ALLOP_TOTAL <- cowplot::ggdraw() +
 SYMP_ALLOP_TOTAL
 
 
-cowplot::save_plot(file=here::here("figures", "NbadultsALLOP_SYMP_TOTAL_NEWLOGCHANGE_ALLvsINITIAL.pdf"),  
+cowplot::save_plot(file=here::here("figures", "FIG_Heterogeneity.pdf"),  
                    SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
 
 ```
@@ -1013,7 +1013,7 @@ Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() +
  
  
  
-cowplot::save_plot(file=here::here("figures", "Slopeestimates_logchange_pairwise_errorbar_NEWLOGCHANGE.pdf"), 
+cowplot::save_plot(file=here::here("figures", "FIG_MAregression.pdf"), 
                    Slopeestimates_logchange_pairwise_errorbar, base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
 
 
