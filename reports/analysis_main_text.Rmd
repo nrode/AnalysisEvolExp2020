@@ -473,7 +473,7 @@ Estimates_pairwise <- data.frame(Estimate = c("G7_slope", "G7_slope_CI_inf", "G7
                                Cranberry_Strawberry=NA, 
                                Strawberry_Cherry=NA)
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_CheCran$regression.results[2, 3]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CheCran$confidence.intervals[2, 3]
+Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CheCran$confidence.intervals[2, 4]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_CheCran$confidence.intervals[2, 5]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_CheCran$regression.results[2, 2]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_CheCran$confidence.intervals[2, 2]
@@ -503,7 +503,7 @@ mod0_G7_CranStraw$regression.results[2,]
 
 #Fill out the data
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_CranStraw$regression.results[2, 3]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CranStraw$confidence.intervals[2, 3]
+Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CranStraw$confidence.intervals[2, 4]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_CranStraw$confidence.intervals[2, 5]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_CranStraw$regression.results[2, 2]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_CranStraw$confidence.intervals[2, 2]
@@ -525,7 +525,7 @@ mod0_G7_StrawChe$confidence.intervals[2,]
 
 #Data with value
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_StrawChe$regression.results[2, 3]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_StrawChe$confidence.intervals[2, 3]
+Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_StrawChe$confidence.intervals[2, 4]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_StrawChe$confidence.intervals[2, 5]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_StrawChe$regression.results[2, 2]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_StrawChe$confidence.intervals[2, 2]
@@ -553,7 +553,7 @@ mod0_G29_CheCran$regression.results[2,]
 mod0_G29_CheCran$confidence.intervals[2,]
 
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_CheCran$regression.results[2, 3]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CheCran$confidence.intervals[2, 3]
+Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CheCran$confidence.intervals[2, 4]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_CheCran$confidence.intervals[2, 5]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_CheCran$regression.results[2, 2]
 Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_CheCran$confidence.intervals[2, 2]
@@ -574,7 +574,7 @@ mod0_G29_CranStraw$confidence.intervals[2,]
 mod0_G29_CranStraw$regression.results[2,]
 
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_CranStraw$regression.results[2, 3]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CranStraw$confidence.intervals[2, 3]
+Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CranStraw$confidence.intervals[2, 4]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_CranStraw$confidence.intervals[2, 5]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_CranStraw$regression.results[2, 2]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_CranStraw$confidence.intervals[2, 2]
@@ -595,7 +595,7 @@ mod0_G29_StrawChe$regression.results[2,]
 mod0_G29_StrawChe$confidence.intervals[2,]
 
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_StrawChe$regression.results[2, 3]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_StrawChe$confidence.intervals[2, 3]
+Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_StrawChe$confidence.intervals[2, 4]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_StrawChe$confidence.intervals[2, 5]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_StrawChe$regression.results[2, 2]
 Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_StrawChe$confidence.intervals[2, 2]
@@ -904,6 +904,7 @@ StrawCheG29_inf_min <- (ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberr
 StrawCheG29_inf_max <- (ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] 
 StrawCheG29_sup_min <- (ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
 StrawCheG29_sup_max <- (ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
+
 polygon_StrawCheG29 <- data.frame (xvalue = c(StrawCheG29_inf_min, StrawCheG29_sup_min,
                                         StrawCheG29_sup_max, StrawCheG29_inf_max),
                                yvalue = c(ymin, ymin,
@@ -926,7 +927,7 @@ StrawChe_G29 <- ggplot() +
   geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"],
             slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"],
             colour="grey", linetype="dotted") + 
-     geom_errorbar(data = TEMP_dataG29_StrawChe,
+  geom_errorbar(data = TEMP_dataG29_StrawChe,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
                     color=Symp),
@@ -953,8 +954,80 @@ StrawChe_G29 <- ggplot() +
 
 
 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+intercept_StrawCheG29<-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"]
+StrawCheG29_inf_min<-(ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"] 
+StrawCheG29_inf_max<-(ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"] 
+StrawCheG29_sup_min<-(ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"] 
+StrawCheG29_sup_max<-(ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"] 
+polygon_StrawCheG29<-data.frame (xvalue=c(StrawCheG29_inf_min,StrawCheG29_sup_min,
+                                        StrawCheG29_sup_max,StrawCheG29_inf_max),
+                               yvalue=c(ymin,ymin,
+                                        ymax,ymax)) 
 
 
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
+                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop+1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
+                max(TEMP_dataG29_StrawChe$logchange_symp+1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
+
+
+StrawChe_G29<-ggplot() + 
+  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
+            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope"],
+            colour="black") + 
+  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
+            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"],
+            colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
+            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"],
+            colour="grey", linetype="dotted") + 
+     geom_errorbar(data = TEMP_dataG29_StrawChe,
+                aes(x =logchange_symp ,ymin = logchange_allop-(1.96*sd_allop),ymax = logchange_allop+(1.96*sd_allop),
+                    color=Symp),
+                  width=0.02,size=0.2,alpha=1) +
+   geom_errorbarh(data = TEMP_dataG29_StrawChe,
+                 aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp,xmax = logchange_symp+1.96*sd_symp, 
+                 color=Symp),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_point(data = TEMP_dataG29_StrawChe,
+                 aes(x =logchange_symp ,y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
+                 size=3, fill="white",stroke=1.2) +
+  geom_polygon(data=polygon_StrawCheG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+  coord_cartesian(ylim = c(ymin_StrawCheG29,ymax_StrawCheG29), 
+                  xlim = c(ymin_StrawCheG29,ymax_StrawCheG29))+ 
+    xlab("Fitness difference in\nselective environment")  + 
+    ylab("Fitness difference in\nalternative environment")  +
+  ggtitle("Strawberry vs. Cherry") +
+  labs(shape = "Test fruit", color="Selection fruit") + 
+  scale_shape_manual(values=c(16,17)) + 
+  scale_color_manual(values=c(  "#BC3C6D", "#3FAA96"))  + 
+  theme_LO_sober
+ StrawChe_G29 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
                           aes(x =logchange, y = logchange,  color=Symp,fill=Symp, shape=Allop)) + 
