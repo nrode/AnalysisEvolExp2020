@@ -310,11 +310,11 @@ data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
 ## Plot
 ```{r }
 PLOT_ALL<-ggplot(data=data_compare_longitudinal_pheno, 
-                 aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
-  geom_errorbar(aes(x = fitness_temporal, 
+                 ggplot2::aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
+  geom_errorbar(ggplot2::aes(x = fitness_temporal, 
                     ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
                   width=0.02,size=0.2,alpha=1) +
-  geom_errorbarh(aes(y = fitness_pheno, 
+  geom_errorbarh(ggplot2::aes(y = fitness_pheno, 
                     xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
                  height=0.02,size=0.2,alpha=1) +
   geom_point(size=3, stroke = 1.2) +

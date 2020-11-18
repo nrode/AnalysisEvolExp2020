@@ -1,7 +1,7 @@
 #' @title Sober theme for ggplot
 #'
 #' @description Object: Sober theme for ggplot
-#'
+#' @importFrom ggplot2 ggplot aes geom_bar coord_flip xlim ylim labs guides xlab ylab scale_shape_manual scale_color_manual scale_fill_manual ggtitle geom_point geom_errorbar geom_errorbarh
 #' @return
 #' @export
 #'
