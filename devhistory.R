@@ -20,7 +20,7 @@ usethis::use_r("sim_fitnessdata")
 usethis::use_r("boot_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
-usethis::use_r("theme_plot")
+usethis::use_r("theme_LO_sobre")
 
 
 dir.create("data")
