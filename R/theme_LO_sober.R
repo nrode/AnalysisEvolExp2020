@@ -22,6 +22,7 @@ theme_LO_sober <- ggplot2::theme(plot.title = element_text(size = 12, face="bold
                                  panel.grid.minor.x = element_blank(),
                                  axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"))
 
+
 theme_LO_adaptation <- ggplot2::theme(axis.title.x = element_text(size = 10),
                                  axis.title.y = element_text(size = 10),
                                  axis.text.x = element_text(size = 6),
