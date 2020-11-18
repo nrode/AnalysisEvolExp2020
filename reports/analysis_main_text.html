@@ -1534,19 +1534,7 @@ div.tocify {
 </div>
 
 
-<pre class="r"><code># #Theme
-# theme_LO_sobre &lt;- ggplot2::theme(plot.title = ggplot2::element_text( size=12,face=&quot;bold&quot;,hjust = 0.5),
-#                         axis.title.x = ggplot2::element_text( size=10),
-#                         axis.title.y = ggplot2::element_text( size=10),
-#                         axis.text.x  = ggplot2::element_text( size=8),
-#                         axis.text.y  =  ggplot2::element_text( size=8),
-#                         panel.background = ggplot2::element_rect(fill = &quot;white&quot;,colour = &quot;white&quot;,size = 0.5, linetype = &quot;solid&quot;),
-#                         panel.grid.major.y = ggplot2::element_line(size = 0.025, linetype = &#39;solid&#39;,colour = &quot;grey&quot;),
-#                         panel.grid.minor.y = ggplot2::element_blank(),
-#                         panel.grid.major.x= ggplot2::element_blank(),
-#                         panel.grid.minor.x= ggplot2::element_blank(),
-#                         axis.line = ggplot2::element_line(colour = &quot;grey30&quot;, size = 0.4, linetype = &quot;solid&quot;))
-library(ggplot2)
+<pre class="r"><code>library(ggplot2)
 
 #### PROBLEM /!!!!\</code></pre>
 <div id="data" class="section level1">
@@ -2313,10 +2301,10 @@ mod0_G7_CheCran</code></pre>
 ## 
 ## Regression results
 ##   Method    Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS  0.015811976 0.9709274        44.15491         0.1068931
-## 2     MA -0.034413319 2.8662681        70.76685         0.1068931
+## 1    OLS  0.015811976 0.9709274        44.15491        0.07892108
+## 2     MA -0.034413319 2.8662681        70.76685        0.07892108
 ## 3    SMA -0.007638014 1.8558544        61.68264                NA
-## 4    RMA -0.011960209 2.0189601        63.65058         0.1068931
+## 4    RMA -0.011960209 2.0189601        63.65058        0.07892108
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2331,7 +2319,7 @@ mod0_G7_CheCran</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G7_CheCran$regression.results[2,]</code></pre>
 <pre><code>##   Method   Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.03441332 2.866268        70.76685         0.1068931</code></pre>
+## 2     MA -0.03441332 2.866268        70.76685        0.07892108</code></pre>
 <pre class="r"><code>mod0_G7_CheCran$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA      0.2377528      0.01609149  0.9603793   -7.404403</code></pre>
@@ -2381,10 +2369,10 @@ mod0_G7_CranStraw</code></pre>
 ## 
 ## Regression results
 ##   Method   Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS  0.07778912 0.4093331        22.26091         0.2297702
-## 2     MA -0.62085655 3.7645194        75.12361         0.2297702
+## 1    OLS  0.07778912 0.4093331        22.26091         0.2207792
+## 2     MA -0.62085655 3.7645194        75.12361         0.2207792
 ## 3    SMA -0.16171969 1.5595538        57.33164                NA
-## 4    RMA -0.23805813 1.9261626        62.56315         0.2297702
+## 4    RMA -0.23805813 1.9261626        62.56315         0.2207792
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2402,7 +2390,7 @@ mod0_G7_CranStraw$confidence.intervals[2,]</code></pre>
 ## 2     MA      0.4815458      0.05659085   0.511136   -1.529674</code></pre>
 <pre class="r"><code>mod0_G7_CranStraw$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.6208566 3.764519        75.12361         0.2297702</code></pre>
+## 2     MA -0.6208566 3.764519        75.12361         0.2207792</code></pre>
 <pre class="r"><code>#Fill out the data
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate==&quot;G7_slope&quot;]&lt;-mod0_G7_CranStraw$regression.results[2,3]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate==&quot;G7_slope_CI_inf&quot;]&lt;-mod0_G7_CranStraw$confidence.intervals[2,4]
@@ -2437,10 +2425,10 @@ mod0_G7_StrawChe</code></pre>
 ## 
 ## Regression results
 ##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS 0.3229824 0.3831600        20.96484        0.08991009
-## 2     MA 0.3072319 0.5606481        29.27709        0.08991009
+## 1    OLS 0.3229824 0.3831600        20.96484        0.06093906
+## 2     MA 0.3072319 0.5606481        29.27709        0.06093906
 ## 3    SMA 0.2922950 0.7289682        36.09086                NA
-## 4    RMA 0.2854344 0.8062784        38.87848        0.08991009
+## 4    RMA 0.2854344 0.8062784        38.87848        0.06093906
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept  2.5%-Slope 97.5%-Slope
@@ -2455,7 +2443,7 @@ mod0_G7_StrawChe</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G7_StrawChe$regression.results[2,]</code></pre>
 <pre><code>##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA 0.3072319 0.5606481        29.27709        0.08991009</code></pre>
+## 2     MA 0.3072319 0.5606481        29.27709        0.06093906</code></pre>
 <pre class="r"><code>mod0_G7_StrawChe$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA      0.1440322       0.3707596 -0.1552263    2.399698</code></pre>
@@ -2499,10 +2487,10 @@ mod0_G29_CheCran</code></pre>
 ## 
 ## Regression results
 ##   Method Intercept      Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS 0.1313351 -0.6964883       -34.85676        0.06193806
-## 2     MA 0.2684057 -1.4271279       -54.98076        0.06193806
+## 1    OLS 0.1313351 -0.6964883       -34.85676        0.06393606
+## 2     MA 0.2684057 -1.4271279       -54.98076        0.06393606
 ## 3    SMA 0.2308927 -1.2271686       -50.82396                NA
-## 4    RMA 0.2219698 -1.1796064       -49.71071        0.06193806
+## 4    RMA 0.2219698 -1.1796064       -49.71071        0.06393606
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2517,7 +2505,7 @@ mod0_G29_CheCran</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G29_CheCran$regression.results[2,]</code></pre>
 <pre><code>##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA 0.2684057 -1.427128       -54.98076        0.06193806</code></pre>
+## 2     MA 0.2684057 -1.427128       -54.98076        0.06393606</code></pre>
 <pre class="r"><code>mod0_G29_CheCran$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA     0.04073939       -1.350356   7.201497   -0.213578</code></pre>
@@ -2554,10 +2542,10 @@ mod0_G29_CranStraw</code></pre>
 ## 
 ## Regression results
 ##   Method  Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS -0.3955687 0.7939019        38.44613        0.06393606
-## 2     MA -0.5829369 1.6139086        58.21707        0.06393606
+## 1    OLS -0.3955687 0.7939019        38.44613        0.06493506
+## 2     MA -0.5829369 1.6139086        58.21707        0.06493506
 ## 3    SMA -0.5198185 1.3376743        53.21945                NA
-## 4    RMA -0.4703885 1.1213465        48.27390        0.06393606
+## 4    RMA -0.4703885 1.1213465        48.27390        0.06493506
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2575,7 +2563,7 @@ mod0_G29_CranStraw$confidence.intervals[2,]</code></pre>
 ## 2     MA       2.135079      -0.3013228  0.3814396   -10.28134</code></pre>
 <pre class="r"><code>mod0_G29_CranStraw$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.5829369 1.613909        58.21707        0.06393606</code></pre>
+## 2     MA -0.5829369 1.613909        58.21707        0.06493506</code></pre>
 <pre class="r"><code>Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate==&quot;G29_slope&quot;]&lt;-mod0_G29_CranStraw$regression.results[2,3]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate==&quot;G29_slope_CI_inf&quot;]&lt;-mod0_G29_CranStraw$confidence.intervals[2,4]
 Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate==&quot;G29_slope_CI_sup&quot;]&lt;-mod0_G29_CranStraw$confidence.intervals[2,5]
@@ -2608,10 +2596,10 @@ mod0_G29_StrawChe</code></pre>
 ## 
 ## Regression results
 ##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS -0.3926339 1.324565        52.94847        0.05994006
-## 2     MA -0.7647082 2.537640        68.49224        0.05994006
+## 1    OLS -0.3926339 1.324565        52.94847        0.03696304
+## 2     MA -0.7647082 2.537640        68.49224        0.03696304
 ## 3    SMA -0.5873546 1.959413        62.96220                NA
-## 4    RMA -0.5806572 1.937578        62.70136        0.05994006
+## 4    RMA -0.5806572 1.937578        62.70136        0.03596404
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2626,7 +2614,7 @@ mod0_G29_StrawChe</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G29_StrawChe$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept   Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.7647082 2.53764        68.49224        0.05994006</code></pre>
+## 2     MA -0.7647082 2.53764        68.49224        0.03696304</code></pre>
 <pre class="r"><code>mod0_G29_StrawChe$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA       1.833145      -0.2210037   0.764998   -5.932149</code></pre>
