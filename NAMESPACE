@@ -3,6 +3,7 @@
 export(boot_fitnessdata)
 export(computefitness)
 export(computelogchange)
+export(computelogchange_forlongdata)
 export(computemeanvar_fitnessdata)
 export(computemeanvar_fitnessdifferencedata)
 export(estim_overdisp)
