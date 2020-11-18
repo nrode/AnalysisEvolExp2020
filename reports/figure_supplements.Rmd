@@ -1,0 +1,418 @@
+---
+title: "Simulation of log fitness change"
+author: "Laure Olazcuaga, Nicolas Rode"
+date: "`r format(Sys.Date(), '%d-%B-%Y')`"
+output: 
+  html_document:
+    theme: "journal"
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+devtools::load_all()
+```
+
+
+
+```{r }
+
+library(ggplot2)
+
+#### PROBLEM /!!!!\
+```
+
+
+# DATA
+```{r }
+## Longitudinal data
+data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
+
+## Phenotyping steps
+data_G0 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1")
+data_G7 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G7")
+data_G29 <- loadfitnessdata(dataset = "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv", generation = "29")
+
+```
+
+
+
+
+
+# SUP: Pairwise of Fitness difference
+## Data 
+```{r } 
+#Compute log change
+data_logchange<-computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+
+#Formatting for plotting pairwise
+EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
+EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
+EC_Straw_Cher_G7<-formattingplotpair(data_logchange, "7", "Strawberry", "Cherry")
+EC_Cran_Cher_G29<-formattingplotpair(data_logchange, "29", "Cherry", "Cranberry")
+EC_Straw_Cran_G29<-formattingplotpair(data_logchange, "29", "Cranberry", "Strawberry")
+EC_Straw_Cher_G29<-formattingplotpair(data_logchange, "29", "Strawberry", "Cherry")
+
+```
+
+## Plot 
+```{r } 
+#Limit axis 
+lim_G7<-max(abs(min(data_logchange[data_logchange$Generation=="7",]$logchange-
+                      1.96*data_logchange[data_logchange$Generation=="7",]$sd_logchange, na.rm = T)),
+            max(data_logchange[data_logchange$Generation=="7",]$logchange+
+                  1.96*data_logchange[data_logchange$Generation=="7",]$sd_logchange, na.rm = T))
+
+lim_G29<-max(abs(min(data_logchange[data_logchange$Generation=="29",]$logchange-
+                       1.96*data_logchange[data_logchange$Generation=="29",]$sd_logchange, na.rm = T)),
+            max(data_logchange[data_logchange$Generation=="29",]$logchange+
+                  1.96*data_logchange[data_logchange$Generation=="29",]$sd_logchange, na.rm = T))
+
+#Plot
+PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
+                          aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s, group = Line)) +
+  geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                 height=0.02,size=0.2,alpha=1) + 
+  geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
+  xlab("Fitness difference in strawberry")  +     
+  ylab("Fitness difference in cranberry")  +
+  xlim(-lim_G7,lim_G7) + 
+  ylim(-lim_G7,lim_G7) +  
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme(axis.title.x = element_text(size=10, colour = "#3FAA96"),
+        axis.title.y = element_text(size=10, colour = "#FDB424")) +
+  theme_LO_sober
+ PAIR_StrawCran_G7
+
+ 
+ 
+PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
+                         aes(x = logchange_Cherry,y = logchange_Strawberry, group=Line, color=Fruit_s)) + 
+  geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                    ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                  width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                     xmax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                  height=0.02, size=0.2, alpha=1) + 
+  geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
+  ylab("Fitness difference in strawberry")  + 
+  xlab("Fitness difference in cherry")  + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  xlim(-lim_G7,lim_G7) + 
+  ylim(-lim_G7,lim_G7) +    
+  theme(axis.title.x = element_text(size=10, colour = "#BC3C6D"),
+           axis.title.y = element_text(size=10, colour = "#3FAA96")) +
+  theme_LO_sober
+ PAIR_StrawChe_G7
+
+
+
+ 
+PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = logchange_Cherry, 
+                                          group=Line, color=Fruit_s)) + 
+  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                  width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                  height=0.02, size=0.2, alpha=1) + 
+  geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
+  ylab("Fitness difference in cherry")  + 
+  xlab("Fitness difference in cranberry")  + 
+  xlim(-lim_G7, lim_G7) + 
+  ylim(-lim_G7, lim_G7) +     
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober + 
+  theme(axis.title.x = element_text(size=10, colour = "#FDB424"),
+        axis.title.y = element_text(size=10, colour = "#BC3C6D")) 
+ PAIR_CheCran_G7
+
+
+
+################## Final phenotyping step
+#Plot
+PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
+                          aes(x = logchange_Strawberry, y = logchange_Cranberry,  color=Fruit_s,group=Line)) + 
+  geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                      ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                  width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                       xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                  height=0.02,size=0.2,alpha=1) + 
+  geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
+  xlab("Fitness difference in strawberry")  +     
+  ylab("Fitness difference in cranberry")  +
+  xlim(-lim_G29,lim_G29) + 
+  ylim(-lim_G29,lim_G29) +     
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme(axis.title.x = element_text(size=10, colour = "#3FAA96"),
+        axis.title.y = element_text(size=10, colour = "#FDB424")) +
+  theme_LO_sober
+ PAIR_CranStraw_G29
+
+ 
+ 
+PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
+                         aes(x = logchange_Cherry,y = logchange_Strawberry, group=Line , color=Fruit_s)) + 
+  geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                      ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                  width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                       xmax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                  height=0.02,size=0.2,alpha=1) + 
+  geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
+  ylab("Fitness difference in strawberry")  + 
+  xlab("Fitness difference in cherry")  + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  xlim(-lim_G29,lim_G29) + 
+  ylim(-lim_G29,lim_G29) +       
+  theme(axis.title.x = element_text(size=10, colour = "#BC3C6D"),
+           axis.title.y = element_text(size=10, colour = "#3FAA96")) +
+  theme_LO_sober
+ PAIR_StrawChe_G29
+
+
+
+ 
+PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
+                         aes(x = logchange_Cranberry,y = logchange_Cherry,group=Line, color=Fruit_s)) + 
+  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                  width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                  height=0.02,size=0.2,alpha=1) + 
+  geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
+  ylab("Fitness difference in cherry")  + 
+  xlab("Fitness difference in cranberry")  + 
+  xlim(-lim_G29,lim_G29) + 
+  ylim(-lim_G29,lim_G29) +   
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober + 
+  theme(axis.title.x = element_text(size = 10, colour = "#FDB424"),
+        axis.title.y = element_text(size = 10, colour = "#BC3C6D")) 
+ PAIR_CheCran_G29
+
+
+ #Legend
+TEMP_data_logchange_sum_Straw_Cher_G7<-data_logchange
+TEMP_data_logchange_sum_Straw_Cher_G7$Pheno<-sample(c("Intermediate", "Final"),
+                                                    length(data_logchange$logchange), 
+                                                    replace=TRUE)
+
+PAIR_plot_legend<- ggplot(data=TEMP_data_logchange_sum_Straw_Cher_G7, 
+                          aes(x=Treatment, y=logchange, group=Fruit_s, colour=Fruit_s,shape=Pheno)) +
+  geom_errorbar(aes(ymin=logchange-1.96*sd_logchange, ymax=logchange+1.96*sd_logchange),
+                  width=0.01,size=1) +
+  geom_point(size=3, stroke=1.3) + 
+  scale_shape_manual(name = "Phenotyping step", 
+                     labels = c("Intermediate", "Final"),values=c(21,16)) +
+  scale_color_manual(name= "Selection fruit", 
+                     values=c("#BC3C6D", "#FDB424", "#3FAA96"), 
+                     label=c("Cherry", "Cranberry", "Strawberry")) +   
+  theme_LO_sober
+PAIR_legend<-lemon::g_legend(PAIR_plot_legend)
+
+rm(TEMP_data_logchange_sum_Straw_Cher_G7)
+
+
+
+
+
+PAIR_Fig_Sup <-  cowplot::ggdraw() +
+  cowplot::draw_plot(PAIR_CheCran_G7+theme(legend.position = "none"), 
+            x =0.00, y = 0.5, width = 0.22, height =0.45) +
+  cowplot::draw_plot(PAIR_StrawCran_G7+theme(legend.position = "none"), 
+            x = 0.26, y = 0.5, width = 0.22, height = 0.45) +
+  cowplot::draw_plot(PAIR_StrawChe_G7+theme(legend.position = "none"), 
+            x = 0.52, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(PAIR_legend, x = 0.80, y = 0.5, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(PAIR_CheCran_G29+theme(legend.position = "none"), 
+            x =0.00, y = 0, width = 0.22, height = 0.45) +
+  cowplot::draw_plot(PAIR_CranStraw_G29+theme(legend.position = "none"), 
+            x = 0.26, y = 0, width = 0.22, height = 0.45) +
+  cowplot::draw_plot(PAIR_StrawChe_G29+theme(legend.position = "none"), 
+            x = 0.52, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
+                    "Final phenotyping step", "D", "E", "F", " "),  
+                  x = c(0.26,0,0.26,0.52,0.82,0.2,0,0.26,0.52,0.82), 
+                  y = c(1.01,0.97,0.97,0.97,0.97,0.5,0.47, 0.47, 0.47, 0.47), 
+                  hjust = c(-0.25,-0.25,-0.25,-0.25,-0.25,-0.75,-0.75,-0.75,-0.75,-0.75), 
+                  vjust = c(1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5),
+                  size = 14) 
+ PAIR_Fig_Sup
+ 
+ 
+
+cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), PAIR_Fig_Sup, 
+                   base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
+
+
+```
+
+
+
+
+
+# SUP: Longitudinal vs. pheno data
+## Data
+```{r }
+####### Longitudinal data 
+#Model
+mod_Lines<-lme4::lmer(fitness~ Line-1 + (1|Generation), weights = N, data = data_sum)
+
+#Predict mean per model 
+dat_predict_lines <- expand.grid(Line=unique(data_sum$Line))
+
+#Add variables
+dat_predict_lines$Fruit_s<-c(rep("Cherry",9),rep("Cranberry",11),rep("Strawberry",9))
+dat_predict_lines$Step<-"first_prepool"
+dat_predict_lines$Step[c(9,16,29)]<-"pool"
+dat_predict_lines$Step[c(6:8, 15, 17:20, 26:28)]<-"second_postpool"
+
+#Extract estimate and standard error
+dat_predict_lines$fitness_temporal<-predict(mod_Lines, newdata = dat_predict_lines, 
+                          re.form=NA, type="response")
+dat_predict_lines$se_fitness_temporal<-summary(mod_Lines)$coefficients[, 2]
+
+#Remove pool step 
+dat_predict_lines<-dat_predict_lines[dat_predict_lines$Step!="pool",]
+
+####### Phenotyping steps 
+#Compute fitness
+data_fitness_pheno<-computefitness(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+
+#Remove allopatric data
+data_fitness_pheno<-data_fitness_pheno[data_fitness_pheno$Fruit_s==data_fitness_pheno$Treatment,]
+data_fitness_pheno<-data_fitness_pheno[,c("Line", "Fruit_s", "fitness_pheno", "se_fitness_pheno")]
+
+####### Merge data
+data_compare_longitudinal_pheno <- merge(dat_predict_lines,data_fitness_pheno,by=c("Line", "Fruit_s"))
+data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
+```
+
+
+## Plot
+```{r }
+PLOT_ALL<-ggplot(data=data_compare_longitudinal_pheno, 
+                 aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
+  geom_errorbar(aes(x = fitness_temporal, 
+                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
+                  width=0.02,size=0.2,alpha=1) +
+  geom_errorbarh(aes(y = fitness_pheno, 
+                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_point(size=3, stroke = 1.2) +
+  scale_fill_manual(values=c("#ffffff", "#ffffff", "#ffffff", "#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(name = "Phenotyping step / Step", labels = c("Intermediate / Step 1", "Final / Step 3"),values=c(21,16)) +
+  xlab("Fitness (Longitudinal data)") + 
+  ylab("Fitness (Phenotyping step data)") + 
+  guides(fill=FALSE)+
+  labs(shape = "Phenotyping step /\nStep", color="Selection fruit") + 
+  ylim(-1.7,1.7) +
+  xlim(-1.7,1.7) +
+  theme_LO_sober
+PLOT_ALL
+
+cowplot::save_plot(file=here::here("figures", "SUPMAT_Pheno_Longitudinal_ONEPLOT.pdf"), 
+                   PLOT_ALL, base_height = 10/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+
+PLOT_IntermediatePheno<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Step=="first_prepool",], 
+       aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s,shape=Fruit_s)) +
+  geom_errorbar(aes(x = fitness_temporal, 
+                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
+                  width=0.02,size=0.2,alpha=1) +
+  geom_errorbarh(aes(y = fitness_pheno, 
+                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_point(size=3, fill = "#ffffff", stroke=1.3) +
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  xlab("Fitness (Longitudinal data)") + 
+  ylab("Fitness (Phenotyping step data)") + 
+  labs(color="Selection fruit", shape="Selection fruit") + 
+  # ylim(-1.7,1.2) +
+  # xlim(-1.7,1.2) +
+  ylim(-1.7,1.7) +
+  xlim(-1.7,1.7) +
+  ggtitle("Intermediate phenotyping step / Step 1") +
+  theme_LO_sober
+PLOT_IntermediatePheno
+
+PLOT_FinalPheno<-ggplot(data=data_compare_longitudinal_pheno
+                        [data_compare_longitudinal_pheno$Step=="second_postpool",], 
+       aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
+  geom_errorbar(aes(x = fitness_temporal, 
+                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
+                  width=0.02,size=0.2,alpha=1) +
+  geom_errorbarh(aes(y = fitness_pheno, 
+                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_point(size=3, stroke=1) +
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  xlab("Fitness (Longitudinal data)") + 
+  ylab("Fitness (Phenotyping step data)") + 
+  labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
+  # ylim(-0.1,1.3) +
+  # xlim(-0.1,1.3) +
+  ylim(-1.3,1.3) +
+  xlim(-1.3,1.3) +
+  ggtitle("Final phenotyping step / Step 3") +
+  theme_LO_sober
+PLOT_FinalPheno
+
+
+    
+
+PLOT_Comparison_Pheno_Longitudinal <- cowplot::ggdraw() +
+  cowplot::draw_plot(PLOT_IntermediatePheno,
+            x = 0, y = 0.5, width = 1, height = 0.5) +
+  cowplot::draw_plot(PLOT_FinalPheno,
+            x =0, y = 0, width = 1, height = 0.5) +
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0,0), y = c(1,0.5), 
+                  size = 14) 
+PLOT_Comparison_Pheno_Longitudinal
+
+
+cowplot::save_plot(file=here::here("figures", "SUPMAT_Pheno_Longitudinal.pdf"),
+                   PLOT_Comparison_Pheno_Longitudinal, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
