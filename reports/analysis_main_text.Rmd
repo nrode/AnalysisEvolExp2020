@@ -24,21 +24,22 @@ devtools::load_all()
 
 
 ```{r }
-#Theme
-theme_LO_sobre <- theme(plot.title = element_text( size=12,face="bold",hjust = 0.5),
-                        axis.title.x = element_text( size=10),
-                        axis.title.y = element_text( size=10),
-                        axis.text.x  = element_text( size=8),
-                        axis.text.y  =  element_text( size=8),
-                        panel.background = element_rect(fill = "white",colour = "white",size = 0.5, linetype = "solid"),
-                        panel.grid.major.y = element_line(size = 0.025, linetype = 'solid',colour = "grey"),
-                        panel.grid.minor.y = element_blank(),
-                        panel.grid.major.x= element_blank(),
-                        panel.grid.minor.x= element_blank(),
-                        axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"))
+# #Theme
+# theme_LO_sobre <- ggplot2::theme(plot.title = ggplot2::element_text( size=12,face="bold",hjust = 0.5),
+#                         axis.title.x = ggplot2::element_text( size=10),
+#                         axis.title.y = ggplot2::element_text( size=10),
+#                         axis.text.x  = ggplot2::element_text( size=8),
+#                         axis.text.y  =  ggplot2::element_text( size=8),
+#                         panel.background = ggplot2::element_rect(fill = "white",colour = "white",size = 0.5, linetype = "solid"),
+#                         panel.grid.major.y = ggplot2::element_line(size = 0.025, linetype = 'solid',colour = "grey"),
+#                         panel.grid.minor.y = ggplot2::element_blank(),
+#                         panel.grid.major.x= ggplot2::element_blank(),
+#                         panel.grid.minor.x= ggplot2::element_blank(),
+#                         axis.line = ggplot2::element_line(colour = "grey30", size = 0.4, linetype = "solid"))
+# #Position dodge
+# pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 #Position dodge
-pd <- position_dodge(0.3) # move them .05 to the left and right
-
+pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 ```
 
 
@@ -149,13 +150,6 @@ summary(mod_Best)
 
 ## Plot 
 ```{r }
-  ###### 4-Create three subset
-  data_fitness_cherry<-data_sum[data_sum$Fruit_s=="Cherry",]
-  data_fitness_cranb<-data_sum[data_sum$Fruit_s=="Cranberry",]
-  data_fitness_straw<-data_sum[data_sum$Fruit_s=="Strawberry",]
-
-
-
 #Extract slope and intercept
 dat_predict_allfruits <- expand.grid(Generation=as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
@@ -197,15 +191,16 @@ TEMP_title<-data.frame(xtitle=c(14,14,14),
 TEMP_title
 
 
+library(ggplot2)
 
-
-PLOT_FITNESS_CHERRY<-ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s=="Cherry",], 
+PLOT_FITNESS_CHERRY<-ggplot(data=TEMP_total[TEMP_total$Fruit_s=="Cherry",], 
                             aes(x=factor(Generation),group=Lines, y=fitness, colour=Fruit_s)) + 
   geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax=fitness+1.96*se_fitness),
                 width=.1,position=pd,size=0.2,color="black") +
   geom_line(size=0.3,position=pd) +
-  geom_line(data=dat_predict_allfruits[dat_predict_allfruits$Fruit_s=="Cherry",], aes(x=factor(Generation), y=fitness_predicted, colour="black", group = Step),
-                size=0.5) +
+  geom_line(data=dat_predict_allfruits[dat_predict_allfruits$Fruit_s=="Cherry",], 
+                     aes(x=factor(Generation), y=fitness_predicted,
+                         colour="black", group = Step), size=0.5) +
   geom_point(size=1, position=pd,shape=21, fill="white") +
   ylim(-3,3.05) + 
   ylab("Fitness") + 
@@ -219,7 +214,7 @@ PLOT_FITNESS_CHERRY<-ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s=="Cherry
            y = y2, yend = y2),size=0.4) + 
   scale_color_manual(values=c("black","#BC3C6D", "#FDB424", "#3FAA96")) +  
   ggtitle("Cherry") +
-  theme_LO_sobre +
+  theme_LO_sober +
     theme(panel.grid.major.y = element_line(size = 0.1, linetype = 'solid',colour = "grey"),
         panel.grid.minor.y = element_line(size = 0.05, linetype = 'solid',colour = "grey"),
         strip.background = element_rect(fill="white"),
@@ -251,7 +246,7 @@ PLOT_FITNESS_CRANB<-ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s=="Cranber
            y = y2, yend = y2),size=0.4) + 
   scale_color_manual(values=c("black", "#FDB424")) +  
   ggtitle("Cranberry") +
-  theme_LO_sobre +
+  theme_LO_sober +
     theme(panel.grid.major.y = element_line(size = 0.1, linetype = 'solid',colour = "grey"),
         panel.grid.minor.y = element_line(size = 0.05, linetype = 'solid',colour = "grey"),
                 axis.text.x  = element_text( size=6), 
@@ -283,7 +278,7 @@ PLOT_FITNESS_STRAW<-ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s=="Strawbe
            y = y2, yend = y2),size=0.4) + 
   scale_color_manual(values=c("black", "#3FAA96")) +  
   ggtitle("Strawberry") +
-  theme_LO_sobre +
+  theme_LO_sober +
     theme(panel.grid.major.y = element_line(size = 0.1, linetype = 'solid',colour = "grey"),
         panel.grid.minor.y = element_line(size = 0.05, linetype = 'solid',colour = "grey"),
         strip.background = element_rect(fill="white"),
@@ -297,19 +292,19 @@ PLOT_FITNESS_STRAW
 
 
 DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() +
-  draw_plot(PLOT_FITNESS_CHERRY+theme(axis.title.x=element_blank(),
+  cowplot::draw_plot(PLOT_FITNESS_CHERRY+theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.line.x = element_blank()), 
             x =0, y = 0.66, width = 1, height = 0.33) +
-  draw_plot(PLOT_FITNESS_CRANB+theme(axis.title.x=element_blank(),
+  cowplot::draw_plot(PLOT_FITNESS_CRANB+theme(axis.title.x=element_blank(),
         axis.text.x=element_blank(),
         axis.ticks.x=element_blank(),
         axis.line.x = element_blank()), 
             x = 0, y = 0.33, width = 1, height = 0.33) +
-  draw_plot(PLOT_FITNESS_STRAW, 
+  cowplot::draw_plot(PLOT_FITNESS_STRAW, 
             x = 0, y = 00, width = 1, height = 0.33) + 
-  draw_plot_label(c("A", "B", "C"),  
+  cowplot::draw_plot_label(c("A", "B", "C"),  
                   x = c(0,0,0), 
                   y = c(1,0.66,0.33), 
                   hjust = c(-0.5,-0.5,-0.5), 
@@ -318,8 +313,8 @@ DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() +
  DYNAMIQUE_THREE_JOIN
 
 
-cowplot::save_plot("figures/Fitness_evolexp_Model_Pop.pdf", DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
-# 
+cowplot::save_plot(file=here::here("figures", "Fitness_evolexp_Model_Pop.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
+
 
 
 ```
