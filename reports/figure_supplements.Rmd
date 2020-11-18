@@ -21,16 +21,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 devtools::load_all()
 ```
 
-
-
-```{r }
-
-library(ggplot2)
-
-#### PROBLEM /!!!!\
-```
-
-
 # DATA
 ```{r }
 ## Longitudinal data
@@ -304,6 +294,11 @@ data_fitness_pheno<-data_fitness_pheno[,c("Line", "Fruit_s", "fitness_pheno", "s
 ####### Merge data
 data_compare_longitudinal_pheno <- merge(dat_predict_lines,data_fitness_pheno,by=c("Line", "Fruit_s"))
 data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
+
+## Test correlation between measures
+cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="first_prepool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="first_prepool"])
+
+cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="second_postpool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="second_postpool"])
 ```
 
 
@@ -354,7 +349,8 @@ PLOT_IntermediatePheno<-ggplot(data=data_compare_longitudinal_pheno[data_compare
   xlim(-1.7,1.7) +
   ggtitle("Intermediate phenotyping step / Step 1") +
   theme_LO_sober
-PLOT_IntermediatePheno
+PLOT_IntermediatePheno + geom_abline(intercept = 0, slope = 1, color="black", 
+                 linetype="dashed", size=1)
 
 PLOT_FinalPheno<-ggplot(data=data_compare_longitudinal_pheno
                         [data_compare_longitudinal_pheno$Step=="second_postpool",], 
@@ -378,7 +374,8 @@ PLOT_FinalPheno<-ggplot(data=data_compare_longitudinal_pheno
   xlim(-1.3,1.3) +
   ggtitle("Final phenotyping step / Step 3") +
   theme_LO_sober
-PLOT_FinalPheno
+PLOT_FinalPheno + geom_abline(intercept = 0, slope = 1, color="black", 
+                 linetype="dashed", size=1)
 
 
     
