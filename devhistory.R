@@ -15,6 +15,7 @@ usethis::use_git(message = ":bulb: Update documentation")
 ## Create a R directory and a file for functions
 usethis::use_r("loadfitnessdata")
 usethis::use_r("loadlongitudinaldata")
+usethis::use_r("computelogchange")
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
 usethis::use_r("sim_fitnessdata")
