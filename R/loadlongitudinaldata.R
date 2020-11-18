@@ -12,7 +12,7 @@
 #' @examples
 #'data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
 
-loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7 ,rm_generation3 = 29){
+loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1, rm_generation2 = 7, rm_generation3 = 29){
 
   ######  0- Load data
   # Path using the here function so that the command line is reproducible across platforms
