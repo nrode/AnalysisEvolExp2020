@@ -4,7 +4,10 @@
 \alias{computelogchange}
 \title{Calculation difference in fitness: from fitness data to logchange}
 \usage{
-computelogchange(fitness_dataset = data_G7)
+computelogchange(
+  fitness_dataset_intermediate = data_G7,
+  fitness_dataset_final = data_G29
+)
 }
 \arguments{
 \item{fitness_dataset_intermediate}{Intermediate phenotyping dataset created using loadfitnessdata()}
@@ -12,7 +15,7 @@ computelogchange(fitness_dataset = data_G7)
 \item{fitness_dataset_final}{Final phenotyping dataset created using loadfitnessdata()}
 }
 \value{
-
+dataset of fitness difference between the phenotyping step and the initial phenotyping step
 }
 \description{
 Log change in fitness in generation x for the population i in the test fruit j = mean(W)Gxij / mean(W)G1j
