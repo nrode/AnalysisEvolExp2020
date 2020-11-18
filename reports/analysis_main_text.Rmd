@@ -998,7 +998,8 @@ Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() +
  
  
 cowplot::save_plot(file=here::here("figures", "FIG_MAregression.pdf"), 
-                   Slopeestimates_logchange_pairwise_errorbar, base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
+                   Slopeestimates_logchange_pairwise_errorbar, 
+                   base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
 
 
 
