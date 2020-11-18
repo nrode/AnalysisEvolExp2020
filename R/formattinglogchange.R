@@ -1,4 +1,4 @@
-' @title Formatting a logchange dataset to pairwise dataset for testing MA-regression
+#' @title Formatting a logchange dataset to pairwise dataset for testing MA-regression
 #'
 #' @description  Formatting a logchange dataset
 #' From a logchange dataset created using computelogchange() to pairwise dataset for testing MA-regression
