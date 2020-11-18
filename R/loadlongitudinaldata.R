@@ -53,11 +53,8 @@ loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generatio
 
   data$se_fitness <- sqrt((data$sd^2) / (data$N * (data$Nb_adults^2)))
 
-  #Check with se:
-  data$se_fitness_verif <- sqrt((data$se^2) / (data$Nb_adults^2))
-
   #Remove useless columns
-  data <- subset(data, select = -c(se, se_fitness_verif))
+  data <- subset(data, select = -c(se))
 
   # Change colname of Line
   names(data)[names(data) == "Lines"] <- "Line"
