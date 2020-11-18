@@ -16,13 +16,17 @@ usethis::use_git(message = ":bulb: Update documentation")
 usethis::use_r("loadfitnessdata")
 usethis::use_r("loadlongitudinaldata")
 usethis::use_r("computelogchange")
+usethis::use_r("formattinglogchange")
+usethis::use_r("formattinglogchange2")
+usethis::use_r("theme_LO_sober")
+
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
 usethis::use_r("sim_fitnessdata")
 usethis::use_r("boot_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
-usethis::use_r("theme_LO_sober")
+
 
 dir.create("data")
 dir.create("reports")
@@ -37,6 +41,8 @@ usethis::use_package("lme4")
 usethis::use_package("Rmisc")
 usethis::use_package("cowplot")
 usethis::use_package("MuMIn")
+usethis::use_package("lmodel2")
+usethis::use_package("lemon")
 
 ## Update NAMESPACE file
 devtools::document()
