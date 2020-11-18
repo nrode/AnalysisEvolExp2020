@@ -6,7 +6,7 @@
 #'
 #' @param longitudinal_dataset Longitudinal dataset created using loadlongitudinaldata()
 
-#' @return dataset of fitness difference between XXXXXXXXXXXXXXXXX and XXXXXXXXXXXX
+#' @return dataset of fitness difference between fitness during step and G2 mean per fruit
 #' @export
 #'
 #' @examples
