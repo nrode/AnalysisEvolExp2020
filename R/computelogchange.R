@@ -32,23 +32,18 @@
 
 computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29){
 
-  # Calculate mean during intermediate step
-  TEMP_data_intermediate <- Rmisc::summarySE(fitness_dataset_intermediate,
-                       measurevar = "Nb_adults",
-                       groupvars = c("Line", "Fruit_s", "Treatment"))
-
-  # Calculate mean during final step
-  TEMP_data_final <- Rmisc::summarySE(fitness_dataset_final,
-                                      measurevar = "Nb_adults",
-                                      groupvars = c("Line", "Fruit_s", "Treatment"))
-
-
   # Add generation
-  TEMP_data_intermediate$Generation <- "7"
-  TEMP_data_final$Generation <- "29"
+  fitness_dataset_intermediate$Generation <- "7"
+  fitness_dataset_final$Generation <- "29"
 
   # Merge intermediate and final
-  TEMP_data_G7G29<-rbind(TEMP_data_intermediate,TEMP_data_final)
+  fitnessdataset<-rbind(fitness_dataset_intermediate,fitness_dataset_final)
+
+
+  # Calculate mean during phenotyping steps
+  TEMP_data_G7G29 <- Rmisc::summarySE(fitnessdataset,
+                       measurevar = "Nb_adults",
+                       groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
 
   # Calculate initial mean and sd
   TEMP_mean_G1 <- data.frame(Mean_initial = tapply(data_G0$Nb_adults, data_G0$Treatment, mean),
