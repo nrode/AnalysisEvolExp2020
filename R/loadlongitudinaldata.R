@@ -28,7 +28,6 @@ loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generatio
                                             data_fitness_all$Generation != rm_generation2&
                                             data_fitness_all$Generation != rm_generation3,]
 
-
   ######  1- Extract mean for each lines and each generations + se + N (number of tubes)
   data<-Rmisc::summarySE(TEMP_data_fitness_all,
                                  measurevar="Nb_adults",
@@ -60,6 +59,8 @@ loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generatio
   #Remove useless columns
   data <- subset(data, select = -c(se, se_fitness_verif))
 
+  # Change colname of Line
+  names(data)[names(data) == "Lines"] <- "Line"
 
 
   return(data)

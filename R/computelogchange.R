@@ -24,13 +24,13 @@
 #' @param fitness_dataset_intermediate Intermediate phenotyping dataset created using loadfitnessdata()
 #' @param fitness_dataset_final Final phenotyping dataset created using loadfitnessdata()
 
-#' @return
+#' @return dataset of fitness difference between the phenotyping step and the initial phenotyping step
 #' @export
 #'
 #' @examples
 #'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
 
-computelogchange <- function(fitness_dataset = data_G7){
+computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29){
 
   # Calculate mean during intermediate step
   TEMP_data_intermediate <- Rmisc::summarySE(fitness_dataset_intermediate,
@@ -72,6 +72,9 @@ computelogchange <- function(fitness_dataset = data_G7){
   # Subset
   data_logchange<-subset(data_logchange, select = -c(N,Nb_adults,sd,se,Mean_initial,Sd_initial,N_initial,ci))
 
+  # Add symp and allop
+  data_logchange$Symp <- data_logchange$Fruit_s
+  data_logchange$Allop <- data_logchange$Treatment
 
   return(data_logchange)
 
