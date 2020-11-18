@@ -17,8 +17,8 @@ usethis::use_r("loadfitnessdata")
 usethis::use_r("loadlongitudinaldata")
 usethis::use_r("computelogchange")
 usethis::use_r("formattinglogchange")
-usethis::use_r("formattinglogchange2")
 usethis::use_r("theme_LO_sober")
+usethis::use_r("formattingplotpair")
 
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
@@ -43,6 +43,8 @@ usethis::use_package("cowplot")
 usethis::use_package("MuMIn")
 usethis::use_package("lmodel2")
 usethis::use_package("lemon")
+usethis::use_package("data.table")
+
 
 ## Update NAMESPACE file
 devtools::document()
