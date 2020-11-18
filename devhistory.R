@@ -32,6 +32,8 @@ usethis::use_package("MASS")
 usethis::use_package("fitdistrplus")
 usethis::use_package("ggplot2")
 usethis::use_package("lme4")
+usethis::use_package("Rmisc")
+usethis::use_package("cowplot")
 
 ## Update NAMESPACE file
 devtools::document()
