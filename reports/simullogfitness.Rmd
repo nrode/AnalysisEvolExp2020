@@ -169,32 +169,35 @@ computemeanvar_fitnessdata(seed=1, ntubes=ntubes_ancestor, N=N_ancestor, theta=t
 sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdata, ntubes=ntubes_ancestor, N=N_ancestor, theta=theta_ancestor)))
 
 ## Variance estimates ~ OK
-hist(sim$boot_varestimfitness, xlab="Variance estimate based on boostrap")
+hist(sim$deltamethod_varestimfitness, xlab="Variance estimate based on the observed mean and variance (delta method approx)")
 abline(v=sim$deltamethod_varfitness, col="red")
 
-
-## 95% confidence interval is actually a 90% CI
-mean(sim$indic)
+## 95% confidence interval with delta method is OK
+mean(sim$indicboot)
+mean(sim$indicnormaprox)
 
 ## Check the influence of the number of tubes on power
 Ntube <- seq(4, 100, by=10)
 
 bias <- c()
-power <- c()
+powerboot <- c()
+powernormapprox <- c()
 for (ntubes_ancestor in Ntube){
   sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdata, ntubes=ntubes_ancestor, N=N_ancestor, theta=theta_ancestor)))
   bias <- c(bias, mean(sim$expected_meanfitness-sim$observed_meanfitness))
-  power <- c(power, mean(sim$indic))
+  powerboot <- c(powerboot, mean(sim$indicboot))
+  powernormapprox <- c(powernormapprox, mean(sim$indicnormaprox))
 }
 
-## Small bias
+## Positive bias decreases with the number of tubes
 bias
 
-plot(Ntube, power, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
+plot(Ntube, powerboot, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n', lty=2, bty="n")
+lines(Ntube, powernormapprox, col="black", lty=1)
 axis(1, at=seq(0, 100, by=10))
-abline(h=0.95, col="red", lty=2)
-
-## 95% CI should be computed with c(0.025*delta, 0.975+0.025*(1-delta))
+abline(h=0.95, col="red", lwd=2)
+legend(0, 0.5, legend=c( "Normal approximation", "Boostrapping"), bty="n", lwd=1, lty=c(1, 2))
+## 95% CI computed with -/+ 1.96 SE is OK
 ```
 
 # Fitness difference estimation
@@ -241,11 +244,11 @@ for (ntubes_tested in Ntube){
 ## No bias
 bias
 
-plot(Ntube, powerboot, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n')
-lines(Ntube, powernormapprox, col="red")
+plot(Ntube, powerboot, xlab="Number of tubes", ylab="Power", ylim=c(0, 1), las=1, type="l", xaxt='n', lty=2)
+lines(Ntube, powernormapprox)
 axis(1, at=seq(0, 100, by=10))
-abline(h=0.95, col="red", lty=2)
-legend(0, 0.5, legend=c("Boostrapping", "Normal approximation"), col=1:2, bty="n", lwd=1)
+abline(h=0.95, col="red", lwd=2)
+legend(0, 0.5, legend=c( "Normal approximation", "Boostrapping"), bty="n", lwd=1, lty=c(1, 2))
 ## 95% CI should be computed with c(0.025*delta, 0.975+0.025*(1-delta))
 
 ```

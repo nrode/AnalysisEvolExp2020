@@ -16,7 +16,15 @@ estim_overdisp(colfactorlevel, colfactor, data, generation)
 \item{generation}{Generation considered}
 }
 \value{
-
+"number_tubes_counted",
+"fitted_mean_nb_adults",
+"fitted_theta",
+"observed_var_nb_adults",
+"fitted_var_nb_adults",
+"obsoverdisp=observed_var_nb_adults/observed_mean_adults",
+"fittedoverdisp==fitted_var_nb_adults/fitted_mean_nb_adults",
+"standardized_mean",
+"standardized_mean_small_sample"
 }
 \description{
 Analyze a dataset using a negative binomial distribution and returns the fitted mean, variance and overdispersion
