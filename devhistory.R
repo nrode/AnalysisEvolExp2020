@@ -20,6 +20,7 @@ usethis::use_r("sim_fitnessdata")
 usethis::use_r("boot_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
+usethis::use_r("theme_plot")
 
 
 dir.create("data")
@@ -34,6 +35,7 @@ usethis::use_package("ggplot2")
 usethis::use_package("lme4")
 usethis::use_package("Rmisc")
 usethis::use_package("cowplot")
+
 
 ## Update NAMESPACE file
 devtools::document()
