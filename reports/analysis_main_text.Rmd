@@ -17,30 +17,30 @@ editor_options:
 
 
 ```{r setup, include=FALSE}
-library("ggplot2")
-library("cowplot")
-library("Rmisc")
-library("lme4")
-
-theme_LO_sobre <- theme(plot.title = element_text( size=12,face="bold",hjust = 0.5),
-        axis.title.x = element_text( size=10),
-        axis.title.y = element_text( size=10),
-        axis.text.x  = element_text( size=8), 
-        axis.text.y  =  element_text( size=8),
-        panel.background = element_rect(fill = "white",colour = "white",size = 0.5, linetype = "solid"),
-        panel.grid.major.y = element_line(size = 0.025, linetype = 'solid',colour = "grey"), 
-        panel.grid.minor.y = element_blank(),
-        panel.grid.major.x= element_blank(),
-        panel.grid.minor.x= element_blank(),
-        axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"))
-pd <- position_dodge(0.3) # move them .05 to the left and right
-```
-
-
-```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 devtools::load_all()
 ```
+
+
+
+```{r }
+#Theme
+theme_LO_sobre <- theme(plot.title = element_text( size=12,face="bold",hjust = 0.5),
+                        axis.title.x = element_text( size=10),
+                        axis.title.y = element_text( size=10),
+                        axis.text.x  = element_text( size=8),
+                        axis.text.y  =  element_text( size=8),
+                        panel.background = element_rect(fill = "white",colour = "white",size = 0.5, linetype = "solid"),
+                        panel.grid.major.y = element_line(size = 0.025, linetype = 'solid',colour = "grey"),
+                        panel.grid.minor.y = element_blank(),
+                        panel.grid.major.x= element_blank(),
+                        panel.grid.minor.x= element_blank(),
+                        axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"))
+#Position dodge
+pd <- position_dodge(0.3) # move them .05 to the left and right
+
+```
+
 
 # Import data
 ```{r }
@@ -57,83 +57,19 @@ head(data_G0)
 head(data_G7)
 head(data_G29)
 
-
-
-
-
-```
-
-# Adaptation analysis
-## Prepare data
-```{r }
-
-data_total_dyn<-read.table("/Users/laure/Dropbox/TEMP_Discussion_Nico_Evolexp/Data/DATA_Adults_G1G29.csv",sep=";",header=T)
-
-
-data_fitness_all<-data_total_dyn[data_total_dyn$Treatment=="Cherry"|
-                           data_total_dyn$Treatment=="Cranberry"|
-                           data_total_dyn$Treatment=="Strawberry",]
-data_fitness_all$obs<-as.factor(1:nrow(data_fitness_all))
-data_fitness_all<-droplevels(data_fitness_all)
-
-
-#Remove generation with parental development on GF : G1 G7 and G29
-TEMP_data_fitness_all<-data_fitness_all[data_fitness_all$Generation!=1&data_fitness_all$Generation!=7&data_fitness_all$Generation!=29,]
-
-
-head(TEMP_data_fitness_all)
-
-######  1- Extract mean for each lines and each generations + se + N (number of tubes)
-data_all_sum<-Rmisc::summarySE(TEMP_data_fitness_all,
-          measurevar="Nb_adults",
-          groupvars=c("Lines","Fruit_s","Generation","Step","T_counted"), na.rm=TRUE)
-
-#Replace the N (=Number of tubes used to estimate the mean) for pool step (rplace NA by T_counted)
-data_all_sum[data_all_sum$Step=="pool",]$N<-data_all_sum[data_all_sum$Step=="pool",]$T_counted
-
-#Remove useless columns 
-data_sum<-subset(data_all_sum, select = -c(T_counted,ci))
-
-###### 2- Tranform to fitness (log(mean/20))
-data_sum$fitness<-log(data_sum$Nb_adults/20)
-
-###### 3- Calcul se for fitness (sqrt(sd/N*mean))
-#With Hedges et al. 1999
-#logchange=Ln(x1/x2) with x1 and the x2 the mean of Nt+1 and Nt respectively
-#logchange=ln((meanNt+1)/20)
-#se(logchange)=sqrt((s1²/n1x1²)+(s2²/n2x2²)) with s1 and s2 the standard deviation of Nt+1 and Nt respesctively, and n1 and n2 the sample size of  Nt+1 and Nt respesctively
-#In our case: x2=20 and s2=0 
-#So: se(logchange)=sqrt((s1²/n1x1²))=sqrt((sdNt+1²)/(NNt+1*meanNt+1²))
-
-data_sum$se_fitness<-sqrt((data_sum$sd^2)/(data_sum$N*(data_sum$Nb_adults^2)))
-
-#Check with se: 
-data_sum$se_fitness_verif<-sqrt((data_sum$se^2)/(data_sum$Nb_adults^2))
-
-#Remove useless columns 
-data_sum<-subset(data_sum, select = -c(se, se_fitness_verif))
-
-
+## Longitudinal data
+data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
 head(data_sum)
-tail(data_sum)
-str(data_sum)
-
-
-###### 4-Create three subset
-data_fitness_cherry<-data_sum[data_sum$Fruit_s=="Cherry",]
-data_fitness_cranb<-data_sum[data_sum$Fruit_s=="Cranberry",]
-data_fitness_straw<-data_sum[data_sum$Fruit_s=="Strawberry",]
 
 
 ```
 
-
-## Models
+# ADAPTATION
+## Analysis
 ```{r }
-######## FORWARD MODEL SELECTION 
+######## Models
 mod_nul<-lme4::lmer(fitness ~ 1 + (1|Generation), 
             weights = N, data = data_sum)
-
 
 mod_Fruits<-lme4::lmer(fitness ~ Fruit_s + (1|Generation), 
             weights = N, data = data_sum)
@@ -183,22 +119,20 @@ mod_DoublePopulationGeneration<-lme4::lmer(fitness ~ Generation*Lines +
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-#Test AICC
-AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
+# AICC and Loglik
+MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
 anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
 summary(mod_Fruits_Step)
 
-
-
 #Posthoc
-mod_Best<-lmer(fitness~ Step -1+ Fruit_s+ (1|Generation), 
+mod_Best<-lme4::lmer(fitness~ Step -1 + Fruit_s+ (1|Generation), 
             weights = N, data = data_sum)
-emmeans(mod_Best, list(pairwise ~ Step:Fruit_s), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Step:Fruit_s), adjust = "tukey") #
 
-emmeans(mod_Best, list(pairwise ~ Fruit_s), adjust = "tukey") #
-emmeans(mod_Best, list(pairwise ~ Step), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Fruit_s), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Step), adjust = "tukey") #
 
 summary(mod_Best)
 
@@ -215,6 +149,13 @@ summary(mod_Best)
 
 ## Plot 
 ```{r }
+  ###### 4-Create three subset
+  data_fitness_cherry<-data_sum[data_sum$Fruit_s=="Cherry",]
+  data_fitness_cranb<-data_sum[data_sum$Fruit_s=="Cranberry",]
+  data_fitness_straw<-data_sum[data_sum$Fruit_s=="Strawberry",]
+
+
+
 #Extract slope and intercept
 dat_predict_allfruits <- expand.grid(Generation=as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
