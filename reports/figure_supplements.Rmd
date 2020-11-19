@@ -196,8 +196,8 @@ PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   theme_LO_sober + 
-  theme(axis.title.x = element_text(size = 10, colour = "#FDB424"),
-        axis.title.y = element_text(size = 10, colour = "#BC3C6D")) 
+  theme(axis.title.x = element_text(colour = "#FDB424"),
+        axis.title.y = element_text(colour = "#BC3C6D")) 
  PAIR_CheCran_G29
 
 
