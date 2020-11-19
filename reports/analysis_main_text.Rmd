@@ -94,6 +94,9 @@ mod_Doubleinteraction <- lme4::lmer(fitness ~ Generation + Step + Fruit_s +
                               (1|Generation),  
                               weights = N, data = data_sum)
 
+mod_Double_gene <- lme4::lmer(fitness ~ Generation*Fruit_s + 
+                              (1|Generation), 
+                              weights = N, data = data_sum)
 
 mod_Double <- lme4::lmer(fitness ~ Step*Fruit_s + 
                               (1|Generation), 
@@ -112,9 +115,9 @@ mod_DoublePopulationGeneration <- lme4::lmer(fitness ~ Generation*Line +
                               weights = N, data = data_sum)
 
 # AICC and Loglik
-MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
+MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
-anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
+anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene)
 
 summary(mod_Fruits_Step)
 

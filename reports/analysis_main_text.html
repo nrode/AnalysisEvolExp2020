@@ -1640,6 +1640,9 @@ mod_Doubleinteraction &lt;- lme4::lmer(fitness ~ Generation + Step + Fruit_s +
                               (1|Generation),  
                               weights = N, data = data_sum)
 
+mod_Double_gene &lt;- lme4::lmer(fitness ~ Generation*Fruit_s + 
+                              (1|Generation), 
+                              weights = N, data = data_sum)
 
 mod_Double &lt;- lme4::lmer(fitness ~ Step*Fruit_s + 
                               (1|Generation), 
@@ -1658,7 +1661,7 @@ mod_DoublePopulationGeneration &lt;- lme4::lmer(fitness ~ Generation*Line +
                               weights = N, data = data_sum)
 
 # AICC and Loglik
-MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)</code></pre>
+MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)</code></pre>
 <pre><code>##                                df     AICc
 ## mod_nul                         3 339.7756
 ## mod_Fruits                      5 333.0398
@@ -1669,12 +1672,13 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Generation_Fruits           6 328.4534
 ## mod_Fruits_Step                 7 309.1298
 ## mod_Generation_Fruits_Step      8 317.0215
+## mod_Double_gene                 8 342.2655
 ## mod_Doubleinteraction          10 330.9505
 ## mod_Double                     11 317.2153
 ## mod_Double_Generation          12 325.1311
 ## mod_Tripleinteraction          20 354.5837
 ## mod_DoublePopulationGeneration 60 504.0109</code></pre>
-<pre class="r"><code>anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)</code></pre>
+<pre class="r"><code>anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene)</code></pre>
 <pre><code>## Data: data_sum
 ## Models:
 ## mod_nul: fitness ~ 1 + (1 | Generation)
@@ -1685,6 +1689,7 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Generation_Fruits: fitness ~ Generation + Fruit_s + (1 | Generation)
 ## mod_Fruits_Step: fitness ~ Step + Fruit_s + (1 | Generation)
 ## mod_Generation_Fruits_Step: fitness ~ Generation + Step + Fruit_s + (1 | Generation)
+## mod_Double_gene: fitness ~ Generation * Fruit_s + (1 | Generation)
 ## mod_Doubleinteraction: fitness ~ Generation + Step + Fruit_s + Fruit_s:Generation + 
 ## mod_Doubleinteraction:     (1 | Generation)
 ## mod_Double: fitness ~ Step * Fruit_s + (1 | Generation)
@@ -1701,7 +1706,8 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Generation_Fruits             6 308.84 329.90 -148.42   296.84  0.0000  0
 ## mod_Fruits_Step                   7 291.48 316.05 -138.74   277.48 19.3583  1
 ## mod_Generation_Fruits_Step        8 291.95 320.02 -137.97   275.95  1.5325  1
-## mod_Doubleinteraction            10 289.56 324.65 -134.78   269.56  6.3920  2
+## mod_Double_gene                   8 306.40 334.48 -145.20   290.40  0.0000  0
+## mod_Doubleinteraction            10 289.56 324.65 -134.78   269.56 20.8451  2
 ## mod_Double                       11 291.19 329.79 -134.59   269.19  0.3679  1
 ## mod_Double_Generation            12 291.62 333.73 -133.81   267.62  1.5683  1
 ## mod_Tripleinteraction            20 290.03 360.22 -125.02   250.03 17.5887  8
@@ -1716,7 +1722,8 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Generation_Fruits             1.00000    
 ## mod_Fruits_Step                 1.083e-05 ***
 ## mod_Generation_Fruits_Step        0.21574    
-## mod_Doubleinteraction             0.04093 *  
+## mod_Double_gene                   1.00000    
+## mod_Doubleinteraction           2.975e-05 ***
 ## mod_Double                        0.54414    
 ## mod_Double_Generation             0.21045    
 ## mod_Tripleinteraction             0.02453 *  
@@ -2274,10 +2281,10 @@ mod0_G7_CheCran</code></pre>
 ## 
 ## Regression results
 ##   Method    Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS  0.015811976 0.9709274        44.15491        0.08791209
-## 2     MA -0.034413319 2.8662681        70.76685        0.08791209
+## 1    OLS  0.015811976 0.9709274        44.15491        0.08491508
+## 2     MA -0.034413319 2.8662681        70.76685        0.08491508
 ## 3    SMA -0.007638014 1.8558544        61.68264                NA
-## 4    RMA -0.011960209 2.0189601        63.65058        0.08791209
+## 4    RMA -0.011960209 2.0189601        63.65058        0.08491508
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2292,7 +2299,7 @@ mod0_G7_CheCran</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G7_CheCran$regression.results[2,]</code></pre>
 <pre><code>##   Method   Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.03441332 2.866268        70.76685        0.08791209</code></pre>
+## 2     MA -0.03441332 2.866268        70.76685        0.08491508</code></pre>
 <pre class="r"><code>mod0_G7_CheCran$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA      0.2377528      0.01609149  0.9603793   -7.404403</code></pre>
@@ -2329,10 +2336,10 @@ mod0_G7_CranStraw</code></pre>
 ## 
 ## Regression results
 ##   Method   Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS  0.07778912 0.4093331        22.26091         0.2137862
-## 2     MA -0.62085655 3.7645194        75.12361         0.2137862
+## 1    OLS  0.07778912 0.4093331        22.26091         0.2307692
+## 2     MA -0.62085655 3.7645194        75.12361         0.2307692
 ## 3    SMA -0.16171969 1.5595538        57.33164                NA
-## 4    RMA -0.23805813 1.9261626        62.56315         0.2137862
+## 4    RMA -0.23805813 1.9261626        62.56315         0.2307692
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2350,7 +2357,7 @@ mod0_G7_CranStraw$confidence.intervals[2,]</code></pre>
 ## 2     MA      0.4815458      0.05659085   0.511136   -1.529674</code></pre>
 <pre class="r"><code>mod0_G7_CranStraw$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.6208566 3.764519        75.12361         0.2137862</code></pre>
+## 2     MA -0.6208566 3.764519        75.12361         0.2307692</code></pre>
 <pre class="r"><code>#Save slope, intercept and ci 
 Estimates_pairwise &lt;- filldata_maregression(model = mod0_G7_CranStraw, 
                                                         empty_dataset = Estimates_pairwise, 
@@ -2382,10 +2389,10 @@ mod0_G7_StrawChe</code></pre>
 ## 
 ## Regression results
 ##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS 0.3229824 0.3831600        20.96484        0.07692308
-## 2     MA 0.3072319 0.5606481        29.27709        0.07692308
+## 1    OLS 0.3229824 0.3831600        20.96484        0.07892108
+## 2     MA 0.3072319 0.5606481        29.27709        0.07892108
 ## 3    SMA 0.2922950 0.7289682        36.09086                NA
-## 4    RMA 0.2854344 0.8062784        38.87848        0.07692308
+## 4    RMA 0.2854344 0.8062784        38.87848        0.07892108
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept  2.5%-Slope 97.5%-Slope
@@ -2400,7 +2407,7 @@ mod0_G7_StrawChe</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G7_StrawChe$regression.results[2,]</code></pre>
 <pre><code>##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA 0.3072319 0.5606481        29.27709        0.07692308</code></pre>
+## 2     MA 0.3072319 0.5606481        29.27709        0.07892108</code></pre>
 <pre class="r"><code>mod0_G7_StrawChe$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA      0.1440322       0.3707596 -0.1552263    2.399698</code></pre>
@@ -2441,10 +2448,10 @@ mod0_G29_CheCran</code></pre>
 ## 
 ## Regression results
 ##   Method Intercept      Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS 0.1313351 -0.6964883       -34.85676        0.05994006
-## 2     MA 0.2684057 -1.4271279       -54.98076        0.05994006
+## 1    OLS 0.1313351 -0.6964883       -34.85676        0.06393606
+## 2     MA 0.2684057 -1.4271279       -54.98076        0.06393606
 ## 3    SMA 0.2308927 -1.2271686       -50.82396                NA
-## 4    RMA 0.2219698 -1.1796064       -49.71071        0.05994006
+## 4    RMA 0.2219698 -1.1796064       -49.71071        0.06393606
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2459,7 +2466,7 @@ mod0_G29_CheCran</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G29_CheCran$regression.results[2,]</code></pre>
 <pre><code>##   Method Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA 0.2684057 -1.427128       -54.98076        0.05994006</code></pre>
+## 2     MA 0.2684057 -1.427128       -54.98076        0.06393606</code></pre>
 <pre class="r"><code>mod0_G29_CheCran$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA     0.04073939       -1.350356   7.201497   -0.213578</code></pre>
@@ -2495,10 +2502,10 @@ mod0_G29_CranStraw</code></pre>
 ## 
 ## Regression results
 ##   Method  Intercept     Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS -0.3955687 0.7939019        38.44613        0.06193806
-## 2     MA -0.5829369 1.6139086        58.21707        0.06193806
+## 1    OLS -0.3955687 0.7939019        38.44613        0.05894106
+## 2     MA -0.5829369 1.6139086        58.21707        0.05894106
 ## 3    SMA -0.5198185 1.3376743        53.21945                NA
-## 4    RMA -0.4703885 1.1213465        48.27390        0.06193806
+## 4    RMA -0.4703885 1.1213465        48.27390        0.05894106
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2516,7 +2523,7 @@ mod0_G29_CranStraw$confidence.intervals[2,]</code></pre>
 ## 2     MA       2.135079      -0.3013228  0.3814396   -10.28134</code></pre>
 <pre class="r"><code>mod0_G29_CranStraw$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.5829369 1.613909        58.21707        0.06193806</code></pre>
+## 2     MA -0.5829369 1.613909        58.21707        0.05894106</code></pre>
 <pre class="r"><code>#Save slope, intercept and ci 
 Estimates_pairwise &lt;- filldata_maregression(model = mod0_G29_CranStraw, 
                                                         empty_dataset = Estimates_pairwise, 
@@ -2548,10 +2555,10 @@ mod0_G29_StrawChe</code></pre>
 ## 
 ## Regression results
 ##   Method  Intercept    Slope Angle (degrees) P-perm (1-tailed)
-## 1    OLS -0.3926339 1.324565        52.94847        0.05394605
-## 2     MA -0.7647082 2.537640        68.49224        0.05394605
+## 1    OLS -0.3926339 1.324565        52.94847        0.04095904
+## 2     MA -0.7647082 2.537640        68.49224        0.04095904
 ## 3    SMA -0.5873546 1.959413        62.96220                NA
-## 4    RMA -0.5806572 1.937578        62.70136        0.05394605
+## 4    RMA -0.5806572 1.937578        62.70136        0.03896104
 ## 
 ## Confidence intervals
 ##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
@@ -2566,7 +2573,7 @@ mod0_G29_StrawChe</code></pre>
 <pre class="r"><code>#Value: 
 mod0_G29_StrawChe$regression.results[2,]</code></pre>
 <pre><code>##   Method  Intercept   Slope Angle (degrees) P-perm (1-tailed)
-## 2     MA -0.7647082 2.53764        68.49224        0.05394605</code></pre>
+## 2     MA -0.7647082 2.53764        68.49224        0.04095904</code></pre>
 <pre class="r"><code>mod0_G29_StrawChe$confidence.intervals[2,]</code></pre>
 <pre><code>##   Method 2.5%-Intercept 97.5%-Intercept 2.5%-Slope 97.5%-Slope
 ## 2     MA       1.833145      -0.2210037   0.764998   -5.932149</code></pre>
