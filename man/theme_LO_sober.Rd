@@ -5,7 +5,7 @@
 \alias{theme_LO_sober}
 \title{Sober theme for ggplot}
 \format{
-An object of class \code{theme} (inherits from \code{gg}) of length 14.
+An object of class \code{theme} (inherits from \code{gg}) of length 13.
 }
 \usage{
 theme_LO_sober
