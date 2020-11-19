@@ -49,6 +49,7 @@ usethis::use_package("MuMIn")
 usethis::use_package("lmodel2")
 usethis::use_package("lemon")
 usethis::use_package("data.table")
+usethis::use_package("radiant.data")
 
 
 ## Update NAMESPACE file
