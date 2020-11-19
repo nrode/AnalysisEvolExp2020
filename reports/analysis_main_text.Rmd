@@ -16,7 +16,7 @@ editor_options:
 ---
 
 
-```{r setup, include=FALSE}
+```{r setup, include =FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 devtools::load_all()
 ```
@@ -41,6 +41,9 @@ dim(data_G29)
 
 #Compute log change
 data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
+data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+
 
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
@@ -141,12 +144,12 @@ summary(mod_Best)
 pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 
 #Extract slope and intercept
-dat_predict_allfruits <- expand.grid(Generation=as.numeric(levels(as.factor(data_sum$Generation))),
+dat_predict_allfruits <- expand.grid(Generation =as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
-dat_predict_allfruits$Step <- ifelse(dat_predict_allfruits$Generation<=7, "first_prepool",ifelse(dat_predict_allfruits$Generation>=12, "second_postpool", "pool"))
+dat_predict_allfruits$Step <- ifelse(dat_predict_allfruits$Generation<= 7, "first_prepool",ifelse(dat_predict_allfruits$Generation>=12, "second_postpool", "pool"))
 
 dat_predict_allfruits$fitness_predicted <- predict(mod_Best, newdata = dat_predict_allfruits, 
-                          re.form=NA, type="response")
+                          re.form= NA, type = "response")
 
 #REAL DATA
 #Add G1 G6 and G7
@@ -172,7 +175,7 @@ TEMP_anno <- data.frame(x1 = c(3.5, 3.5, 10, 3.5, 3.5, 10, 3.5, 3.5, 10),
                         Fruit_s = c("Cherry", "Cherry", "Cherry",
                                "Cranberry", "Cranberry", "Cranberry",
                                "Strawberry", "Strawberry", "Strawberry"), 
-                        Line=NA)
+                        Line = NA)
 TEMP_anno
 
 
@@ -180,23 +183,23 @@ TEMP_title <- data.frame(xtitle = c(14, 14, 14),
                        ytitle = c(3, 3, 3),
                        title = c("Cherry", "Cranberry", "Strawberry"),
                        Fruit_s = c("Cherry", "Cranberry", "Strawberry"), 
-                       Line=NA)
+                       Line = NA)
 TEMP_title
 
 
-PLOT_FITNESS_CHERRY <- ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Cherry",], 
-                            aes(x = factor(Generation),group=Line, y = fitness, colour=Fruit_s)) + 
-  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
-                width=.1,position = pd, size = 0.2,color="black") + 
+PLOT_FITNESS_CHERRY <- ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Cherry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
   geom_line(size = 0.3,position = pd) + 
-  geom_line(data=dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cherry",], 
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cherry",], 
                      aes(x = factor(Generation), y = fitness_predicted,
-                         colour="black", group = Step), size = 0.5) + 
-  geom_point(size=1, position = pd, shape=21, fill="white") + 
+                         colour = "black", group = Step), size = 0.5) + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 
   ylab("Fitness") + 
   xlab("Generation") + 
-  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = xstar,  y = ystar, label = lab), size=3.3) + 
+  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = x1, xend = x1, 
            y = y1, yend = y2), size = 0.4) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = x2, xend = x2, 
@@ -205,23 +208,23 @@ PLOT_FITNESS_CHERRY <- ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Cherry",],
            y = y2, yend = y2), size = 0.4) + 
   scale_color_manual(values = c("black", "#BC3C6D", "#FDB424", "#3FAA96")) + 
   ggtitle("Cherry") + 
-  theme_LO_adaptation + theme(plot.title = element_text(color="#BC3C6D"))
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#BC3C6D"))
 PLOT_FITNESS_CHERRY
 
 
 
-PLOT_FITNESS_CRANB <- ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Cranberry",], 
-                            aes(x = factor(Generation),group=Line, y = fitness, colour=Fruit_s)) + 
-  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
-                width=.1,position = pd, size = 0.2,color="black") + 
+PLOT_FITNESS_CRANB <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Cranberry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
   geom_line(size = 0.3,position = pd) + 
-  geom_line(data=dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cranberry",], aes(x = factor(Generation), y = fitness_predicted, colour="black", group = Step),
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cranberry",], aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
                 size = 0.5) + 
-  geom_point(size=1, position = pd, shape=21, fill="white") + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 
   ylab("Fitness") + 
   xlab("Generation") + 
-  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = xstar,  y = ystar, label = lab), size=3.3) + 
+  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = x1, xend = x1, 
            y = y1, yend = y2), size = 0.4) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = x2, xend = x2, 
@@ -230,25 +233,25 @@ PLOT_FITNESS_CRANB <- ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Cra
            y = y2, yend = y2), size = 0.4) + 
   scale_color_manual(values = c("black", "#FDB424")) + 
   ggtitle("Cranberry") + 
-  theme_LO_adaptation + theme(plot.title = element_text(color="#FDB424"))
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#FDB424"))
 PLOT_FITNESS_CRANB
 
 
 
-PLOT_FITNESS_STRAW <- ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Strawberry",], 
-                            aes(x = factor(Generation),group=Line, y = fitness, colour=Fruit_s)) + 
-  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
-                width=.1,position = pd, size = 0.2,color="black") + 
+PLOT_FITNESS_STRAW <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Strawberry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
   geom_line(size = 0.3,position = pd) + 
-  geom_line(data=dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Strawberry",], 
-            aes(x = factor(Generation), y = fitness_predicted, colour="black", group = Step),
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Strawberry",], 
+            aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
             size = 0.5) + 
-  geom_point(size=1, position = pd, shape=21, fill="white") + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 
   ylab("Fitness") + 
   xlab("Generation") + 
   geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
-            aes(x = xstar,  y = ystar, label = lab), size=3.3) + 
+            aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
                aes(x = x1, xend = x1, y = y1, yend = y2), size = 0.4) + 
   geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
@@ -257,19 +260,19 @@ PLOT_FITNESS_STRAW <- ggplot2::ggplot(data=TEMP_total[TEMP_total$Fruit_s == "Str
                aes(x = x1, xend = x2, y = y2, yend = y2), size = 0.4) + 
   scale_color_manual(values = c("black", "#3FAA96")) + 
   ggtitle("Strawberry") + 
-  theme_LO_adaptation + theme(plot.title = element_text(color="#3FAA96"))
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#3FAA96"))
 PLOT_FITNESS_STRAW
 
 
 DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() + 
-  cowplot::draw_plot(PLOT_FITNESS_CHERRY + theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
+  cowplot::draw_plot(PLOT_FITNESS_CHERRY + theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
         axis.line.x = element_blank()), 
-            x =0, y = 0.66, width = 1, height = 0.33) + 
-  cowplot::draw_plot(PLOT_FITNESS_CRANB + theme(axis.title.x=element_blank(),
-        axis.text.x=element_blank(),
-        axis.ticks.x=element_blank(),
+            x = 0, y = 0.66, width = 1, height = 0.33) + 
+  cowplot::draw_plot(PLOT_FITNESS_CRANB + theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
         axis.line.x = element_blank()), 
             x = 0, y = 0.33, width = 1, height = 0.33) + 
   cowplot::draw_plot(PLOT_FITNESS_STRAW, 
@@ -283,7 +286,7 @@ DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() +
  DYNAMIQUE_THREE_JOIN
 
 
-cowplot::save_plot(file=here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
+cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
 
 
 
@@ -300,6 +303,8 @@ cowplot::save_plot(file=here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_T
 ```{r }
 pd <-  position_dodge(width = 0.5)
 
+
+
 ################### INTERMEDIATE PHENOTYPING
 
 # Re-order levels of Line
@@ -311,14 +316,16 @@ data_sum_G7$Line <- factor(data_sum_G7$Line, levels= c("CE2", "CE1", "CE4", "CE3
 
 #Plot: 
 symp_allop_g7 <- ggplot(data = data_sum_G7, 
-                      aes(x = Line, y = logchange, group=Treatment, color = Fruit_s, shape = Treatment, fill = Fruit_s)) + 
-  geom_hline(yintercept=0, linetype="dashed", color="grey", size = 0.5) + 
-  geom_errorbar(aes(ymin=logchange-1.96*sd_logchange, ymax=logchange + 1.96*sd_logchange),
-                  width=0.2, size = 0.5, alpha=0.6,position = pd) + 
-  geom_point(position = pd, fill="white", size=3) + 
+                      aes(x = Line, y = logchange, group = Treatment, 
+                          color = Fruit_s, shape = Treatment, fill = Fruit_s)) + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+  geom_errorbar(aes(ymin = logchange-1.96*sd_logchange, 
+                    ymax =logchange + 1.96*sd_logchange, linetype = Line_type),
+                  width = 0.2, size = 0.5, alpha = 0.6,position = pd) + 
+  geom_point(position = pd, fill = "white", size =3) + 
   ylab("Fitness difference between intermediate\nand initial phenotyping steps")  + 
   xlab("Populations") + 
-  labs(shape = "Test fruit", color="Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   guides(color = FALSE,
            shape = guide_legend(override.aes = list(fill = c("black")))) + 
   scale_shape_manual(values = c(21, 22, 24)) + 
@@ -328,19 +335,19 @@ symp_allop_g7 <- ggplot(data = data_sum_G7,
   coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 15),clip = "off") + 
   ggtitle("Intermediate phenotyping step") + 
   annotate("text", x = 2.5, y =1.5, label = 'bold(" Evolved\non cherry")',
-                     size=3,colour="#BC3C6D",parse=TRUE) + 
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
   annotate("text", x = 7.5, y =1.5, label = 'bold("   Evolved\non cranberry")',
-                     size=3,colour="#FDB424",parse=TRUE) + 
+                     size =3,colour = "#FDB424",parse = TRUE) + 
   annotate("text", x = 12.5, y =1.5, label = 'bold("   Evolved\non strawberry")',
-                     size=3,colour="#3FAA96",parse=TRUE) + 
+                     size =3,colour = "#3FAA96",parse = TRUE) + 
   geom_segment(x = 15.5, y = -0.1, xend= 15.5, yend = -1.2, size = 0.15, 
-               arrow = arrow(length = unit(0.05, "npc")),colour="black") + 
+               arrow = arrow(length = unit(0.05, "npc")),colour = "black") + 
   geom_segment(x = 15.5, y = 0.1, xend= 15.5, yend = 1.2, size = 0.15,
-               arrow = arrow(length = unit(0.05, "npc")),colour="black") + 
-  annotate("text", x = 16.2, y =0.5, label = 'bold(" Fitness\nincrease")',
-             size=3,colour="black",parse=TRUE, angle=90) + 
+               arrow = arrow(length = unit(0.05, "npc")),colour = "black") + 
+  annotate("text", x = 16.2, y = 0.5, label = 'bold(" Fitness\nincrease")',
+             size =3,colour = "black",parse = TRUE, angle =90) + 
   annotate("text", x = 16.2, y =-0.5, label = 'bold("  Fitness\ndecrease")',
-              size=3,colour="black",parse=TRUE, angle=90) 
+              size =3,colour = "black",parse = TRUE, angle =90) 
 symp_allop_g7
 
 ################### FINAL PHENOTYPING
@@ -351,16 +358,16 @@ data_sum_G29$Line <- factor(data_sum_G29$Line, levels = c("CEA", "CEB", "CEC",
                                                           "CRD", "CRA", "CRC", "CRB", "CRE",
                                                           "FRA", "FRC", "FRB"))
 
-symp_allop_G29 <- ggplot(data=data_sum_G29, 
-              aes(x=Line, y=logchange, group=Treatment, 
-                  color =Fruit_s, shape=Treatment,fill=Fruit_s)) + 
-      geom_hline(yintercept=0, linetype="dashed", color="grey", size = 0.5) + 
-    geom_point(size=3, position = pd) + 
-    geom_errorbar(aes(ymin=logchange-1.96*sd_logchange, ymax=logchange + 1.96*sd_logchange),
-                width=0.2, size = 0.5, alpha=0.6,position = pd) + 
+symp_allop_G29 <- ggplot(data = data_sum_G29, 
+              aes(x = Line, y=logchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+      geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+    geom_point(size =3, position = pd) + 
+    geom_errorbar(aes(ymin =logchange-1.96*sd_logchange, ymax =logchange + 1.96*sd_logchange),
+                width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
     ylab("Fitness difference between final\nand initial phenotyping steps")  + 
     xlab("Populations") + 
-    labs(shape = "Test fruit", color="Selection fruit") + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
     guides(fill = FALSE, alpha = FALSE) + 
     scale_shape_manual(values = c(21, 22, 24)) + 
     scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
@@ -368,19 +375,19 @@ symp_allop_G29 <- ggplot(data=data_sum_G29,
     theme_LO_sober + theme(axis.text.x  = element_blank()) +
     coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") + 
   annotate("text", x = 2, y =1.5, label = 'bold(" Evolved\non cherry")',
-                     size=3,colour="#BC3C6D",parse=TRUE) + 
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
   annotate("text", x = 6, y =1.5, label = 'bold("   Evolved\non cranberry")',
-                     size=3,colour="#FDB424",parse=TRUE) + 
+                     size =3,colour = "#FDB424",parse = TRUE) + 
   annotate("text", x = 10, y =1.5, label = 'bold("   Evolved\non strawberry")',
-                     size=3,colour="#3FAA96",parse=TRUE) + 
+                     size =3,colour = "#3FAA96",parse = TRUE) + 
   geom_segment(x = 11.5, y = -0.1, xend= 11.5, yend = -1.2, size = 0.15, 
-               arrow = arrow(length = unit(0.05, "npc")),colour="black") + 
+               arrow = arrow(length = unit(0.05, "npc")),colour = "black") + 
     geom_segment(x = 11.5, y = 0.1, xend= 11.5, yend = 1.2, size = 0.15,
-               arrow = arrow(length = unit(0.05, "npc")),colour="black") + 
+               arrow = arrow(length = unit(0.05, "npc")),colour = "black") + 
     annotate("text", x = 12, y = 0.5, label = 'bold(" Fitness\nincrease")',
-             size=3,colour="black",parse=TRUE, angle=90) + 
+             size =3,colour = "black",parse = TRUE, angle =90) + 
     annotate("text", x = 12, y = -0.5, label = 'bold("  Fitness\ndecrease")',
-              size=3,colour="black", parse=TRUE, angle=90) + 
+              size =3,colour = "black", parse = TRUE, angle =90) + 
   ggtitle("Final phenotyping step") 
 symp_allop_G29
 
@@ -389,25 +396,25 @@ symp_allop_G29
 
 ### Add stroke
 DIF_FITNESS_G7 <- symp_allop_g7 + 
-  geom_point(aes(alpha=SA, color = interaction(SA,Fruit_s)), position = pd, size=3, stroke=1.5, fill="white") + 
+  geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5, fill = "white") + 
   scale_alpha_manual(values = c(0, 1)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_FITNESS_G7
 
-DIF_FITNESS_G29 <- symp_allop_G29 + geom_point(aes(alpha=SA, color=interaction(SA,Fruit_s)), position = pd, size=3, stroke=1.5) + 
+DIF_FITNESS_G29 <- symp_allop_G29 + geom_point(aes(alpha = SA, color =interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5) + 
       scale_alpha_manual(values = c(0, 1)) + 
       scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_FITNESS_G29
 
 
-plot_legend <- ggplot(data=data_logchange, aes(x=Line, y=logchange, group=Treatment, 
-                  color =Fruit_s, shape=Treatment,fill=Fruit_s)) + 
-    geom_point(size=3, position = pd) + 
-    labs(shape = "Test fruit", color="Selection fruit") + 
+plot_legend <- ggplot(data = data_logchange, aes(x = Line, y=logchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+    geom_point(size =3, position = pd) + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
     scale_shape_manual(values = c(21, 22, 24)) + 
     scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
     theme_LO_sober + 
-    guides(fill= FALSE) + 
+    guides(fill = FALSE) + 
     theme(legend.key.size = unit(0.5, "cm"),
         axis.text.x  = element_blank()) +
     coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") 
@@ -420,10 +427,10 @@ legend_trade <- lemon::g_legend(plot_legend)
 
 SYMP_ALLOP_TOTAL <- cowplot::ggdraw() + 
   cowplot::draw_plot(DIF_FITNESS_G7 + theme(legend.position = 'none', 
-                             plot.margin=unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
-            x =0, y = 0.5, width = 1, height = 0.5) + 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
+            x = 0, y = 0.5, width = 1, height = 0.5) + 
   cowplot::draw_plot(DIF_FITNESS_G29 + theme(legend.position = 'none', 
-                             plot.margin=unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
             x = 0, y = 0, width = 1, height = 0.5) + 
   cowplot::draw_plot_label(c("A", "B"),  
                   x = c(0, 0), y = c(1, 0.5), 
@@ -433,7 +440,7 @@ SYMP_ALLOP_TOTAL <- cowplot::ggdraw() +
 SYMP_ALLOP_TOTAL
 
 
-cowplot::save_plot(file=here::here("figures", "FIG_Heterogeneity.pdf"),  
+cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),  
                    SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
 
 ```
@@ -463,7 +470,7 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("slope", "slope_CI_inf", 
 
 mod0_G7_CheCran <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG7_CheCran, nperm=1000)
+                   data = TEMP_dataG7_CheCran, nperm=1000)
 mod0_G7_CheCran
 
 #Value: 
@@ -484,7 +491,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G7_CheCran,
 
 mod0_G7_CranStraw <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG7_CranStraw, nperm=1000)
+                   data = TEMP_dataG7_CranStraw, nperm=1000)
 mod0_G7_CranStraw
 
 
@@ -504,7 +511,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G7_CranStraw,
 ####### 
 mod0_G7_StrawChe <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG7_StrawChe, nperm=1000)
+                   data = TEMP_dataG7_StrawChe, nperm=1000)
 mod0_G7_StrawChe
 
 #Value: 
@@ -529,7 +536,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G7_StrawChe,
 
 mod0_G29_CheCran <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG29_CheCran, nperm=1000)
+                   data = TEMP_dataG29_CheCran, nperm=1000)
 mod0_G29_CheCran
 
 
@@ -550,7 +557,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G29_CheCran,
 
 mod0_G29_CranStraw <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG29_CranStraw, nperm=1000)
+                   data = TEMP_dataG29_CranStraw, nperm=1000)
 mod0_G29_CranStraw
 
 #Value: 
@@ -569,7 +576,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G29_CranStraw,
 ####### 
 mod0_G29_StrawChe <- lmodel2::lmodel2(logchange_allop ~ logchange_symp, 
                     range.y = "interval",range.x = "interval",
-                   data=TEMP_dataG29_StrawChe, nperm=1000)
+                   data = TEMP_dataG29_StrawChe, nperm=1000)
 mod0_G29_StrawChe
 
 
@@ -585,7 +592,7 @@ Estimates_pairwise <- filldata_maregression(model = mod0_G29_StrawChe,
 
 
 Estimates_pairwise
-Estimates_pairwise[Estimates_pairwise$Variables=="slope",]
+Estimates_pairwise[Estimates_pairwise$Variables == "slope",]
 
 
 ```
@@ -595,60 +602,60 @@ Estimates_pairwise[Estimates_pairwise$Variables=="slope",]
 ```{r } 
 
 pd <- position_dodge(0.3) # move them .05 to the left and right
-ymin=-5
-ymax=5
+ymin =-5
+ymax =5
 
 
 ##################################################
 ##################   G7
 # Calculate polygon limits and plot limits
 polygon_CheCranG7<-filldata_predict_maregression(model = mod0_G7_CheCran)
-ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm=TRUE))
-ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm=TRUE))
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
 
 # Plot
 CheCran_G7 <- ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-              colour="grey", linetype="dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+              colour = "grey", linetype = "dotted") + 
   geom_errorbar(data = TEMP_dataG7_CheCran,
-                aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
+                aes(x = logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
                     ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                    color = Symp, linetype = Line_type),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
   geom_errorbarh(data = TEMP_dataG7_CheCran,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(data = TEMP_dataG7_CheCran,
-                 aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white", stroke=1.2) + 
+                 aes(x = logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
   xlab("Fitness difference in\nselective environment")  + 
   ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
   theme_LO_sober + 
-  labs(shape = "Test fruit", color="Evolution fruit") + 
-  geom_polygon(data=polygon_CheCranG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  geom_polygon(data =polygon_CheCranG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
   scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
@@ -658,52 +665,52 @@ CheCran_G7 <- ggplot() +
 
 # Calculate polygon limits and plot limits
 polygon_CranStrawG7<-filldata_predict_maregression(model = mod0_G7_CranStraw)
-ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$logchange_allop-1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG7_CranStraw$logchange_symp-1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm=TRUE))
-ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$logchange_allop + 1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG7_CranStraw$logchange_symp + 1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm=TRUE))
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$logchange_allop-1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw$logchange_symp-1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$logchange_allop + 1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw$logchange_symp + 1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
 
 CranStraw_G7 <-  ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-              colour="grey", linetype="dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry"  & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7  & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry"  & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+              colour = "grey", linetype = "dotted") + 
   geom_errorbar(data = TEMP_dataG7_CranStraw,            
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                    color = Symp, linetype = Line_type),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
   geom_errorbarh(data = TEMP_dataG7_CranStraw,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(data = TEMP_dataG7_CranStraw,
-                      aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                   size=3, fill="white", stroke=1.2) + 
-  geom_polygon(data=polygon_CranStrawG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+                      aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                   size =3, fill = "white", stroke =1.2) + 
+  geom_polygon(data =polygon_CranStrawG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
   xlab("Fitness difference in\nselective environment")  + 
   ylab("Fitness difference in\nalternative environment")  + 
      ggtitle("Cranberry vs. Strawberry") + 
   coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
                   xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
-   labs(shape = "Test fruit", color="Selection fruit") + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
   theme_LO_sober
@@ -712,49 +719,49 @@ CranStraw_G7 <-  ggplot() +
  
 #Calculate polygon limits and plot limits
 polygon_StrawCheG7<-filldata_predict_maregression(model = mod0_G7_StrawChe)
-ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$logchange_allop-1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG7_StrawChe$logchange_symp-1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm=TRUE))
-ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$logchange_allop + 1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG7_StrawChe$logchange_symp + 1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm=TRUE))
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$logchange_allop-1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe$logchange_symp-1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$logchange_allop + 1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe$logchange_symp + 1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
 
 StrawChe_G7 <-  ggplot() + 
-    geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-              colour="grey", linetype="dotted") + 
+    geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+              colour = "grey", linetype = "dotted") + 
   geom_errorbar(data = TEMP_dataG7_StrawChe,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                    color = Symp, linetype = Line_type),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
   geom_errorbarh(data = TEMP_dataG7_StrawChe,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(data = TEMP_dataG7_StrawChe,
-                 aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white", stroke=1.2) + 
-  geom_polygon(data=polygon_StrawCheG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+                 aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_polygon(data =polygon_StrawCheG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
     xlab("Fitness difference in\nselective environment")  + 
     ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Test fruit", color="Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
@@ -775,50 +782,51 @@ TEMP_dataG29_StrawChe
 
 #Calculate polygon limits and plot limits
 polygon_CheCranG29<-filldata_predict_maregression(model = mod0_G29_CheCran)
-ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG29_CheCran$logchange_symp-1.96*TEMP_dataG29_CheCran$sd_symp, na.rm=TRUE))
-ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29_CheCran$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG29_CheCran$logchange_symp + 1.96*TEMP_dataG29_CheCran$sd_symp, na.rm=TRUE))
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran$logchange_symp-1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran$logchange_symp + 1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
 
 
 CheCran_G29 <- ggplot() + 
-    geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-              colour="grey", linetype="dotted") + 
+    geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+              colour = "grey", linetype = "dotted") + 
   geom_errorbar(data = TEMP_dataG29_CheCran,
-                aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
   geom_errorbarh(data = TEMP_dataG29_CheCran,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(data = TEMP_dataG29_CheCran,
-                 aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white", stroke=1.2) + 
-  geom_polygon(data=polygon_CheCranG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+                 aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_polygon(data =polygon_CheCranG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
     xlab("Fitness difference in\nselective environment")  + 
     ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
-  labs(shape = "Test fruit", color="Evolution fruit") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(16, 15)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
@@ -830,53 +838,53 @@ CheCran_G29 <- ggplot() +
 
 #Calculate polygon limits and plot limits
 polygon_CranStrawG29<-filldata_predict_maregression(model = mod0_G29_CranStraw)
-ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm=TRUE))
-ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm=TRUE))
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
 
 #Plot
  CranStraw_G29 <- ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-                            colour="grey", linetype="dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+                            colour = "grey", linetype = "dotted") + 
    geom_errorbar(data = TEMP_dataG29_CranStraw,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                    color = Symp),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
    geom_errorbarh(data = TEMP_dataG29_CranStraw,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
    geom_point(data = TEMP_dataG29_CranStraw,
-                 aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white", stroke=1.2) + 
-   geom_polygon(data=polygon_CranStrawG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+                 aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+   geom_polygon(data =polygon_CranStrawG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
     xlab("Fitness difference in\nselective environment")  + 
     ylab("Fitness difference in\nalternative environment")  + 
    ggtitle("Cranberry vs. Strawberry") + 
    coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
                   xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
-   labs(shape = "Test fruit", color="Selection fruit") + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(15, 17)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
    theme_LO_sober
@@ -889,53 +897,53 @@ ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dat
 
 #Calculate polygon limits and plot limits
 polygon_StrawCheG29<-filldata_predict_maregression(model = mod0_G29_StrawChe)
-ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
-ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG29_StrawChe$logchange_symp + 1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe$logchange_symp + 1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
 
 
 StrawChe_G29 <- ggplot() + 
- geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope"],
-              colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope_CI_inf"],
-               colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="intercept"],
-              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                               Estimates_pairwise$Variables=="slope_CI_sup"],
-                            colour="grey", linetype="dotted") + 
+ geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope_CI_inf"],
+               colour = "grey", linetype = "dotted") + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+              slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope_CI_sup"],
+                            colour = "grey", linetype = "dotted") + 
   geom_errorbar(data = TEMP_dataG29_StrawChe,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
-                    color=Symp),
-                  width=0.02, size = 0.2, alpha=1) + 
+                    color = Symp),
+                  width= 0.02, size = 0.2, alpha =1) + 
    geom_errorbarh(data = TEMP_dataG29_StrawChe,
                  aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02, size = 0.2, alpha=1) + 
+                 color = Symp),
+                 height = 0.02, size = 0.2, alpha =1) + 
   geom_point(data = TEMP_dataG29_StrawChe,
-                 aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white", stroke=1.2) + 
-  geom_polygon(data=polygon_StrawCheG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
+                 aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_polygon(data =polygon_StrawCheG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha = 0.2) + 
   coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
                   xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
     xlab("Fitness difference in\nselective environment")  + 
     ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Test fruit", color="Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 17)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   theme_LO_sober
@@ -948,9 +956,9 @@ StrawChe_G29 <- ggplot() +
  
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
-                          aes(x =logchange, y = logchange,  color=Symp,fill=Symp, shape=Allop)) + 
-  geom_point(size=2.5, fill="white") + 
-  labs(shape = "Test fruit", color="Selection fruit") + 
+                          aes(x =logchange, y = logchange,  color = Symp,fill = Symp, shape = Allop)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 15, 17)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   theme_LO_sober
@@ -961,18 +969,18 @@ legend_trade <- lemon::g_legend(legend_tradevide)
  
 
 Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() + 
-  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none",plot.title = element_text(size=11)), 
-            x =0.00, y = 0.5, width = 0.22, height =0.45) + 
-  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none",plot.title = element_text(size=11)), 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+            x = 0.00, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
             x = 0.26, y = 0.5, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none",plot.title = element_text(size=11)), 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
             x = 0.52, y = 0.5, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(legend_trade, x = 0.750, y = 0.5, width = 0.1, height = 0.1) + 
-  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none",plot.title = element_text(size=11)), 
-            x =0.00, y = 0, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none",plot.title = element_text(size=11)), 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+            x = 0.00, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
             x = 0.26, y = 0, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none",plot.title = element_text(size=11)), 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
             x = 0.52, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
                     "Final phenotyping step", "D", "E", "F", " "),  
@@ -985,7 +993,7 @@ Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() +
  
  
  
-cowplot::save_plot(file=here::here("figures", "FIG_MAregression.pdf"), 
+cowplot::save_plot(file =here::here("figures", "FIG_MAregression.pdf"), 
                    Slopeestimates_logchange_pairwise_errorbar, 
                    base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
 
@@ -1000,15 +1008,15 @@ cowplot::save_plot(file=here::here("figures", "FIG_MAregression.pdf"),
 ##### 
 #####  G7
 ##### 
-# Pblm when Nb_adults=0, it is impossible to calculate fitness log(0/20)
+# Pblm when Nb_adults= 0, it is impossible to calculate fitness log(0/20)
 data_G7[data_G7$Nb_adults == 0,]
 # correspond to 2 allopatric and 2 sympatric measurements (2 in CE1, 1 in FR4 et 1 in FR1)
 
 # Remove Nb_adults = 0 because it is negligeable
-data_G7_without0 <- data_G7[data_G7$Nb_adults!=0,]
+data_G7_without0 <- data_G7[data_G7$Nb_adults!= 0,]
 data_G7_without0$fitness <- log(data_G7_without0$Nb_adults/20)
 
-lm_val_G7 = lm(fitness ~ Treatment + Line + SA + Treatment:Fruit_s, data=data_G7_without0)
+lm_val_G7 = lm(fitness ~ Treatment + Line + SA + Treatment:Fruit_s, data = data_G7_without0)
 
 Fratio = anova(lm_val_G7)[3, 3]/anova(lm_val_G7)[4, 3]
 pvalue = 1 - pf(Fratio, anova(lm_val_G7)[3, 1], anova(lm_val_G7)[4, 1]) 
@@ -1022,17 +1030,17 @@ anova(lm_val_G7)[4, 1]
 #####  G29
 ##### 
 
-# Pblm when Nb_adults=0, it is impossible to calculate fitness log(0/20)
+# Pblm when Nb_adults= 0, it is impossible to calculate fitness log(0/20)
 data_G29[data_G29$Nb_adults == 0,]
-length(data_G29[data_G29$Nb_adults == 0&data_G29$SA == 0,]$Nb_adults)
-length(data_G29[data_G29$Nb_adults == 0&data_G29$SA == 1,]$Nb_adults)
+length(data_G29[data_G29$Nb_adults == 0 & data_G29$SA == 0,]$Nb_adults)
+length(data_G29[data_G29$Nb_adults == 0 & data_G29$SA == 1,]$Nb_adults)
 # correspond to 25 measures 17 allopatric and 8 sympatric measurements (2 in CE1, 1 in FR4 et 1 in FR1)
 
 # Remove Nb_adults = 0 because it is negligeable
-data_G29_without0 <- data_G29[data_G29$Nb_adults!=0,]
+data_G29_without0 <- data_G29[data_G29$Nb_adults!= 0,]
 data_G29_without0$fitness <- log(data_G29_without0$Nb_adults/20)
 
-lm_val_G29 = lm(fitness ~ Treatment + Line + SA + Treatment:Fruit_s, data=data_G29_without0)
+lm_val_G29 = lm(fitness ~ Treatment + Line + SA + Treatment:Fruit_s, data = data_G29_without0)
 
 Fratio = anova(lm_val_G29)[3, 3]/anova(lm_val_G29)[4, 3]
 pvalue = 1 - pf(Fratio, anova(lm_val_G29)[3, 1], anova(lm_val_G29)[4, 1]) 
