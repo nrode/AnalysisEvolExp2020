@@ -20,7 +20,10 @@ theme_LO_sober <- ggplot2::theme(plot.title = element_text(size = 12, face="bold
                                  panel.grid.minor.y = element_blank(),
                                  panel.grid.major.x = element_blank(),
                                  panel.grid.minor.x = element_blank(),
-                                 axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"))
+                                 axis.line = element_line(colour = "grey30", size = 0.4, linetype = "solid"),
+                                 legend.justification =  c("right", "top"),
+                                 legend.title = element_text(colour="black", size = 10, face = "bold"),
+                                 legend.text = element_text(colour="black", size = 8))
 
 
 theme_LO_adaptation <- ggplot2::theme(axis.title.x = element_text(size = 10),
