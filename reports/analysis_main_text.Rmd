@@ -969,18 +969,18 @@ legend_trade <- lemon::g_legend(legend_tradevide)
  
 
 Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() + 
-  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
             x = 0.00, y = 0.5, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
             x = 0.26, y = 0.5, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
             x = 0.52, y = 0.5, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(legend_trade, x = 0.750, y = 0.5, width = 0.1, height = 0.1) + 
-  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
             x = 0.00, y = 0, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
             x = 0.26, y = 0, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none",plot.title = element_text(size =11)), 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
             x = 0.52, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
                     "Final phenotyping step", "D", "E", "F", " "),  
