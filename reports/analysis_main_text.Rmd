@@ -131,8 +131,18 @@ emmeans::emmeans(mod_Best, list(pairwise ~ Step), adjust = "tukey") #
 summary(mod_Best)
 
 
+# Percent of Increase in fitness
+Calcul_increase_fitness <- expand.grid(Step = unique(data_sum$Step),
+                                     Fruit_s = unique(data_sum$Fruit_s))
 
+Calcul_increase_fitness$fitness_predicted <- predict(mod_Best, newdata = Calcul_increase_fitness, 
+                          re.form= NA, type = "response")
 
+((Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="second_postpool"]-
+    Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="first_prepool"])/
+  abs(Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="first_prepool"]))*100
+
+Calcul_increase_fitness
 ```
 
 
