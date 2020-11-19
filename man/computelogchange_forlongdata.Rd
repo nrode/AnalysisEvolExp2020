@@ -10,7 +10,7 @@ computelogchange_forlongdata(longitudinal_dataset = data_sum)
 \item{longitudinal_dataset}{Longitudinal dataset created using loadlongitudinaldata()}
 }
 \value{
-dataset of fitness difference between XXXXXXXXXXXXXXXXX and XXXXXXXXXXXX
+dataset of fitness difference between fitness during step and G2 mean per fruit
 }
 \description{
 Log change in fitness in generation x for the population i in the test fruit j = mean(W)Gxij / mean(W)G1j
