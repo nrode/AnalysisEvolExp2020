@@ -308,6 +308,7 @@ cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudi
 ```{r }
 PLOT_ALL<-ggplot(data=data_compare_longitudinal_pheno, 
                  ggplot2::aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
+  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.7) +
   geom_errorbar(ggplot2::aes(x = fitness_temporal, 
                     ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
                   width=0.02,size=0.2,alpha=1) +
@@ -425,7 +426,7 @@ data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitne
 
 #Remove allopatric data
 data_fitness_pheno <- data_logchange[data_logchange$SA==1,]
-data_fitness_pheno <- data_logchange[, c("Line", "Fruit_s", "logchange", "sd_logchange")]
+data_fitness_pheno <- data_fitness_pheno[, c("Line", "Fruit_s", "logchange", "sd_logchange")]
 
 
 ####### Longitudinal data 
@@ -454,6 +455,7 @@ PLOT_ALL_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno,
   geom_errorbarh(ggplot2::aes(y = logchange, 
                     xmin = logchange_long-1.96*sd_logchange_long,xmax = logchange_long+1.96*sd_logchange_long),
                  height=0.02,size=0.2,alpha=1) +
+  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.7) +
   geom_point(size=3, stroke = 1.2) +
   scale_fill_manual(values=c("#ffffff", "#ffffff", "#ffffff", "#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
@@ -489,7 +491,7 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   ylim(-1.5,1.5) + 
   xlim(-1.5,1.5) +
   ggtitle("Intermediate phenotyping step / Step 1") +
-  theme_LO_sober
+  theme_LO_sober 
 PLOT_IntermediatePheno_LOGCHANGE 
 
 
