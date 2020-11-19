@@ -21,6 +21,9 @@ usethis::use_r("theme_LO_sober")
 usethis::use_r("formattingplotpair")
 usethis::use_r("computefitness")
 usethis::use_r("computelogchange_forlongdata")
+usethis::use_r("filldata_maregression")
+usethis::use_r("polygon_limits")
+
 
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
