@@ -408,16 +408,14 @@ plot_legend <- ggplot(data=data_logchange, aes(x=Line, y=logchange, group=Treatm
     scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
     theme_LO_sober + 
     guides(fill= FALSE) + 
+    theme(legend.key.size = unit(0.5, "cm"),
+        axis.text.x  = element_blank()) +
     coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") 
 
 
 ###########################################################
 #############################################ALL PLOT
-legend_trade <- lemon::g_legend(plot_legend + theme(legend.key.size = unit(0.5, "cm"),
-        axis.text.x  = element_blank(),
-        legend.justification =  c("right", "top"),
-        legend.title = element_text(colour="black", size = 10, face = "bold"), 
-        legend.text = element_text(colour="black", size = 8)))
+legend_trade <- lemon::g_legend(plot_legend)
     
 
 SYMP_ALLOP_TOTAL <- cowplot::ggdraw() + 
@@ -445,6 +443,15 @@ cowplot::save_plot(file=here::here("figures", "FIG_Heterogeneity.pdf"),
 # MA-AXIS REGRESSION 
 ## Analysis 
 ```{r } 
+# ##### Create empty dataframe with slopes and confidence interval for all pairwise
+Estimates_pairwise <- data.frame(Variables = rep(rep(c("slope", "slope_CI_inf", "slope_CI_sup",
+                                                          "intercept", "intercept_CI_inf", "intercept_CI_sup"),2),3),
+                                    Generation = rep(c(rep(7, 6), rep(29, 6)),3),
+                                    Pairwise = rep(c("Cherry_Cranberry",
+                                                     "Cranberry_Strawberry", 
+                                                     "Strawberry_Cherry"), each=12),
+                                    Estimates = NA)
+
 
 #########################
 ######################### G7
@@ -463,26 +470,11 @@ mod0_G7_CheCran
 mod0_G7_CheCran$regression.results[2,]
 mod0_G7_CheCran$confidence.intervals[2,]
 
-
-
-##### Create dataframe with slopes and confidence interval for all pairwise
-Estimates_pairwise <- data.frame(Estimate = c("G7_slope", "G7_slope_CI_inf", "G7_slope_CI_sup", "G7_intercept", "G7_intercept_CI_inf", "G7_intercept_CI_sup",
-                               "G29_slope", "G29_slope_CI_inf", "G29_slope_CI_sup", "G29_intercept", "G29_intercept_CI_inf",
-                               "G29_intercept_CI_sup"),
-                               Cherry_Cranberry=NA,
-                               Cranberry_Strawberry=NA, 
-                               Strawberry_Cherry=NA)
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_CheCran$regression.results[2, 3]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CheCran$confidence.intervals[2, 4]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_CheCran$confidence.intervals[2, 5]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_CheCran$regression.results[2, 2]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_CheCran$confidence.intervals[2, 2]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept_CI_sup"] <- mod0_G7_CheCran$confidence.intervals[2, 3]                            
-
-## Plot: 
-#With all methods: 
-reg <- mod0_G7_CheCran$regression.results
-names(reg) <- c("method", "intercept", "slope", "angle", "p-value")
+#Save slope, intercept and ci 
+Estimates_pairwise <- filldata_maregression(model = mod0_G7_CheCran, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 7, 
+                                                        pairwise = "Cherry_Cranberry")
 
 
 
@@ -500,15 +492,11 @@ mod0_G7_CranStraw
 mod0_G7_CranStraw$confidence.intervals[2,]
 mod0_G7_CranStraw$regression.results[2,]
 
-
-#Fill out the data
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_CranStraw$regression.results[2, 3]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_CranStraw$confidence.intervals[2, 4]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_CranStraw$confidence.intervals[2, 5]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_CranStraw$regression.results[2, 2]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_CranStraw$confidence.intervals[2, 2]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept_CI_sup"] <- mod0_G7_CranStraw$confidence.intervals[2, 3]
-
+#Save slope, intercept and ci 
+Estimates_pairwise <- filldata_maregression(model = mod0_G7_CranStraw, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 7, 
+                                                        pairwise = "Cranberry_Strawberry")
 
 
 ####### 
@@ -523,14 +511,11 @@ mod0_G7_StrawChe
 mod0_G7_StrawChe$regression.results[2,]
 mod0_G7_StrawChe$confidence.intervals[2,]
 
-#Data with value
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope"] <- mod0_G7_StrawChe$regression.results[2, 3]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] <- mod0_G7_StrawChe$confidence.intervals[2, 4]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] <- mod0_G7_StrawChe$confidence.intervals[2, 5]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"] <- mod0_G7_StrawChe$regression.results[2, 2]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept_CI_inf"] <- mod0_G7_StrawChe$confidence.intervals[2, 2]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept_CI_sup"] <- mod0_G7_StrawChe$confidence.intervals[2, 3]
-
+#Save slope, intercept and ci 
+Estimates_pairwise <- filldata_maregression(model = mod0_G7_StrawChe, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 7, 
+                                                        pairwise = "Strawberry_Cherry")
 
 
 #########################
@@ -552,12 +537,11 @@ mod0_G29_CheCran
 mod0_G29_CheCran$regression.results[2,]
 mod0_G29_CheCran$confidence.intervals[2,]
 
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_CheCran$regression.results[2, 3]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CheCran$confidence.intervals[2, 4]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_CheCran$confidence.intervals[2, 5]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_CheCran$regression.results[2, 2]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_CheCran$confidence.intervals[2, 2]
-Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept_CI_sup"] <- mod0_G29_CheCran$confidence.intervals[2, 3]          
+Estimates_pairwise <- filldata_maregression(model = mod0_G29_CheCran, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 29, 
+                                                        pairwise = "Cherry_Cranberry")
+
 
 
 ####### 
@@ -573,12 +557,11 @@ mod0_G29_CranStraw
 mod0_G29_CranStraw$confidence.intervals[2,]
 mod0_G29_CranStraw$regression.results[2,]
 
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_CranStraw$regression.results[2, 3]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_CranStraw$confidence.intervals[2, 4]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_CranStraw$confidence.intervals[2, 5]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_CranStraw$regression.results[2, 2]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_CranStraw$confidence.intervals[2, 2]
-Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept_CI_sup"] <- mod0_G29_CranStraw$confidence.intervals[2, 3]   
+#Save slope, intercept and ci 
+Estimates_pairwise <- filldata_maregression(model = mod0_G29_CranStraw, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 29, 
+                                                        pairwise = "Cranberry_Strawberry")
 
 
 ####### 
@@ -594,19 +577,15 @@ mod0_G29_StrawChe
 mod0_G29_StrawChe$regression.results[2,]
 mod0_G29_StrawChe$confidence.intervals[2,]
 
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope"] <- mod0_G29_StrawChe$regression.results[2, 3]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] <- mod0_G29_StrawChe$confidence.intervals[2, 4]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] <- mod0_G29_StrawChe$confidence.intervals[2, 5]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"] <- mod0_G29_StrawChe$regression.results[2, 2]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept_CI_inf"] <- mod0_G29_StrawChe$confidence.intervals[2, 2]
-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept_CI_sup"] <- mod0_G29_StrawChe$confidence.intervals[2, 3]  
-
-
-
+#Save slope, intercept and ci 
+Estimates_pairwise <- filldata_maregression(model = mod0_G29_StrawChe, 
+                                                        empty_dataset = Estimates_pairwise, 
+                                                        generation = 29, 
+                                                        pairwise = "Strawberry_Cherry")
 
 
 Estimates_pairwise
-
+Estimates_pairwise[Estimates_pairwise$Variables=="slope",]
 
 
 ```
@@ -622,38 +601,36 @@ ymax=5
 
 ##################################################
 ##################   G7
-
-
-#Polygon limits: 
-intercept_CheCranG7 <- Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"]
-CheCranG7_inf_min <- (ymin-intercept_CheCranG7)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] 
-CheCranG7_inf_max <- (ymax-intercept_CheCranG7)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] 
-CheCranG7_sup_min <- (ymin-intercept_CheCranG7)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-CheCranG7_sup_max <- (ymax-intercept_CheCranG7)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-polygon_CheCranG7 <- data.frame (xvalue = c(CheCranG7_inf_min,CheCranG7_sup_min,
-                                        CheCranG7_sup_max,CheCranG7_inf_max),
-                               yvalue = c(ymin, ymin,
-                                        ymax, ymax))
-
+# Calculate polygon limits and plot limits
+polygon_CheCranG7<-filldata_predict_maregression(model = mod0_G7_CheCran)
 ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm=TRUE))
 ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm=TRUE),
                 max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm=TRUE))
 
-
+# Plot
 CheCran_G7 <- ggplot() + 
-    xlab("Fitness difference in\nselective environment")  + 
-    ylab("Fitness difference in\nalternative environment")  + 
-  ggtitle("Cherry vs. Cranberry") + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"],
-               slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope"],
-            colour="black", size = 0.75) + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"],
-               slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"],
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
                colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_intercept"],
-            slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
+              colour="grey", linetype="dotted") + 
   geom_errorbar(data = TEMP_dataG7_CheCran,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
                     ymax = logchange_allop + (1.96*sd_allop),
@@ -666,6 +643,9 @@ CheCran_G7 <- ggplot() +
   geom_point(data = TEMP_dataG7_CheCran,
                  aes(x =logchange_symp, y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
                  size=3, fill="white", stroke=1.2) + 
+  xlab("Fitness difference in\nselective environment")  + 
+  ylab("Fitness difference in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
   theme_LO_sober + 
   labs(shape = "Test fruit", color="Evolution fruit") + 
   geom_polygon(data=polygon_CheCranG7, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
@@ -675,33 +655,36 @@ CheCran_G7 <- ggplot() +
                   xlim = c(ymin_CheCranG7, ymax_CheCranG7)) 
  CheCran_G7
 
- 
-#Polygon limits: 
-intercept_CranStrawG7 <- Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"]
-CranStrawG7_inf_min <- (ymin-intercept_CranStrawG7)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] 
-CranStrawG7_inf_max <- (ymax-intercept_CranStrawG7)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"] 
-CranStrawG7_sup_min <- (ymin-intercept_CranStrawG7)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-CranStrawG7_sup_max <- (ymax-intercept_CranStrawG7)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-polygon_CranStrawG7 <- data.frame (xvalue = c(CranStrawG7_inf_min,CranStrawG7_sup_min,
-                                        CranStrawG7_sup_max,CranStrawG7_inf_max),
-                               yvalue = c(ymin, ymin, ymax, ymax))
 
-
+# Calculate polygon limits and plot limits
+polygon_CranStrawG7<-filldata_predict_maregression(model = mod0_G7_CranStraw)
 ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$logchange_allop-1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG7_CranStraw$logchange_symp-1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm=TRUE))
 ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$logchange_allop + 1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm=TRUE),
                 max(TEMP_dataG7_CranStraw$logchange_symp + 1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm=TRUE))
 
 CranStraw_G7 <-  ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"],
-              slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope"],
-              colour="black") + 
-  geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"],
-            slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"],
-            colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_intercept"],
-            slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
+               colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
+              colour="grey", linetype="dotted") + 
   geom_errorbar(data = TEMP_dataG7_CranStraw,            
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
@@ -727,35 +710,35 @@ CranStraw_G7 <-  ggplot() +
  CranStraw_G7
 
  
- 
- 
-#Polygon limits: 
-intercept_StrawCheG7 <- Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"]
-StrawCheG7_sup_min <- (ymin-intercept_StrawCheG7)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-StrawCheG7_sup_max <- (ymax-intercept_StrawCheG7)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"] 
-StrawCheG7_inf_min <- (Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"]*ymin) + intercept_StrawCheG7
-StrawCheG7_inf_max <- (Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"]*ymax) + intercept_StrawCheG7
-polygon_StrawCheG7 <- data.frame (xvalue = c(ymin, StrawCheG7_sup_min,
-                                        StrawCheG7_sup_max, ymax),
-                               yvalue = c(StrawCheG7_inf_min, ymin,
-                                        ymax, StrawCheG7_inf_max)) 
-
-
+#Calculate polygon limits and plot limits
+polygon_StrawCheG7<-filldata_predict_maregression(model = mod0_G7_StrawChe)
 ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$logchange_allop-1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG7_StrawChe$logchange_symp-1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm=TRUE))
 ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$logchange_allop + 1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm=TRUE),
                 max(TEMP_dataG7_StrawChe$logchange_symp + 1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm=TRUE))
 
 StrawChe_G7 <-  ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"],
-              slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope"],
-              colour="black") + 
-   geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_inf"],
-            colour="grey", linetype="dotted") + 
-   geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G7_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
+    geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
+               colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
+              colour="grey", linetype="dotted") + 
   geom_errorbar(data = TEMP_dataG7_StrawChe,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
                     color=Symp),
@@ -778,9 +761,9 @@ StrawChe_G7 <-  ggplot() +
                   xlim = c(ymin_StrawCheG7, ymax_StrawCheG7)) + 
   theme_LO_sober
  StrawChe_G7
-
-
-
+ 
+ 
+  
 #####################################################################################
 ##################################      G29        ##################################
 #####################################################################################
@@ -789,18 +772,9 @@ TEMP_dataG29_CheCran
 TEMP_dataG29_CranStraw
 TEMP_dataG29_StrawChe
 
-#Polygon limits: 
-intercept_CheCranG29 <- Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"]
-CheCranG29_inf_min <- (ymin-intercept_CheCranG29)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] 
-CheCranG29_inf_max <- (ymax-intercept_CheCranG29)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] 
-CheCranG29_sup_min <- (ymin-intercept_CheCranG29)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
-CheCranG29_sup_max <- (ymax-intercept_CheCranG29)/Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
-polygon_CheCranG29 <- data.frame (xvalue = c(CheCranG29_inf_min,CheCranG29_sup_min,
-                                        CheCranG29_sup_max,CheCranG29_inf_max),
-                               yvalue = c(ymin, ymin,
-                                        ymax, ymax))
 
-
+#Calculate polygon limits and plot limits
+polygon_CheCranG29<-filldata_predict_maregression(model = mod0_G29_CheCran)
 ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG29_CheCran$logchange_symp-1.96*TEMP_dataG29_CheCran$sd_symp, na.rm=TRUE))
 ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29_CheCran$sd_allop, na.rm=TRUE),
@@ -808,14 +782,26 @@ ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29
 
 
 CheCran_G29 <- ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"],
-               slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope"],
-               colour="black") + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"],
-              slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"],
-              colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_intercept"],
-              slope=Estimates_pairwise$Cherry_Cranberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"],
+    geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
+               colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
               colour="grey", linetype="dotted") + 
   geom_errorbar(data = TEMP_dataG29_CheCran,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
@@ -841,37 +827,37 @@ CheCran_G29 <- ggplot() +
  CheCran_G29
 
 
- 
-  
-#Polygon limits: 
-intercept_CranStrawG29 <- Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"]
-CranStrawG29_sup_min <- (ymin-intercept_CranStrawG29)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
-CranStrawG29_sup_max <- (ymax-intercept_CranStrawG29)/Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
-CranStrawG29_inf_min <- (Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"]*ymin) + intercept_CranStrawG29
-CranStrawG29_inf_max <- (Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"]*ymax) + intercept_CranStrawG29
 
-
-polygon_CranStrawG29 <- data.frame (xvalue = c(ymin,CranStrawG29_sup_min,
-                                        CranStrawG29_sup_max, ymax),
-                               yvalue = c(CranStrawG29_inf_min, ymin,
-                                        ymax,CranStrawG29_inf_max)) 
-
-
+#Calculate polygon limits and plot limits
+polygon_CranStrawG29<-filldata_predict_maregression(model = mod0_G29_CranStraw)
 ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm=TRUE))
 ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm=TRUE),
                 max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm=TRUE))
 
+#Plot
  CranStraw_G29 <- ggplot() + 
-   geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"], 
-              slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope"],
-              colour="black") + 
-   geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"],
-               slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"],
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
                colour="grey", linetype="dotted") + 
-   geom_abline(intercept=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_intercept"],
-            slope=Estimates_pairwise$Cranberry_Strawberry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
+                            colour="grey", linetype="dotted") + 
    geom_errorbar(data = TEMP_dataG29_CranStraw,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
@@ -898,19 +884,11 @@ ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dat
 
  
  
- #Polygon limits: 
-intercept_StrawCheG29 <- Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"]
-StrawCheG29_inf_min <- (ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] 
-StrawCheG29_inf_max <- (ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"] 
-StrawCheG29_sup_min <- (ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
-StrawCheG29_sup_max <- (ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"] 
+ 
+ 
 
-polygon_StrawCheG29 <- data.frame (xvalue = c(StrawCheG29_inf_min, StrawCheG29_sup_min,
-                                        StrawCheG29_sup_max, StrawCheG29_inf_max),
-                               yvalue = c(ymin, ymin,
-                                        ymax, ymax)) 
-
-
+#Calculate polygon limits and plot limits
+polygon_StrawCheG29<-filldata_predict_maregression(model = mod0_G29_StrawChe)
 ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
                 min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
 ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
@@ -918,15 +896,27 @@ ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG
 
 
 StrawChe_G29 <- ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope"],
-            colour="black") + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_inf"],
-            colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate == "G29_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
+ geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope"],
+              colour="black", size = 0.75) + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+               slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope_CI_inf"],
+               colour="grey", linetype="dotted") + 
+  geom_abline(intercept=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="intercept"],
+              slope=Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                               Estimates_pairwise$Variables=="slope_CI_sup"],
+                            colour="grey", linetype="dotted") + 
   geom_errorbar(data = TEMP_dataG29_StrawChe,
                 aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
@@ -954,79 +944,7 @@ StrawChe_G29 <- ggplot() +
 
 
 
- 
- 
- 
- 
- 
- 
- 
- 
-intercept_StrawCheG29<-Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"]
-StrawCheG29_inf_min<-(ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"] 
-StrawCheG29_inf_max<-(ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"] 
-StrawCheG29_sup_min<-(ymin-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"] 
-StrawCheG29_sup_max<-(ymax-intercept_StrawCheG29)/Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"] 
-polygon_StrawCheG29<-data.frame (xvalue=c(StrawCheG29_inf_min,StrawCheG29_sup_min,
-                                        StrawCheG29_sup_max,StrawCheG29_inf_max),
-                               yvalue=c(ymin,ymin,
-                                        ymax,ymax)) 
 
-
-ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
-                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
-ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop+1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm=TRUE),
-                max(TEMP_dataG29_StrawChe$logchange_symp+1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm=TRUE))
-
-
-StrawChe_G29<-ggplot() + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope"],
-            colour="black") + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_inf"],
-            colour="grey", linetype="dotted") + 
-  geom_abline(intercept=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_intercept"],
-            slope=Estimates_pairwise$Strawberry_Cherry[Estimates_pairwise$Estimate=="G29_slope_CI_sup"],
-            colour="grey", linetype="dotted") + 
-     geom_errorbar(data = TEMP_dataG29_StrawChe,
-                aes(x =logchange_symp ,ymin = logchange_allop-(1.96*sd_allop),ymax = logchange_allop+(1.96*sd_allop),
-                    color=Symp),
-                  width=0.02,size=0.2,alpha=1) +
-   geom_errorbarh(data = TEMP_dataG29_StrawChe,
-                 aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp,xmax = logchange_symp+1.96*sd_symp, 
-                 color=Symp),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_point(data = TEMP_dataG29_StrawChe,
-                 aes(x =logchange_symp ,y = logchange_allop,  color=Symp,fill=Symp, shape=Allop),
-                 size=3, fill="white",stroke=1.2) +
-  geom_polygon(data=polygon_StrawCheG29, aes(x = xvalue, y = yvalue), fill = "grey", alpha =0.2) + 
-  coord_cartesian(ylim = c(ymin_StrawCheG29,ymax_StrawCheG29), 
-                  xlim = c(ymin_StrawCheG29,ymax_StrawCheG29))+ 
-    xlab("Fitness difference in\nselective environment")  + 
-    ylab("Fitness difference in\nalternative environment")  +
-  ggtitle("Strawberry vs. Cherry") +
-  labs(shape = "Test fruit", color="Selection fruit") + 
-  scale_shape_manual(values=c(16,17)) + 
-  scale_color_manual(values=c(  "#BC3C6D", "#3FAA96"))  + 
-  theme_LO_sober
- StrawChe_G29 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
  
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
