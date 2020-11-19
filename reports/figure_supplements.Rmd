@@ -488,8 +488,8 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   ylab("Fitness difference (Phenotyping step data)") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=1) +
-  ylim(-1.5,1.5) + 
-  xlim(-1.5,1.5) +
+  ylim(-2,2) + 
+  xlim(-2,2) +
   ggtitle("Intermediate phenotyping step / Step 1") +
   theme_LO_sober 
 PLOT_IntermediatePheno_LOGCHANGE 
