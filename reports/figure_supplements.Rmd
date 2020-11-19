@@ -78,8 +78,8 @@ PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
                      xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
                  height=0.02,size=0.2,alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  xlab("Fitness difference in strawberry")  +     
-  ylab("Fitness difference in cranberry")  +
+  xlab("Fitness difference\nin strawberry")  +     
+  ylab("Fitness difference\nin cranberry")  +
   xlim(-lim_G7,lim_G7) + 
   ylim(-lim_G7,lim_G7) +  
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -99,8 +99,8 @@ PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
                      xmax = logchange_Cherry+1.96*sd_logchange_Cherry),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  ylab("Fitness difference in strawberry")  + 
-  xlab("Fitness difference in cherry")  + 
+  ylab("Fitness difference\nin strawberry")  + 
+  xlab("Fitness difference\nin cherry")  + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   xlim(-lim_G7,lim_G7) + 
   ylim(-lim_G7,lim_G7) +    
@@ -121,14 +121,14 @@ PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = l
                        xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  ylab("Fitness difference in cherry")  + 
-  xlab("Fitness difference in cranberry")  + 
+  ylab("Fitness difference\nin cherry")  + 
+  xlab("Fitness difference\nin cranberry")  + 
   xlim(-lim_G7, lim_G7) + 
   ylim(-lim_G7, lim_G7) +     
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   theme_LO_sober + 
-  theme(axis.title.x = element_text(size=10, colour = "#FDB424"),
-        axis.title.y = element_text(size=10, colour = "#BC3C6D")) 
+  theme(axis.title.x = element_text(colour = "#FDB424"),
+        axis.title.y = element_text(colour = "#BC3C6D")) 
  PAIR_CheCran_G7
 
 
@@ -144,8 +144,8 @@ PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
                        xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
-  xlab("Fitness difference in strawberry")  +     
-  ylab("Fitness difference in cranberry")  +
+  xlab("Fitness difference\nin strawberry")  +     
+  ylab("Fitness difference\nin cranberry")  +
   xlim(-lim_G29,lim_G29) + 
   ylim(-lim_G29,lim_G29) +     
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -166,14 +166,14 @@ PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
                        xmax = logchange_Cherry+1.96*sd_logchange_Cherry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
-  ylab("Fitness difference in strawberry")  + 
-  xlab("Fitness difference in cherry")  + 
+  ylab("Fitness difference\nin strawberry")  + 
+  xlab("Fitness difference\nin cherry")  + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   xlim(-lim_G29,lim_G29) + 
   ylim(-lim_G29,lim_G29) +       
-  theme(axis.title.x = element_text(size=10, colour = "#BC3C6D"),
-           axis.title.y = element_text(size=10, colour = "#3FAA96")) +
+  theme(axis.title.x = element_text(colour = "#BC3C6D"),
+           axis.title.y = element_text(colour = "#3FAA96")) +
   theme_LO_sober
  PAIR_StrawChe_G29
 
@@ -189,8 +189,8 @@ PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
                        xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
-  ylab("Fitness difference in cherry")  + 
-  xlab("Fitness difference in cranberry")  + 
+  ylab("Fitness difference\nin cherry")  + 
+  xlab("Fitness difference\nin cranberry")  + 
   xlim(-lim_G29,lim_G29) + 
   ylim(-lim_G29,lim_G29) +   
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
