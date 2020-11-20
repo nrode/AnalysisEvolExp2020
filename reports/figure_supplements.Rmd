@@ -261,154 +261,8 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), 
 
 
 
-# SUP: Longitudinal vs. pheno data
-## Data
-```{r }
-####### Longitudinal data 
-#Model
-mod_Lines<-lme4::lmer(fitness ~ Line-1 + (1|Generation), weights = N, data = data_sum)
 
-#Predict mean per model 
-dat_predict_lines <- expand.grid(Line = unique(data_sum$Line))
-
-#Add variables
-dat_predict_lines$Fruit_s <- c(rep("Cherry", 9), rep("Cranberry", 11), rep("Strawberry", 9))
-dat_predict_lines$Step <- "first_prepool"
-dat_predict_lines$Step[c(9,16,29)] <- "pool"
-dat_predict_lines$Step[c(6:8, 15, 17:20, 26:28)] <- "second_postpool"
-
-#Extract estimate and standard error
-dat_predict_lines$fitness_temporal <- predict(mod_Lines, newdata = dat_predict_lines, 
-                          re.form=NA, type="response")
-dat_predict_lines$se_fitness_temporal<-summary(mod_Lines)$coefficients[, 2]
-
-#Remove pool step 
-dat_predict_lines<-dat_predict_lines[dat_predict_lines$Step!="pool",]
-
-####### Phenotyping steps 
-#Compute fitness
-data_fitness_pheno <- computefitness(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
-
-#Remove allopatric data
-data_fitness_pheno <- data_fitness_pheno[data_fitness_pheno$Fruit_s==data_fitness_pheno$Treatment,]
-data_fitness_pheno <- data_fitness_pheno[, c("Line", "Fruit_s", "fitness_pheno", "se_fitness_pheno")]
-
-####### Merge data
-data_compare_longitudinal_pheno <- merge(dat_predict_lines,data_fitness_pheno,by=c("Line", "Fruit_s"))
-data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
-
-## Does not seem to be a correlation between measures
-cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="first_prepool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="first_prepool"])
-
-cor.test(data_compare_longitudinal_pheno$fitness_temporal[data_compare_longitudinal_pheno$Step=="second_postpool"], data_compare_longitudinal_pheno$fitness_pheno[data_compare_longitudinal_pheno$Step=="second_postpool"])
-```
-
-
-## Plot
-```{r }
-PLOT_ALL<-ggplot(data=data_compare_longitudinal_pheno, 
-                 ggplot2::aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
-  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.7) +
-  geom_errorbar(ggplot2::aes(x = fitness_temporal, 
-                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
-                  width=0.02,size=0.2,alpha=1) +
-  geom_errorbarh(ggplot2::aes(y = fitness_pheno, 
-                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_point(size=3, stroke = 1.2) +
-  scale_fill_manual(values=c("#ffffff", "#ffffff", "#ffffff", "#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(name = "Phenotyping step / Step", labels = c("Intermediate / Step 1", "Final / Step 3"),values=c(21,16)) +
-  xlab("Fitness (Longitudinal data)") + 
-  ylab("Fitness (Phenotyping step data)") + 
-  guides(fill=FALSE)+
-  labs(shape = "Phenotyping step /\nStep", color="Selection fruit") + 
-  ylim(-1.7,1.7) +
-  xlim(-1.7,1.7) +
-  theme_LO_sober
-PLOT_ALL
-
-cowplot::save_plot(file=here::here("figures", "SUPMAT_Pheno_Longitudinal_ONEPLOT.pdf"), 
-                   PLOT_ALL, base_height = 10/cm(1), base_width = 15/cm(1), dpi = 1200)
-
-
-PLOT_IntermediatePheno<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Step=="first_prepool",], 
-       aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s,shape=Fruit_s)) +
-  geom_errorbar(aes(x = fitness_temporal, 
-                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
-                  width=0.02,size=0.2,alpha=1) +
-  geom_errorbarh(aes(y = fitness_pheno, 
-                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_point(size=3, fill = "#ffffff", stroke=1.3) +
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness (Longitudinal data)") + 
-  ylab("Fitness (Phenotyping step data)") + 
-  labs(color="Selection fruit", shape="Selection fruit") + 
-  # ylim(-1.7,1.2) +
-  # xlim(-1.7,1.2) +
-  ylim(-1.7,1.7) +
-  xlim(-1.7,1.7) +
-  ggtitle("Intermediate phenotyping step / Step 1") +
-  theme_LO_sober
-PLOT_IntermediatePheno + geom_abline(intercept = 0, slope = 1, color="black", 
-                 linetype="dashed", size=1)
-
-PLOT_FinalPheno<-ggplot(data=data_compare_longitudinal_pheno
-                        [data_compare_longitudinal_pheno$Step=="second_postpool",], 
-       aes(y=fitness_pheno,x=fitness_temporal, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
-  geom_errorbar(aes(x = fitness_temporal, 
-                    ymin = fitness_pheno-(1.96*se_fitness_pheno),ymax = fitness_pheno+(1.96*se_fitness_pheno)),
-                  width=0.02,size=0.2,alpha=1) +
-  geom_errorbarh(aes(y = fitness_pheno, 
-                    xmin = fitness_temporal-1.96*se_fitness_temporal,xmax = fitness_temporal+1.96*se_fitness_temporal),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_point(size=3, stroke=1) +
-  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness (Longitudinal data)") + 
-  ylab("Fitness (Phenotyping step data)") + 
-  labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
-  # ylim(-0.1,1.3) +
-  # xlim(-0.1,1.3) +
-  ylim(-1.3,1.3) +
-  xlim(-1.3,1.3) +
-  ggtitle("Final phenotyping step / Step 3") +
-  theme_LO_sober
-PLOT_FinalPheno + geom_abline(intercept = 0, slope = 1, color="black", 
-                 linetype="dashed", size=1)
-
-
-    
-
-PLOT_Comparison_Pheno_Longitudinal <- cowplot::ggdraw() +
-  cowplot::draw_plot(PLOT_IntermediatePheno,
-            x = 0, y = 0.5, width = 1, height = 0.5) +
-  cowplot::draw_plot(PLOT_FinalPheno,
-            x =0, y = 0, width = 1, height = 0.5) +
-  cowplot::draw_plot_label(c("A", "B"),  
-                  x = c(0,0), y = c(1,0.5), 
-                  size = 14) 
-PLOT_Comparison_Pheno_Longitudinal
-
-
-cowplot::save_plot(file=here::here("figures", "SUPMAT_Pheno_Longitudinal.pdf"),
-                   PLOT_Comparison_Pheno_Longitudinal, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
-
-```
-
-
-
-
-
-
-
-
-
-
-# TEMP: Long vs Fitness
+# SUP: Long vs Fitness
 ## Data
 ```{r }
 #To consider fruit maternal effect and GF maternal effect: new plot 
@@ -442,44 +296,28 @@ data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
 cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Step=="first_prepool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Step=="first_prepool"])
 
 cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Step=="second_postpool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Step=="second_postpool"])
+
+
+####### Geary test
+#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
+data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_pheno$Line == "CR2"|
+                                                       data_compare_longitudinal_pheno$Line == "CE2", "solid","dashed")
+
 ```
 
 
 ## Plot
 ```{r }
-PLOT_ALL_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno, 
-                 aes(y=logchange,x=logchange_long, color=Fruit_s, shape=Step, fill=interaction(Fruit_s, Step))) +
-  geom_errorbar(aes(x = logchange_long, ymin = logchange-(1.96*logchange),
-                    ymax = logchange+(1.96*logchange)),
-                  width=0.02,size=0.2,alpha=1) +
-  geom_errorbarh(ggplot2::aes(y = logchange, 
-                    xmin = logchange_long-1.96*sd_logchange_long,xmax = logchange_long+1.96*sd_logchange_long),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.7) +
-  geom_point(size=3, stroke = 1.2) +
-  scale_fill_manual(values=c("#ffffff", "#ffffff", "#ffffff", "#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(name = "Phenotyping step / Step", labels = c("Intermediate / Step 1", "Final / Step 3"),values=c(21,16)) +
-  xlab("Fitness difference (Longitudinal data)") + 
-  ylab("Fitness difference (Phenotyping step data)") + 
-  guides(fill=FALSE)+
-  labs(shape = "Phenotyping step /\nStep", color="Selection fruit") + 
-  ylim(-2,2) +
-  xlim(-2,2) +
-  theme_LO_sober
-PLOT_ALL_LOGCHANGE
-
-cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno_Longitudinal_ONEPLOT.pdf"), 
-                   PLOT_ALL_LOGCHANGE, base_height = 10/cm(1), base_width = 15/cm(1), dpi = 1200)
-
-
 PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Step=="first_prepool",], 
        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s)) +
   geom_errorbar(aes(x = logchange_long, 
-                    ymin = logchange-(1.96*sd_logchange),ymax = logchange+(1.96*sd_logchange)),
+                    ymin = logchange-(1.96*sd_logchange), 
+                    ymax = logchange+(1.96*sd_logchange), linetype=Line_type),
                   width=0.02,size=0.2,alpha=1) +
   geom_errorbarh(aes(y = logchange, 
-                    xmin = logchange_long-1.96*sd_logchange_long,xmax = logchange_long+1.96*sd_logchange_long),
+                    xmin = logchange_long-1.96*sd_logchange_long,
+                    xmax = logchange_long+1.96*sd_logchange_long, 
+                    linetype=Line_type),
                  height=0.02,size=0.2,alpha=1) +
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
@@ -487,27 +325,29 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   xlab("Fitness difference (Longitudinal data)") + 
   ylab("Fitness difference (Phenotyping step data)") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
-  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=1) +
-  ylim(-2,2) + 
-  xlim(-2,2) +
-  ggtitle("Intermediate phenotyping step / Step 1") +
+  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
+  ylim(-1.9,0.9) + 
+  xlim(-1.9,0.9) +
+  ggtitle("Intermediate phenotyping step vs. Phase 1") +
   theme_LO_sober 
 PLOT_IntermediatePheno_LOGCHANGE 
 
 
 PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
                         [data_compare_longitudinal_pheno$Step=="second_postpool",], 
-       aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
+                        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
   geom_errorbar(aes(x = logchange_long, 
                     ymin = logchange-(1.96*sd_logchange),
-                    ymax = logchange+(1.96*sd_logchange)),
+                    ymax = logchange+(1.96*sd_logchange), 
+                    linetype=Line_type),
                   width=0.02,size=0.2,alpha=1) +
   geom_errorbarh(aes(y = logchange, 
                     xmin = logchange_long-1.96*sd_logchange_long,
-                    xmax = logchange_long+1.96*sd_logchange_long),
+                    xmax = logchange_long+1.96*sd_logchange_long, 
+                    linetype=Line_type),
                  height=0.02,size=0.2,alpha=1) +
   geom_abline(intercept = 0, slope = 1, color="black", 
-                 linetype="dashed", size=1) +
+                 linetype="dashed", size=0.8) +
   geom_point(size=3, stroke=1) +
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
@@ -515,9 +355,9 @@ PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
   xlab("Fitness difference (Longitudinal data)") + 
   ylab("Fitness difference (Phenotyping step data)") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
-  ylim(-2,2) +
-  xlim(-2,2) +
-  ggtitle("Final phenotyping step / Step 3") +
+  ylim(-0.5,1.7) +
+  xlim(-0.5,1.7) +
+  ggtitle("Final phenotyping step vs. Phase 3") +
   theme_LO_sober
 PLOT_FinalPheno_LOGCHANGE  
 
@@ -525,9 +365,13 @@ PLOT_FinalPheno_LOGCHANGE
     
 
 PLOT_Comparison_Pheno_Longitudinal_LOGCHANGE <- cowplot::ggdraw() +
-  cowplot::draw_plot(PLOT_IntermediatePheno_LOGCHANGE,
+  cowplot::draw_plot(PLOT_IntermediatePheno_LOGCHANGE + 
+                       theme(axis.title.y = element_text(size=10),
+                             axis.title.x = element_text(size=10)),
             x = 0, y = 0.5, width = 1, height = 0.5) +
-  cowplot::draw_plot(PLOT_FinalPheno_LOGCHANGE,
+  cowplot::draw_plot(PLOT_FinalPheno_LOGCHANGE + 
+                       theme(axis.title.y = element_text(size=10),
+                             axis.title.x = element_text(size=10)),
             x =0, y = 0, width = 1, height = 0.5) +
   cowplot::draw_plot_label(c("A", "B"),  
                   x = c(0,0), y = c(1,0.5), 
