@@ -846,8 +846,6 @@ temp_polygon_limits <- function(empty_dataset = Estimates_pairwise, generation =
 
 ## Plot 
 ```{r } 
-
-pd <- position_dodge(0.3) # move them .05 to the left and right
 ymin =-50
 ymax =50
 
@@ -1026,7 +1024,6 @@ StrawChe_G7 <-  ggplot() +
 #####################################################################################
 ##################################      G29        ##################################
 #####################################################################################
-pd <- position_dodge(0.3) # move them .05 to the left and right
 TEMP_dataG29_CheCran
 TEMP_dataG29_CranStraw
 TEMP_dataG29_StrawChe
