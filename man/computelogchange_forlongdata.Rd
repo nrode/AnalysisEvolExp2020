@@ -13,7 +13,14 @@ computelogchange_forlongdata(longitudinal_dataset = data_sum)
 dataset of fitness difference between fitness during step and G2 mean per fruit
 }
 \description{
-Log change in fitness in generation x for the population i in the test fruit j = mean(W)Gxij / mean(W)G1j
+Log change in fitness in the three phase for the population i in selective fruit j
+
+= log(mean(nb_adults_ij_allgenerationphase1/mean(nb_adlts_j_G2))
+= log(mean(nb_adults_ij_allgenerationphase3/mean(nb_adlts_j_G2))
+Example for CE2 during phase1
+log(mean (CE2 in G2 G3 G4 G5) / mean (all lines Cherry in G2))
+
+Mean and sd are weighted by the number of tubes counted
 }
 \examples{
 data_sum <- computelogchange_forlongdata(longitudinal_dataset = data_sum)

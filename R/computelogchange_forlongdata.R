@@ -23,9 +23,6 @@
 
 computelogchange_forlongdata <- function(longitudinal_dataset = data_sum){
 
-  # Remove pool step
-  #longitudinal_dataset<-longitudinal_dataset[longitudinal_dataset$Step!="pool",]
-
   # Calculate weighted mean during each step for each line
   TEMP_data_step <- Rmisc::summarySE(longitudinal_dataset,
                                       measurevar = "Nb_adults",
@@ -60,7 +57,7 @@ computelogchange_forlongdata <- function(longitudinal_dataset = data_sum){
                                         ((data_logchange_long$Sd_G2^2) / (data_logchange_long$N_G2*(data_logchange_long$Mean_G2^2))))
 
   # Subset
-  data_logchange_long<-subset(data_logchange_long, select = -c(N,Nb_adults,sd,se,Mean_G2,Sd_G2,N_G2,ci))
+  data_logchange_long<-subset(data_logchange_long, select = -c(N,Nb_adults,sd,Mean_G2,Sd_G2,N_G2))
 
   return(data_logchange_long)
 
