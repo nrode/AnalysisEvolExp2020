@@ -38,12 +38,16 @@ bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran) {
                             data = sample_data_pairwise, nperm=0)
 
   # Extract slope
-  estimate_inercept <- model$regression.results[2,2]
-  estimate_slope <- model$regression.results[2,3]
+  estimate_intercept <- model$regression.results[2, 2]
+  estimate_slope <- model$regression.results[2, 3]
+  # Extract correlation
+  estimate_correlation <- model$r
+
   } else {
-    estimate_inercept <- NA
+    estimate_intercept <- NA
     estimate_slope <- NA
+    estimate_correlation <- NA
   }
 
-  return(c(intercept = estimate_inercept, slope = estimate_slope))
+  return(c(intercept = estimate_intercept, slope = estimate_slope, correlation = estimate_correlation))
 }

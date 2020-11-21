@@ -716,16 +716,16 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope,probs = 0.025, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope, probs = 0.025, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope,probs = 0.975, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope, probs = 0.975, na.rm = TRUE)
 
 
 
