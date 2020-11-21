@@ -18,16 +18,16 @@ bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran) {
   set.seed(seed)
 
   # Compute vector of probability weights
-  data_pairwise$Inv_sum<-1/((data_pairwise$sd_symp^2)+(data_pairwise$sd_allop^2))
-  data_pairwise$Vector_sample <- data_pairwise$Inv_sum/sum(data_pairwise$Inv_sum,na.rm = TRUE)
+  data_pairwise$Inv_sum <- 1 / ((data_pairwise$sd_symp^2)+(data_pairwise$sd_allop^2))
+  data_pairwise$Vector_sample <- data_pairwise$Inv_sum / sum(data_pairwise$Inv_sum,na.rm = TRUE)
 
   # Problem with NA (if one sd missing): replace by 0 (max value)
   data_pairwise$Vector_sample[is.na(data_pairwise$Vector_sample)] <- 0
 
 
   # Weighted sample
-  sample_data_pairwise <- data_pairwise[sample(nrow(data_pairwise),
-                                               length(data_pairwise$Line),
+  sample_data_pairwise <- data_pairwise[sample(x = nrow(data_pairwise),
+                                               size = length(data_pairwise$Line),
                                                replace = TRUE,
                                                prob = data_pairwise$Vector_sample), ]
 
