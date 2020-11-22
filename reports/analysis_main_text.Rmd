@@ -334,7 +334,7 @@ data_sum$indic_cranberry <- ifelse(data_sum$Fruit_s=="Cranberry", "Cranberry", "
 data_sum$indic_strawberry <- ifelse(data_sum$Fruit_s=="Strawberry",  "Strawberry", "Others")
 
 
-############## 1 Test indic sur step * Fruit 
+############## 1 Test for differences in fitness between fruits during only one of the three phases
 mod_Fruit_Indic1 <- lme4::lmer(fitness ~ Fruit_s*indic_phase1 + (1|Generation),
             weights = N, data = data_sum)
 
@@ -345,7 +345,7 @@ mod_Fruit_Indic3 <- lme4::lmer(fitness ~ Fruit_s*indic_phase3 + (1|Generation),
             weights = N, data = data_sum)
 
 
-############## 2 Test indic sur fRuit * Fruit 
+############## 2 Test whether the temporal dynamics are different in one fruit compared to the two other fruits 
 mod_Cherry_Step <- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
@@ -364,8 +364,11 @@ mod_Cherry_indic2 <- lme4::lmer(fitness ~ indic_phase2*indic_cherry + (1|Generat
 mod_Cherry_indic3 <- lme4::lmer(fitness ~ indic_phase3*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
-
 MuMIn::AICc(mod_Fruit_Indic1,mod_Fruit_Indic2,mod_Fruit_Indic3,
+            mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step,
+            mod_Cherry_indic1,mod_Cherry_indic2,mod_Cherry_indic3)
+
+MuMIn::model.sel(mod_Fruit_Indic1,mod_Fruit_Indic2,mod_Fruit_Indic3,
             mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step,
             mod_Cherry_indic1,mod_Cherry_indic2,mod_Cherry_indic3)
 
