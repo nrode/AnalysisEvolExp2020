@@ -114,6 +114,8 @@ mod_DoublePopulationGeneration <- lme4::lmer(fitness ~ Generation*Line +
                               (1|Generation), 
                               weights = N, data = data_sum)
 
+
+
 # AICC and Loglik
 MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
@@ -131,7 +133,10 @@ emmeans::emmeans(mod_Best, list(pairwise ~ Step), adjust = "tukey") #
 summary(mod_Best)
 
 
-# Percent of Increase in fitness
+
+
+################### BELOW TEMP: A SUPR
+############### Percent of Increase in fitness
 Calcul_increase_fitness <- expand.grid(Step = unique(data_sum$Step),
                                      Fruit_s = unique(data_sum$Fruit_s))
 
@@ -159,6 +164,7 @@ pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 #Extract slope and intercept
 dat_predict_allfruits <- expand.grid(Generation =as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
+
 dat_predict_allfruits$Step <- ifelse(dat_predict_allfruits$Generation<= 7, "first_prepool",ifelse(dat_predict_allfruits$Generation>=12, "second_postpool", "pool"))
 
 dat_predict_allfruits$fitness_predicted <- predict(mod_Best, newdata = dat_predict_allfruits, 
@@ -305,8 +311,238 @@ cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_
 
 ```
 
+## Analyses with indic  
+```{r }
 
 
+#Posthoc
+mod_Best <- lme4::lmer(fitness ~ Step -1 + Fruit_s + (1|Generation),
+                     weights = N, data = data_sum)
+emmeans::emmeans(mod_Best, list(pairwise ~ Step:Fruit_s), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Fruit_s), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Step), adjust = "tukey") #
+
+summary(mod_Best)
+
+
+############## 0 Add indic 
+data_sum$indic_phase1 <- ifelse(data_sum$Step=="first_prepool", 1, 0)
+data_sum$indic_phase2 <- ifelse(data_sum$Step=="pool", 1, 0)
+data_sum$indic_phase3 <- ifelse(data_sum$Step=="second_postpool", 1, 0)
+data_sum$indic_cherry<- ifelse(data_sum$Fruit_s=="Cherry", "Cherry", "Others")
+data_sum$indic_cranberry <- ifelse(data_sum$Fruit_s=="Cranberry", "Cranberry", "Others")
+data_sum$indic_strawberry <- ifelse(data_sum$Fruit_s=="Strawberry",  "Strawberry", "Others")
+
+
+############## 1 Test indic sur step * Fruit 
+mod_Fruit_Indic1 <- lme4::lmer(fitness ~ Fruit_s*indic_phase1 + (1|Generation),
+            weights = N, data = data_sum)
+
+mod_Fruit_Indic2 <- lme4::lmer(fitness ~ Fruit_s*indic_phase2 + (1|Generation),
+            weights = N, data = data_sum)
+
+mod_Fruit_Indic3 <- lme4::lmer(fitness ~ Fruit_s*indic_phase3 + (1|Generation),
+            weights = N, data = data_sum)
+
+
+############## 2 Test indic sur fRuit * Fruit 
+mod_Cherry_Step <- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+            weights = N, data = data_sum)
+
+mod_Cranberry_Step <- lme4::lmer(fitness ~ Step*indic_cranberry + (1|Generation),
+            weights = N, data = data_sum)
+
+mod_Strawberry_Step <- lme4::lmer(fitness ~ Step*indic_strawberry + (1|Generation),
+            weights = N, data = data_sum)
+
+
+############## 3 Test indic sur fRuit * Test indic phase 3
+mod_Cherry_indic1 <- lme4::lmer(fitness ~ indic_phase1*indic_cherry + (1|Generation),
+            weights = N, data = data_sum)
+mod_Cherry_indic2 <- lme4::lmer(fitness ~ indic_phase2*indic_cherry + (1|Generation),
+            weights = N, data = data_sum)
+mod_Cherry_indic3 <- lme4::lmer(fitness ~ indic_phase3*indic_cherry + (1|Generation),
+            weights = N, data = data_sum)
+
+
+MuMIn::AICc(mod_Fruit_Indic1,mod_Fruit_Indic2,mod_Fruit_Indic3,
+            mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step,
+            mod_Cherry_indic1,mod_Cherry_indic2,mod_Cherry_indic3)
+
+anova(mod_Fruit_Indic1,mod_Fruit_Indic2,mod_Fruit_Indic3,
+            mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step,
+            mod_Cherry_indic1,mod_Cherry_indic2,mod_Cherry_indic3)
+
+#Posthoc
+mod_Best <- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+            weights = N, data = data_sum)
+
+emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = "tukey") #
+summary(mod_Best)
+
+
+
+
+
+
+```
+
+
+## Plot with indic
+```{r }
+#Position dodge
+pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
+
+#Extract slope and intercept
+dat_predict_allfruits <- expand.grid(Generation =as.numeric(levels(as.factor(data_sum$Generation))),
+                                     Fruit_s=unique(data_sum$Fruit_s))
+
+dat_predict_allfruits$Step <- ifelse(dat_predict_allfruits$Generation<= 7, "first_prepool",
+                                     ifelse(dat_predict_allfruits$Generation>=12, "second_postpool", "pool"))
+dat_predict_allfruits$indic_cherry<- ifelse(dat_predict_allfruits$Fruit_s=="Cherry", "Cherry", "Others")
+dat_predict_allfruits$fitness_predicted <- predict(mod_Best, newdata = dat_predict_allfruits, 
+                          re.form= NA, type = "response")
+
+#REAL DATA
+#Add G1 G6 and G7
+TEMP_lineG1 <- c(rep(NA, 2), 1,rep(NA, 5))
+TEMP_lineG6 <- c(rep(NA, 2), 6,rep(NA, 5))
+TEMP_lineG7 <- c(rep(NA, 2), 7,rep(NA, 5))
+
+TEMP_total <- rbind(data_sum,TEMP_lineG1,TEMP_lineG1,TEMP_lineG1,TEMP_lineG6,TEMP_lineG6,TEMP_lineG6,TEMP_lineG7,TEMP_lineG7,TEMP_lineG7)
+TEMP_total$Fruit_s[TEMP_total$Generation == "6"] <- c("Strawberry", "Cranberry", "Cherry")
+TEMP_total$Fruit_s[TEMP_total$Generation == "1"] <- c("Strawberry", "Cranberry", "Cherry")
+TEMP_total$Fruit_s[TEMP_total$Generation == "7"] <- c("Strawberry", "Cranberry", "Cherry")
+tail(TEMP_total)
+
+
+## Add label 
+TEMP_anno <- data.frame(x1 = c(3.5, 3.5, 3.5, 10, 3.5, 10), 
+                        x2 = c(9, 17.5, 17.5, 17.5,  17.5, 17.5),
+                        y1 = c(1, 2, 2, 1.2, 2, 1.2), 
+                        y2 = c(1.25, 2.25, 2.25, 1.45,  2.25, 1.45),
+                        xstar = c(6.5, 10, 10, 14,  10, 14), 
+                        ystar = c(1.5, 2.5, 2.5, 1.7, 2.5, 1.7),
+                        lab = c("**", "***", "***", "**",  "***", "**"),
+                        Fruit_s = c("Cherry", "Cherry", 
+                                    "Cranberry", "Cranberry",
+                                    "Strawberry", "Strawberry"), 
+                        Line = NA)
+TEMP_anno
+
+
+TEMP_title <- data.frame(xtitle = c(14, 14, 14),
+                       ytitle = c(3, 3, 3),
+                       title = c("Cherry", "Cranberry", "Strawberry"),
+                       Fruit_s = c("Cherry", "Cranberry", "Strawberry"), 
+                       Line = NA)
+TEMP_title
+
+
+PLOT_FITNESS_CHERRY <- ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Cherry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
+  geom_line(size = 0.3,position = pd) + 
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cherry",], 
+                     aes(x = factor(Generation), y = fitness_predicted,
+                         colour = "black", group = Step), size = 0.5) + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
+  ylim(-3, 3.05) + 
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = x1, xend = x1, 
+           y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = x2, xend = x2, 
+           y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cherry",], aes(x = x1, xend = x2, 
+           y = y2, yend = y2), size = 0.4) + 
+  scale_color_manual(values = c("black", "#BC3C6D", "#FDB424", "#3FAA96")) + 
+  ggtitle("Cherry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#BC3C6D"))
+PLOT_FITNESS_CHERRY
+
+
+
+PLOT_FITNESS_CRANB <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Cranberry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
+  geom_line(size = 0.3,position = pd) + 
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cranberry",], aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
+                size = 0.5) + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
+  ylim(-3, 3.05) + 
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = x1, xend = x1, 
+           y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = x2, xend = x2, 
+           y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Cranberry",], aes(x = x1, xend = x2, 
+           y = y2, yend = y2), size = 0.4) + 
+  scale_color_manual(values = c("black", "#FDB424")) + 
+  ggtitle("Cranberry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#FDB424"))
+PLOT_FITNESS_CRANB
+
+
+
+PLOT_FITNESS_STRAW <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Strawberry",], 
+                            aes(x = factor(Generation),group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.2,color = "black") + 
+  geom_line(size = 0.3,position = pd) + 
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Strawberry",], 
+            aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
+            size = 0.5) + 
+  geom_point(size =1, position = pd, shape =21, fill = "white") + 
+  ylim(-3, 3.05) + 
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  geom_text(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
+            aes(x = xstar,  y = ystar, label = lab), size =3.3) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
+               aes(x = x1, xend = x1, y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
+               aes(x = x2, xend = x2, y = y1, yend = y2), size = 0.4) + 
+  geom_segment(data = TEMP_anno[TEMP_anno$Fruit_s == "Strawberry",], 
+               aes(x = x1, xend = x2, y = y2, yend = y2), size = 0.4) + 
+  scale_color_manual(values = c("black", "#3FAA96")) + 
+  ggtitle("Strawberry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#3FAA96"))
+PLOT_FITNESS_STRAW
+
+
+DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() + 
+  cowplot::draw_plot(PLOT_FITNESS_CHERRY + theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.line.x = element_blank()), 
+            x = 0, y = 0.66, width = 1, height = 0.33) + 
+  cowplot::draw_plot(PLOT_FITNESS_CRANB + theme(axis.title.x = element_blank(),
+        axis.text.x = element_blank(),
+        axis.ticks.x = element_blank(),
+        axis.line.x = element_blank()), 
+            x = 0, y = 0.33, width = 1, height = 0.33) + 
+  cowplot::draw_plot(PLOT_FITNESS_STRAW, 
+            x = 0, y = 00, width = 1, height = 0.33) + 
+  cowplot::draw_plot_label(c("A", "B", "C"),  
+                  x = c(0, 0, 0), 
+                  y = c(1, 0.66, 0.33), 
+                  hjust = c(-0.5, -0.5, -0.5), 
+                  vjust = c(1.5, 1.5, 1.5),
+                  size = 12) 
+ DYNAMIQUE_THREE_JOIN
+
+
+cowplot::save_plot(file =here::here("figures", "FIG_TEMP_Adaptation_Indic.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
+
+
+
+```
 
 
 
@@ -625,7 +861,7 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("slope", "slope_CI_inf", 
                                     Estimates = NA)
 
 ## Nbr sample 
-nb_sim = 1000
+nb_sim = 50000
 
 
 #########################
