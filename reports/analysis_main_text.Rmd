@@ -119,6 +119,8 @@ mod_DoublePopulationGeneration <- lme4::lmer(fitness ~ Generation*Line +
 # AICC and Loglik
 MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
+MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
+
 anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene)
 
 summary(mod_Fruits_Step)
@@ -977,6 +979,9 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
 Estimates_pairwise
 Estimates_pairwise[Estimates_pairwise$Variables == "slope_CI_inf"|
                      Estimates_pairwise$Variables == "slope_CI_sup",]
+Estimates_pairwise[Estimates_pairwise$Variables == "CIcortest_moins"|
+                     Estimates_pairwise$Variables == "CIcortest_plus",]
+
 
 
 ########## 
