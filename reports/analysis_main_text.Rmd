@@ -706,25 +706,12 @@ cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),
 ## Analysis MA and correlation
 ```{r } 
 # ##### Create empty dataframe with slopes and confidence interval for all pairwise
-Estimates_pairwise <- data.frame(Variables = rep(rep(c("slope", "slope_CI_inf", "slope_CI_sup",
-                                                          "intercept", "correlation",
-                                                          "cor_CI_inf","cor_CI_sup","pval"),2),3),
-                                 Generation = rep(c(rep(7, 8), rep(29, 8)),3),
+Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf","cor_CI_sup",
+                                                       "slope", "intercept"),2),3),
+                                 Generation = rep(c(rep(7, 5), rep(29, 5)),3),
                                  Pairwise = rep(c("Cherry_Cranberry",
                                                      "Cranberry_Strawberry", 
-                                                     "Strawberry_Cherry"), each=16),
-                                Estimates = NA )
-
-
-Estimates_pairwise <- data.frame(Variables = rep(rep(c("slope", "slope_CI_inf", "slope_CI_sup",
-                                                          "intercept", "correlation",
-                                                          "cor_CI_inf","cor_CI_sup","pval", 
-                                                       "CIcortest_moins",
-                                                       "CIcortest_plus"),2),3),
-                                 Generation = rep(c(rep(7, 10), rep(29, 10)),3),
-                                 Pairwise = rep(c("Cherry_Cranberry",
-                                                     "Cranberry_Strawberry", 
-                                                     "Strawberry_Cherry"), each=20),
+                                                     "Strawberry_Cherry"), each=10),
                                 Estimates = NA )
 
 ## Nbr sample 
@@ -746,31 +733,22 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="correlation"] <- mean(sim$correlation.cor, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$correlation.cor, probs = 0.025, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope, probs = 0.025, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$correlation.cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope, probs = 0.975, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- mean(sim$intercept, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- mean(sim$slope, na.rm = TRUE)
+
+
+
 
 
 ####### 
@@ -783,18 +761,6 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope,probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope,probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
                               Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
@@ -804,13 +770,14 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="pval"] <- quantile(sim$pval, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
+
+
+
+
 
 
 ####### 
@@ -825,18 +792,6 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope,probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope,probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
                               Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
@@ -846,13 +801,14 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="pval"] <- quantile(sim$pval, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
+
+
+
+
 
 
 #########################
@@ -870,18 +826,6 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
                               Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
@@ -891,13 +835,13 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="pval"] <- quantile(sim$pval, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
+
+
+
 
 ####### 
 #######  Cranberry Strawberry
@@ -909,18 +853,6 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope,probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope,probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
                               Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
@@ -930,13 +862,13 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="pval"] <- quantile(sim$pval, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
+
+
+
 ####### 
 #######  Strawberry  Cherry
 ####### 
@@ -947,18 +879,6 @@ sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dat
 # Fill out data with quantile of simulations
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope_CI_inf"] <- quantile(sim$slope,probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope_CI_sup"] <- quantile(sim$slope,probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
                               Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
@@ -968,19 +888,15 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="pval"] <- quantile(sim$pval, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
 Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="CIcortest_moins"] <- quantile(sim$CIcortest_moins, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="CIcortest_plus"] <- quantile(sim$CIcortest_plus, probs = 0.5, na.rm = TRUE)
+                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
+
+
 
 Estimates_pairwise
-Estimates_pairwise[Estimates_pairwise$Variables == "slope_CI_inf"|
-                     Estimates_pairwise$Variables == "slope_CI_sup",]
-Estimates_pairwise[Estimates_pairwise$Variables == "CIcortest_moins"|
-                     Estimates_pairwise$Variables == "CIcortest_plus",]
+
 
 
 
@@ -1117,6 +1033,309 @@ temp_polygon_limits_cor <- function(empty_dataset = Estimates_pairwise, generati
 ```
 
 
+
+## Plot 
+```{r } 
+ymin = -50
+ymax = 50
+
+
+##################################################
+##################   G7
+# Limits
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
+
+
+## Function equation R
+eq_r <- function(gen = 7, pair = "Cherry_Cranberry"){
+eq <- substitute(~~italic(r)^2~"="~r2,
+list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
+Estimates_pairwise$Pairwise == pair &
+Estimates_pairwise$Variables == "correlation"], digits = 2)))
+as.character(as.expression(eq));
+}
+
+
+
+# Plot
+CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_text(x = 0.7, y = -1, label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, color="black") +
+  geom_errorbar(aes(x = logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp, linetype = Line_type),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                     color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+             size =3, fill = "white", stroke =1.2) + 
+  xlab("Fitness difference in\nselective environment")  + 
+  ylab("Fitness difference in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  theme_LO_sober + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
+                  xlim = c(ymin_CheCranG7, ymax_CheCranG7)) 
+  
+ CheCran_G7
+
+
+# Limits
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$logchange_allop-1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw$logchange_symp-1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$logchange_allop + 1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw$logchange_symp + 1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
+
+CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp, linetype = Line_type),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                   size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = 0.7, y = -0.8, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black") +
+  xlab("Fitness difference in\nselective environment")  + 
+  ylab("Fitness difference in\nalternative environment")  + 
+     ggtitle("Cranberry vs. Strawberry") + 
+  coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
+                  xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(22, 24)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+ CranStraw_G7
+
+ 
+# Limits
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$logchange_allop-1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe$logchange_symp-1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$logchange_allop + 1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe$logchange_symp + 1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
+
+StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) + 
+    geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp, linetype = Line_type),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp, linetype = Line_type),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = 0.5, y = -0.5, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black") +
+  xlab("Fitness difference in\nselective environment")  + 
+  ylab("Fitness difference in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(21, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
+                  xlim = c(ymin_StrawCheG7, ymax_StrawCheG7)) + 
+  theme_LO_sober
+ StrawChe_G7
+ 
+ 
+  
+#####################################################################################
+##################################      G29        ##################################
+#####################################################################################
+TEMP_dataG29_CheCran
+TEMP_dataG29_CranStraw
+TEMP_dataG29_StrawChe
+
+# Limits
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran$logchange_symp-1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran$logchange_symp + 1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
+
+
+CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) + 
+    geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = -0.5, y = -0.4, label = eq_r(gen = 29, pair = "Cherry_Cranberry"), parse = TRUE, color="black") +
+  xlab("Fitness difference in\nselective environment")  + 
+  ylab("Fitness difference in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
+                  xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
+  theme_LO_sober
+ CheCran_G29
+
+
+
+# Limits
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
+
+#Plot
+ CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+   geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+   geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+   geom_text(x = -1, y = -0.8, label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), parse = TRUE, color="black") +
+   xlab("Fitness difference in\nselective environment")  + 
+   ylab("Fitness difference in\nalternative environment")  + 
+   ggtitle("Cranberry vs. Strawberry") + 
+   coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
+                  xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(15, 17)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+   theme_LO_sober
+ CranStraw_G29
+
+ 
+ 
+ 
+# Limits
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe$logchange_symp + 1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
+
+
+StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) + 
+ geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp),
+                  width= 0.02, size = 0.2, alpha =1) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp),
+                 height = 0.02, size = 0.2, alpha =1) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = -0.4, y = -0.3, label = eq_r(gen = 29, pair = "Strawberry_Cherry"), parse = TRUE, color="black") +
+  coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
+                  xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
+    xlab("Fitness difference in\nselective environment")  + 
+    ylab("Fitness difference in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  theme_LO_sober
+ StrawChe_G29
+
+
+
+
+
+ 
+ 
+legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
+                          aes(x =logchange, y = logchange,  color = Symp,fill = Symp, shape = Allop)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+
+legend_trade <- lemon::g_legend(legend_tradevide)
+
+ 
+ 
+
+Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() + 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
+            x = 0.00, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
+            x = 0.26, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
+            x = 0.52, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(legend_trade, x = 0.750, y = 0.5, width = 0.1, height = 0.1) + 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
+            x = 0.00, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
+            x = 0.26, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
+            x = 0.52, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
+                    "Final phenotyping step", "D", "E", "F", " "),  
+                  x = c(0.26, 0, 0.26, 0.52, 0.82, 0.2, 0, 0.26, 0.52, 0.82), 
+                  y = c(1, 0.95, 0.95, 0.95, 0.95, 0.5, 0.45, 0.45, 0.45, 0.45), 
+                  hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
+                  vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+                  size = 14) 
+ Slopeestimates_logchange_pairwise_errorbar
+#  
+# #  
+# 
+cowplot::save_plot(file =here::here("figures", "FIG_Regression.pdf"),
+                   Slopeestimates_logchange_pairwise_errorbar,
+                   base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
+
+
+
+
+```
 
 ## Plot Correlation FAUX A REFAIRE
 ```{r } 
