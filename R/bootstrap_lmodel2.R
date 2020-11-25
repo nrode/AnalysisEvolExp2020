@@ -32,38 +32,28 @@ bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran) {
                                                prob = data_pairwise$Vector_sample), ]
 
   if ( length(unique(sample_data_pairwise$Line)) > 2 ) {
-  # 1- Model with sample dataset
-  model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+    # 1- Correlation
+    correlation_test<- cor.test(sample_data_pairwise$logchange_allop,sample_data_pairwise$logchange_symp)
+
+    # Extract correlation
+    estimate_correlation <- correlation_test$estimate
+
+    # 2- Model with sample dataset
+     model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             range.y = "interval",range.x = "interval",
                             data = sample_data_pairwise, nperm=0)
 
-  # Extract slope
-  estimate_intercept <- model$regression.results[2, 2]
-  estimate_slope <- model$regression.results[2, 3]
-
-  # 2- Correlation
-  correlation_test<- cor.test(sample_data_pairwise$logchange_allop,sample_data_pairwise$logchange_symp)
-
-  # Extract correlation
-  estimate_correlation <- correlation_test$estimate
-  pvalue_correlation <- correlation_test$p.value
-  # Extract CI
-  CI_inf <- correlation_test$conf.int[1]
-  CI_plus <- correlation_test$conf.int[2]
-
-
-
+    # Extract slope
+     estimate_intercept <- model$regression.results[2, 2]
+     estimate_slope <- model$regression.results[2, 3]
 
   } else {
     estimate_intercept <- NA
     estimate_slope <- NA
     estimate_correlation <- NA
-    pvalue_correlation <- NA
-    CI_inf <- NA
-    CI_plus <- NA
   }
 
-  return(c(intercept = estimate_intercept, slope = estimate_slope,
-           estimate_correlation, pval = pvalue_correlation,
-           CIcortest_moins = CI_inf, CIcortest_plus = CI_plus))
+  return(c(correlation = estimate_correlation,
+           intercept = estimate_intercept,
+           slope = estimate_slope))
 }
