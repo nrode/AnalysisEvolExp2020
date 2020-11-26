@@ -69,27 +69,27 @@ mod_Fruits <- lme4::lmer(fitness ~ Fruit_s + (1|Generation),
 mod_Generation <- lme4::lmer(fitness ~ Generation + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Step <- lme4::lmer(fitness~ Step + (1|Generation), 
+mod_Phase <- lme4::lmer(fitness~ Phase + (1|Generation), 
             weights = N, data = data_sum)
 
 mod_Lines <- lme4::lmer(fitness~ Line + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Generation_Step <- lme4::lmer(fitness~ Step + Generation + (1|Generation),  
+mod_Generation_Phase <- lme4::lmer(fitness~ Phase + Generation + (1|Generation),  
             weights = N, data = data_sum)
 
 mod_Generation_Fruits <- lme4::lmer(fitness ~ Generation + Fruit_s + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Fruits_Step <- lme4::lmer(fitness ~ Step + Fruit_s + (1|Generation), 
+mod_Fruits_Phase <- lme4::lmer(fitness ~ Phase + Fruit_s + (1|Generation), 
             weights = N, data = data_sum)
 
 
-mod_Generation_Fruits_Step <- lme4::lmer(fitness ~ Generation + Step + Fruit_s + (1|Generation), 
+mod_Generation_Fruits_Phase <- lme4::lmer(fitness ~ Generation + Phase + Fruit_s + (1|Generation), 
                               weights = N, data = data_sum)
 
 
-mod_Doubleinteraction <- lme4::lmer(fitness ~ Generation + Step + Fruit_s + 
+mod_Doubleinteraction <- lme4::lmer(fitness ~ Generation + Phase + Fruit_s + 
                               Fruit_s:Generation + 
                               (1|Generation),  
                               weights = N, data = data_sum)
@@ -98,15 +98,15 @@ mod_Double_gene <- lme4::lmer(fitness ~ Generation*Fruit_s +
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Double <- lme4::lmer(fitness ~ Step*Fruit_s + 
+mod_Double <- lme4::lmer(fitness ~ Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Double_Generation <- lme4::lmer(fitness ~ Generation + Step*Fruit_s + 
+mod_Double_Generation <- lme4::lmer(fitness ~ Generation + Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Tripleinteraction <- lme4::lmer(fitness ~ Generation*Step*Fruit_s + 
+mod_Tripleinteraction <- lme4::lmer(fitness ~ Generation*Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
@@ -121,30 +121,30 @@ data_sum$indic_cranberry <- ifelse(data_sum$Fruit_s=="Cranberry", "Cranberry", "
 data_sum$indic_strawberry <- ifelse(data_sum$Fruit_s=="Strawberry",  "Strawberry", "Others")
 
 # Test whether the temporal dynamics are different in one fruit compared to the two other fruits 
-mod_Cherry_Step <- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+mod_Cherry_Phase <- lme4::lmer(fitness ~ Phase*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
-mod_Cranberry_Step <- lme4::lmer(fitness ~ Step*indic_cranberry + (1|Generation),
+mod_Cranberry_Phase <- lme4::lmer(fitness ~ Phase*indic_cranberry + (1|Generation),
             weights = N, data = data_sum)
 
-mod_Strawberry_Step <- lme4::lmer(fitness ~ Step*indic_strawberry + (1|Generation),
+mod_Strawberry_Phase <- lme4::lmer(fitness ~ Phase*indic_strawberry + (1|Generation),
             weights = N, data = data_sum)
 
 
 
 # Model selection: AICC and Loglik
-MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)
+MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)
 
-MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)
+MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)
 
-anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)
+anova(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)
 
 
 #Posthoc
-mod_Best <- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+mod_Best <- lme4::lmer(fitness ~ Phase*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
-emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = "tukey") #
+emmeans::emmeans(mod_Best, list(pairwise ~ Phase:indic_cherry), adjust = "tukey") #
 summary(mod_Best)
 
 
@@ -152,16 +152,16 @@ summary(mod_Best)
 
 ################### BELOW TEMP: A SUPR
 ############### Percent of Increase in fitness
-# Calcul_increase_fitness <- expand.grid(Step = unique(data_sum$Step),
+# Calcul_increase_fitness <- expand.grid(Phase = unique(data_sum$Phase),
 #                                      Fruit_s = unique(data_sum$Fruit_s))
 # 
 # Calcul_increase_fitness$fitness_predicted <- predict(mod_Best, 
 #                                                      newdata = Calcul_increase_fitness, 
 #                                                      re.form= NA, type = "response")
 # 
-# ((Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="second_postpool"]-
-#     Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="first_prepool"])/
-#   abs(Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step=="first_prepool"]))*100
+# ((Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase=="second_postpool"]-
+#     Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase=="first_prepool"])/
+#   abs(Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase=="first_prepool"]))*100
 # 
 # Calcul_increase_fitness
 
@@ -178,7 +178,7 @@ pd <- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 dat_predict_allfruits <- expand.grid(Generation =as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
 
-dat_predict_allfruits$Step <- ifelse(dat_predict_allfruits$Generation<= 7, "first_prepool",
+dat_predict_allfruits$Phase <- ifelse(dat_predict_allfruits$Generation<= 7, "first_prepool",
                                      ifelse(dat_predict_allfruits$Generation>=12, "second_postpool", "pool"))
 dat_predict_allfruits$indic_cherry<- ifelse(dat_predict_allfruits$Fruit_s=="Cherry", "Cherry", "Others")
 dat_predict_allfruits$fitness_predicted <- predict(mod_Best, newdata = dat_predict_allfruits, 
@@ -227,7 +227,7 @@ PLOT_FITNESS_CHERRY <- ggplot(data = TEMP_total[TEMP_total$Fruit_s == "Cherry",]
   geom_line(size = 0.3,position = pd) + 
   geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cherry",], 
                      aes(x = factor(Generation), y = fitness_predicted,
-                         colour = "black", group = Step), size = 0.5) + 
+                         colour = "black", group = Phase), size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 
   ylab("Fitness") + 
@@ -251,7 +251,7 @@ PLOT_FITNESS_CRANB <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "C
   geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.2,color = "black") + 
   geom_line(size = 0.3,position = pd) + 
-  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cranberry",], aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Cranberry",], aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Phase),
                 size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 
@@ -277,7 +277,7 @@ PLOT_FITNESS_STRAW <- ggplot2::ggplot(data = TEMP_total[TEMP_total$Fruit_s == "S
                 width=.1,position = pd, size = 0.2,color = "black") + 
   geom_line(size = 0.3,position = pd) + 
   geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == "Strawberry",], 
-            aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Step),
+            aes(x = factor(Generation), y = fitness_predicted, colour = "black", group = Phase),
             size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = "white") + 
   ylim(-3, 3.05) + 

@@ -1546,7 +1546,7 @@ data_G29 &lt;- loadfitnessdata(dataset =
                             &quot;PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv&quot;,
                             generation = &quot;29&quot;)
 head(data_sum)</code></pre>
-<pre><code>##   Line Fruit_s Generation          Step  N Nb_adults       sd    fitness
+<pre><code>##   Line Fruit_s Generation         Phase  N Nb_adults       sd    fitness
 ## 1  CE1  Cherry          2 first_prepool 20   9.15000 6.123939 -0.7819784
 ## 2  CE1  Cherry          3 first_prepool 10  15.30000 7.631077 -0.2678794
 ## 3  CE1  Cherry          4 first_prepool  8  15.00000 7.782765 -0.2876821
@@ -1615,27 +1615,27 @@ mod_Fruits &lt;- lme4::lmer(fitness ~ Fruit_s + (1|Generation),
 mod_Generation &lt;- lme4::lmer(fitness ~ Generation + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Step &lt;- lme4::lmer(fitness~ Step + (1|Generation), 
+mod_Phase &lt;- lme4::lmer(fitness~ Phase + (1|Generation), 
             weights = N, data = data_sum)
 
 mod_Lines &lt;- lme4::lmer(fitness~ Line + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Generation_Step &lt;- lme4::lmer(fitness~ Step + Generation + (1|Generation),  
+mod_Generation_Phase &lt;- lme4::lmer(fitness~ Phase + Generation + (1|Generation),  
             weights = N, data = data_sum)
 
 mod_Generation_Fruits &lt;- lme4::lmer(fitness ~ Generation + Fruit_s + (1|Generation), 
             weights = N, data = data_sum)
 
-mod_Fruits_Step &lt;- lme4::lmer(fitness ~ Step + Fruit_s + (1|Generation), 
+mod_Fruits_Phase &lt;- lme4::lmer(fitness ~ Phase + Fruit_s + (1|Generation), 
             weights = N, data = data_sum)
 
 
-mod_Generation_Fruits_Step &lt;- lme4::lmer(fitness ~ Generation + Step + Fruit_s + (1|Generation), 
+mod_Generation_Fruits_Phase &lt;- lme4::lmer(fitness ~ Generation + Phase + Fruit_s + (1|Generation), 
                               weights = N, data = data_sum)
 
 
-mod_Doubleinteraction &lt;- lme4::lmer(fitness ~ Generation + Step + Fruit_s + 
+mod_Doubleinteraction &lt;- lme4::lmer(fitness ~ Generation + Phase + Fruit_s + 
                               Fruit_s:Generation + 
                               (1|Generation),  
                               weights = N, data = data_sum)
@@ -1644,15 +1644,15 @@ mod_Double_gene &lt;- lme4::lmer(fitness ~ Generation*Fruit_s +
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Double &lt;- lme4::lmer(fitness ~ Step*Fruit_s + 
+mod_Double &lt;- lme4::lmer(fitness ~ Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Double_Generation &lt;- lme4::lmer(fitness ~ Generation + Step*Fruit_s + 
+mod_Double_Generation &lt;- lme4::lmer(fitness ~ Generation + Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
-mod_Tripleinteraction &lt;- lme4::lmer(fitness ~ Generation*Step*Fruit_s + 
+mod_Tripleinteraction &lt;- lme4::lmer(fitness ~ Generation*Phase*Fruit_s + 
                               (1|Generation), 
                               weights = N, data = data_sum)
 
@@ -1667,51 +1667,51 @@ data_sum$indic_cranberry &lt;- ifelse(data_sum$Fruit_s==&quot;Cranberry&quot;, &
 data_sum$indic_strawberry &lt;- ifelse(data_sum$Fruit_s==&quot;Strawberry&quot;,  &quot;Strawberry&quot;, &quot;Others&quot;)
 
 # Test whether the temporal dynamics are different in one fruit compared to the two other fruits 
-mod_Cherry_Step &lt;- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+mod_Cherry_Phase &lt;- lme4::lmer(fitness ~ Phase*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
-mod_Cranberry_Step &lt;- lme4::lmer(fitness ~ Step*indic_cranberry + (1|Generation),
+mod_Cranberry_Phase &lt;- lme4::lmer(fitness ~ Phase*indic_cranberry + (1|Generation),
             weights = N, data = data_sum)
 
-mod_Strawberry_Step &lt;- lme4::lmer(fitness ~ Step*indic_strawberry + (1|Generation),
+mod_Strawberry_Phase &lt;- lme4::lmer(fitness ~ Phase*indic_strawberry + (1|Generation),
             weights = N, data = data_sum)
 
 
 
 # Model selection: AICC and Loglik
-MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)</code></pre>
+MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)</code></pre>
 <pre><code>##                                df     AICc
 ## mod_nul                         3 339.7756
 ## mod_Fruits                      5 333.0398
 ## mod_Generation                  4 334.4473
-## mod_Step                        5 314.8770
+## mod_Phase                       5 314.8770
 ## mod_Lines                      31 366.1793
-## mod_Generation_Step             6 322.8487
+## mod_Generation_Phase            6 322.8487
 ## mod_Generation_Fruits           6 328.4534
-## mod_Fruits_Step                 7 309.1298
-## mod_Generation_Fruits_Step      8 317.0215
+## mod_Fruits_Phase                7 309.1298
+## mod_Generation_Fruits_Phase     8 317.0215
 ## mod_Double_gene                 8 342.2655
 ## mod_Doubleinteraction          10 330.9505
 ## mod_Double                     11 317.2153
 ## mod_Double_Generation          12 325.1311
 ## mod_Tripleinteraction          20 354.5837
 ## mod_DoublePopulationGeneration 60 504.0109
-## mod_Cherry_Step                 8 307.8003
-## mod_Cranberry_Step              8 328.4648
-## mod_Strawberry_Step             8 316.4444</code></pre>
-<pre class="r"><code>MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)</code></pre>
+## mod_Cherry_Phase                8 307.8003
+## mod_Cranberry_Phase             8 328.4648
+## mod_Strawberry_Phase            8 316.4444</code></pre>
+<pre class="r"><code>MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)</code></pre>
 <pre><code>## Model selection table 
-##                                  (Int) Frt_s        Gnr Stp Lin Frt_s:Gnr
-## mod_Cherry_Step                -0.6076                    +              
-## mod_Fruits_Step                -0.3364     +              +              
-## mod_Step                       -0.4877                    +              
-## mod_Strawberry_Step            -0.5050                    +              
-## mod_Generation_Fruits_Step     -0.2913     + -0.0134300   +              
+##                                  (Int) Frt_s        Gnr Phs Lin Frt_s:Gnr
+## mod_Cherry_Phase               -0.6076                    +              
+## mod_Fruits_Phase               -0.3364     +              +              
+## mod_Phase                      -0.4877                    +              
+## mod_Strawberry_Phase           -0.5050                    +              
+## mod_Generation_Fruits_Phase    -0.2913     + -0.0134300   +              
 ## mod_Double                     -0.6078     +              +              
-## mod_Generation_Step            -0.4455       -0.0127800   +              
+## mod_Generation_Phase           -0.4455       -0.0127800   +              
 ## mod_Double_Generation          -0.5626     + -0.0137100   +              
 ## mod_Generation_Fruits          -0.1599     +  0.0388900                  
-## mod_Cranberry_Step             -0.4319                    +              
+## mod_Cranberry_Phase            -0.4319                    +              
 ## mod_Doubleinteraction          -0.4975     + -0.0007595   +             +
 ## mod_Fruits                      0.4343     +                             
 ## mod_Generation                 -0.3267        0.0398800                  
@@ -1720,17 +1720,17 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Tripleinteraction          -1.1070     +  0.1752000   +             +
 ## mod_Lines                      -0.5347                        +          
 ## mod_DoublePopulationGeneration -1.0460        0.1785000       +          
-##                                Frt_s:Stp Gnr:Stp Frt_s:Gnr:Stp Gnr:Lin ind_chr
-## mod_Cherry_Step                                                              +
-## mod_Fruits_Step                                                               
-## mod_Step                                                                      
-## mod_Strawberry_Step                                                           
-## mod_Generation_Fruits_Step                                                    
+##                                Frt_s:Phs Gnr:Phs Frt_s:Gnr:Phs Gnr:Lin ind_chr
+## mod_Cherry_Phase                                                             +
+## mod_Fruits_Phase                                                              
+## mod_Phase                                                                     
+## mod_Strawberry_Phase                                                          
+## mod_Generation_Fruits_Phase                                                   
 ## mod_Double                             +                                      
-## mod_Generation_Step                                                           
+## mod_Generation_Phase                                                          
 ## mod_Double_Generation                  +                                      
 ## mod_Generation_Fruits                                                         
-## mod_Cranberry_Step                                                            
+## mod_Cranberry_Phase                                                           
 ## mod_Doubleinteraction                                                         
 ## mod_Fruits                                                                    
 ## mod_Generation                                                                
@@ -1739,17 +1739,17 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Tripleinteraction                  +       +             +                
 ## mod_Lines                                                                     
 ## mod_DoublePopulationGeneration                                       +        
-##                                ind_chr:Stp ind_crn ind_crn:Stp ind_str
-## mod_Cherry_Step                          +                            
-## mod_Fruits_Step                                                       
-## mod_Step                                                              
-## mod_Strawberry_Step                                                  +
-## mod_Generation_Fruits_Step                                            
+##                                ind_chr:Phs ind_crn ind_crn:Phs ind_str
+## mod_Cherry_Phase                         +                            
+## mod_Fruits_Phase                                                      
+## mod_Phase                                                             
+## mod_Strawberry_Phase                                                 +
+## mod_Generation_Fruits_Phase                                           
 ## mod_Double                                                            
-## mod_Generation_Step                                                   
+## mod_Generation_Phase                                                  
 ## mod_Double_Generation                                                 
 ## mod_Generation_Fruits                                                 
-## mod_Cranberry_Step                               +           +        
+## mod_Cranberry_Phase                              +           +        
 ## mod_Doubleinteraction                                                 
 ## mod_Fruits                                                            
 ## mod_Generation                                                        
@@ -1758,17 +1758,17 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Tripleinteraction                                                 
 ## mod_Lines                                                             
 ## mod_DoublePopulationGeneration                                        
-##                                ind_str:Stp             family df   logLik  AICc
-## mod_Cherry_Step                            gaussian(identity)  8 -145.598 307.8
-## mod_Fruits_Step                            gaussian(identity)  7 -147.331 309.1
-## mod_Step                                   gaussian(identity)  5 -152.314 314.9
-## mod_Strawberry_Step                      + gaussian(identity)  8 -149.920 316.4
-## mod_Generation_Fruits_Step                 gaussian(identity)  8 -150.208 317.0
+##                                ind_str:Phs             family df   logLik  AICc
+## mod_Cherry_Phase                           gaussian(identity)  8 -145.598 307.8
+## mod_Fruits_Phase                           gaussian(identity)  7 -147.331 309.1
+## mod_Phase                                  gaussian(identity)  5 -152.314 314.9
+## mod_Strawberry_Phase                     + gaussian(identity)  8 -149.920 316.4
+## mod_Generation_Fruits_Phase                gaussian(identity)  8 -150.208 317.0
 ## mod_Double                                 gaussian(identity) 11 -147.046 317.2
-## mod_Generation_Step                        gaussian(identity)  6 -155.249 322.8
+## mod_Generation_Phase                       gaussian(identity)  6 -155.249 322.8
 ## mod_Double_Generation                      gaussian(identity) 12 -149.899 325.1
 ## mod_Generation_Fruits                      gaussian(identity)  6 -158.052 328.5
-## mod_Cranberry_Step                         gaussian(identity)  8 -155.930 328.5
+## mod_Cranberry_Phase                        gaussian(identity)  8 -155.930 328.5
 ## mod_Doubleinteraction                      gaussian(identity) 10 -155.009 331.0
 ## mod_Fruits                                 gaussian(identity)  5 -161.395 333.0
 ## mod_Generation                             gaussian(identity)  4 -163.141 334.4
@@ -1778,16 +1778,16 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_Lines                                  gaussian(identity) 31 -147.476 366.2
 ## mod_DoublePopulationGeneration             gaussian(identity) 60 -172.328 504.0
 ##                                 delta weight
-## mod_Cherry_Step                  0.00  0.634
-## mod_Fruits_Step                  1.33  0.326
-## mod_Step                         7.08  0.018
-## mod_Strawberry_Step              8.64  0.008
-## mod_Generation_Fruits_Step       9.22  0.006
+## mod_Cherry_Phase                 0.00  0.634
+## mod_Fruits_Phase                 1.33  0.326
+## mod_Phase                        7.08  0.018
+## mod_Strawberry_Phase             8.64  0.008
+## mod_Generation_Fruits_Phase      9.22  0.006
 ## mod_Double                       9.41  0.006
-## mod_Generation_Step             15.05  0.000
+## mod_Generation_Phase            15.05  0.000
 ## mod_Double_Generation           17.33  0.000
 ## mod_Generation_Fruits           20.65  0.000
-## mod_Cranberry_Step              20.66  0.000
+## mod_Cranberry_Phase             20.66  0.000
 ## mod_Doubleinteraction           23.15  0.000
 ## mod_Fruits                      25.24  0.000
 ## mod_Generation                  26.65  0.000
@@ -1799,41 +1799,41 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## Models ranked by AICc(x) 
 ## Random terms (all models): 
 ## &#39;1 | Generation&#39;</code></pre>
-<pre class="r"><code>anova(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_Step,mod_Generation_Fruits,mod_Fruits_Step,mod_Generation_Fruits_Step,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene,mod_Cherry_Step,mod_Cranberry_Step,mod_Strawberry_Step)</code></pre>
+<pre class="r"><code>anova(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene,mod_Cherry_Phase,mod_Cranberry_Phase,mod_Strawberry_Phase)</code></pre>
 <pre><code>## Data: data_sum
 ## Models:
 ## mod_nul: fitness ~ 1 + (1 | Generation)
 ## mod_Generation: fitness ~ Generation + (1 | Generation)
 ## mod_Fruits: fitness ~ Fruit_s + (1 | Generation)
-## mod_Step: fitness ~ Step + (1 | Generation)
-## mod_Generation_Step: fitness ~ Step + Generation + (1 | Generation)
+## mod_Phase: fitness ~ Phase + (1 | Generation)
+## mod_Generation_Phase: fitness ~ Phase + Generation + (1 | Generation)
 ## mod_Generation_Fruits: fitness ~ Generation + Fruit_s + (1 | Generation)
-## mod_Fruits_Step: fitness ~ Step + Fruit_s + (1 | Generation)
-## mod_Generation_Fruits_Step: fitness ~ Generation + Step + Fruit_s + (1 | Generation)
+## mod_Fruits_Phase: fitness ~ Phase + Fruit_s + (1 | Generation)
+## mod_Generation_Fruits_Phase: fitness ~ Generation + Phase + Fruit_s + (1 | Generation)
 ## mod_Double_gene: fitness ~ Generation * Fruit_s + (1 | Generation)
-## mod_Cherry_Step: fitness ~ Step * indic_cherry + (1 | Generation)
-## mod_Cranberry_Step: fitness ~ Step * indic_cranberry + (1 | Generation)
-## mod_Strawberry_Step: fitness ~ Step * indic_strawberry + (1 | Generation)
-## mod_Doubleinteraction: fitness ~ Generation + Step + Fruit_s + Fruit_s:Generation + 
+## mod_Cherry_Phase: fitness ~ Phase * indic_cherry + (1 | Generation)
+## mod_Cranberry_Phase: fitness ~ Phase * indic_cranberry + (1 | Generation)
+## mod_Strawberry_Phase: fitness ~ Phase * indic_strawberry + (1 | Generation)
+## mod_Doubleinteraction: fitness ~ Generation + Phase + Fruit_s + Fruit_s:Generation + 
 ## mod_Doubleinteraction:     (1 | Generation)
-## mod_Double: fitness ~ Step * Fruit_s + (1 | Generation)
-## mod_Double_Generation: fitness ~ Generation + Step * Fruit_s + (1 | Generation)
-## mod_Tripleinteraction: fitness ~ Generation * Step * Fruit_s + (1 | Generation)
+## mod_Double: fitness ~ Phase * Fruit_s + (1 | Generation)
+## mod_Double_Generation: fitness ~ Generation + Phase * Fruit_s + (1 | Generation)
+## mod_Tripleinteraction: fitness ~ Generation * Phase * Fruit_s + (1 | Generation)
 ## mod_Lines: fitness ~ Line + (1 | Generation)
 ## mod_DoublePopulationGeneration: fitness ~ Generation * Line + (1 | Generation)
 ##                                npar    AIC    BIC  logLik deviance   Chisq Df
 ## mod_nul                           3 336.65 347.18 -165.33   330.65           
 ## mod_Generation                    4 323.01 337.05 -157.50   315.01 15.6458  1
 ## mod_Fruits                        5 321.74 339.29 -155.87   311.74  3.2688  1
-## mod_Step                          5 305.39 322.93 -147.69   295.39 16.3510  0
-## mod_Generation_Step               6 305.95 327.01 -146.98   293.95  1.4362  1
+## mod_Phase                         5 305.39 322.93 -147.69   295.39 16.3510  0
+## mod_Generation_Phase              6 305.95 327.01 -146.98   293.95  1.4362  1
 ## mod_Generation_Fruits             6 308.84 329.90 -148.42   296.84  0.0000  0
-## mod_Fruits_Step                   7 291.48 316.05 -138.74   277.48 19.3583  1
-## mod_Generation_Fruits_Step        8 291.95 320.02 -137.97   275.95  1.5325  1
+## mod_Fruits_Phase                  7 291.48 316.05 -138.74   277.48 19.3583  1
+## mod_Generation_Fruits_Phase       8 291.95 320.02 -137.97   275.95  1.5325  1
 ## mod_Double_gene                   8 306.40 334.48 -145.20   290.40  0.0000  0
-## mod_Cherry_Step                   8 290.29 318.37 -137.15   274.29 16.1075  0
-## mod_Cranberry_Step                8 310.11 338.19 -147.06   294.11  0.0000  0
-## mod_Strawberry_Step               8 298.37 326.45 -141.19   282.37 11.7394  0
+## mod_Cherry_Phase                  8 290.29 318.37 -137.15   274.29 16.1075  0
+## mod_Cranberry_Phase               8 310.11 338.19 -147.06   294.11  0.0000  0
+## mod_Strawberry_Phase              8 298.37 326.45 -141.19   282.37 11.7394  0
 ## mod_Doubleinteraction            10 289.56 324.65 -134.78   269.56 12.8159  2
 ## mod_Double                       11 291.19 329.79 -134.59   269.19  0.3679  1
 ## mod_Double_Generation            12 291.62 333.73 -133.81   267.62  1.5683  1
@@ -1844,15 +1844,15 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## mod_nul                                      
 ## mod_Generation                  7.638e-05 ***
 ## mod_Fruits                       0.070610 .  
-## mod_Step                        &lt; 2.2e-16 ***
-## mod_Generation_Step              0.230756    
+## mod_Phase                       &lt; 2.2e-16 ***
+## mod_Generation_Phase             0.230756    
 ## mod_Generation_Fruits            1.000000    
-## mod_Fruits_Step                 1.083e-05 ***
-## mod_Generation_Fruits_Step       0.215736    
+## mod_Fruits_Phase                1.083e-05 ***
+## mod_Generation_Fruits_Phase      0.215736    
 ## mod_Double_gene                  1.000000    
-## mod_Cherry_Step                 &lt; 2.2e-16 ***
-## mod_Cranberry_Step               1.000000    
-## mod_Strawberry_Step             &lt; 2.2e-16 ***
+## mod_Cherry_Phase                &lt; 2.2e-16 ***
+## mod_Cranberry_Phase              1.000000    
+## mod_Strawberry_Phase            &lt; 2.2e-16 ***
 ## mod_Doubleinteraction            0.001648 ** 
 ## mod_Double                       0.544137    
 ## mod_Double_Generation            0.210447    
@@ -1862,12 +1862,12 @@ MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Step,mod_Lines,mod_Generation_
 ## ---
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <pre class="r"><code>#Posthoc
-mod_Best &lt;- lme4::lmer(fitness ~ Step*indic_cherry + (1|Generation),
+mod_Best &lt;- lme4::lmer(fitness ~ Phase*indic_cherry + (1|Generation),
             weights = N, data = data_sum)
 
-emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = &quot;tukey&quot;) #</code></pre>
-<pre><code>## $`emmeans of Step, indic_cherry`
-##  Step            indic_cherry    emmean     SE     df lower.CL upper.CL
+emmeans::emmeans(mod_Best, list(pairwise ~ Phase:indic_cherry), adjust = &quot;tukey&quot;) #</code></pre>
+<pre><code>## $`emmeans of Phase, indic_cherry`
+##  Phase           indic_cherry    emmean     SE     df lower.CL upper.CL
 ##  first_prepool   Cherry       -0.607592 0.1631    674   -1.038   -0.177
 ##  pool            Cherry        0.321562 0.1674 111144   -0.119    0.762
 ##  second_postpool Cherry        0.701026 0.0712   2598    0.514    0.889
@@ -1879,7 +1879,7 @@ emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = &quot;tu
 ## Confidence level used: 0.95 
 ## Conf-level adjustment: sidak method for 6 estimates 
 ## 
-## $`pairwise differences of Step, indic_cherry`
+## $`pairwise differences of Phase, indic_cherry`
 ##  contrast                                        estimate     SE     df t.ratio
 ##  first_prepool Cherry - pool Cherry                -0.929 0.2337   2618 -3.976 
 ##  first_prepool Cherry - second_postpool Cherry     -1.309 0.1779    796 -7.354 
@@ -1917,7 +1917,7 @@ emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = &quot;tu
 ## P value adjustment: tukey method for comparing a family of 6 estimates</code></pre>
 <pre class="r"><code>summary(mod_Best)</code></pre>
 <pre><code>## Linear mixed model fit by REML [&#39;lmerMod&#39;]
-## Formula: fitness ~ Step * indic_cherry + (1 | Generation)
+## Formula: fitness ~ Phase * indic_cherry + (1 | Generation)
 ##    Data: data_sum
 ## Weights: N
 ## 
@@ -1934,33 +1934,33 @@ emmeans::emmeans(mod_Best, list(pairwise ~ Step:indic_cherry), adjust = &quot;tu
 ## Number of obs: 247, groups:  Generation, 24
 ## 
 ## Fixed effects:
-##                                        Estimate Std. Error t value
-## (Intercept)                             -0.6076     0.1604  -3.788
-## Steppool                                 0.9292     0.2318   4.008
-## Stepsecond_postpool                      1.3086     0.1753   7.465
-## indic_cherryOthers                       0.1649     0.1483   1.112
-## Steppool:indic_cherryOthers             -0.4862     0.2094  -2.322
-## Stepsecond_postpool:indic_cherryOthers  -0.4105     0.1605  -2.557
+##                                         Estimate Std. Error t value
+## (Intercept)                              -0.6076     0.1604  -3.788
+## Phasepool                                 0.9292     0.2318   4.008
+## Phasesecond_postpool                      1.3086     0.1753   7.465
+## indic_cherryOthers                        0.1649     0.1483   1.112
+## Phasepool:indic_cherryOthers             -0.4862     0.2094  -2.322
+## Phasesecond_postpool:indic_cherryOthers  -0.4105     0.1605  -2.557
 ## 
 ## Correlation of Fixed Effects:
-##             (Intr) Steppl Stpsc_ indc_O Stp:_O
-## Steppool    -0.692                            
-## Stpscnd_pst -0.915  0.633                     
+##             (Intr) Phaspl Phssc_ indc_O Phs:_O
+## Phasepool   -0.692                            
+## Phsscnd_pst -0.915  0.633                     
 ## indc_chrryO -0.670  0.464  0.613              
-## Stppl:ndc_O  0.475 -0.716 -0.434 -0.708       
-## Stpscnd_:_O  0.619 -0.428 -0.663 -0.924  0.654</code></pre>
+## Phspl:ndc_O  0.475 -0.716 -0.434 -0.708       
+## Phsscnd_:_O  0.619 -0.428 -0.663 -0.924  0.654</code></pre>
 <pre class="r"><code>################### BELOW TEMP: A SUPR
 ############### Percent of Increase in fitness
-# Calcul_increase_fitness &lt;- expand.grid(Step = unique(data_sum$Step),
+# Calcul_increase_fitness &lt;- expand.grid(Phase = unique(data_sum$Phase),
 #                                      Fruit_s = unique(data_sum$Fruit_s))
 # 
 # Calcul_increase_fitness$fitness_predicted &lt;- predict(mod_Best, 
 #                                                      newdata = Calcul_increase_fitness, 
 #                                                      re.form= NA, type = &quot;response&quot;)
 # 
-# ((Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step==&quot;second_postpool&quot;]-
-#     Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step==&quot;first_prepool&quot;])/
-#   abs(Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Step==&quot;first_prepool&quot;]))*100
+# ((Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase==&quot;second_postpool&quot;]-
+#     Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase==&quot;first_prepool&quot;])/
+#   abs(Calcul_increase_fitness$fitness_predicted[Calcul_increase_fitness$Phase==&quot;first_prepool&quot;]))*100
 # 
 # Calcul_increase_fitness</code></pre>
 </div>
@@ -1973,7 +1973,7 @@ pd &lt;- ggplot2::position_dodge(0.3) # move them .05 to the left and right
 dat_predict_allfruits &lt;- expand.grid(Generation =as.numeric(levels(as.factor(data_sum$Generation))),
                                      Fruit_s=unique(data_sum$Fruit_s))
 
-dat_predict_allfruits$Step &lt;- ifelse(dat_predict_allfruits$Generation&lt;= 7, &quot;first_prepool&quot;,
+dat_predict_allfruits$Phase &lt;- ifelse(dat_predict_allfruits$Generation&lt;= 7, &quot;first_prepool&quot;,
                                      ifelse(dat_predict_allfruits$Generation&gt;=12, &quot;second_postpool&quot;, &quot;pool&quot;))
 dat_predict_allfruits$indic_cherry&lt;- ifelse(dat_predict_allfruits$Fruit_s==&quot;Cherry&quot;, &quot;Cherry&quot;, &quot;Others&quot;)
 dat_predict_allfruits$fitness_predicted &lt;- predict(mod_Best, newdata = dat_predict_allfruits, 
@@ -1990,13 +1990,13 @@ TEMP_total$Fruit_s[TEMP_total$Generation == &quot;6&quot;] &lt;- c(&quot;Strawbe
 TEMP_total$Fruit_s[TEMP_total$Generation == &quot;1&quot;] &lt;- c(&quot;Strawberry&quot;, &quot;Cranberry&quot;, &quot;Cherry&quot;)
 TEMP_total$Fruit_s[TEMP_total$Generation == &quot;7&quot;] &lt;- c(&quot;Strawberry&quot;, &quot;Cranberry&quot;, &quot;Cherry&quot;)
 tail(TEMP_total)</code></pre>
-<pre><code>##     Line    Fruit_s Generation Step  N Nb_adults sd fitness se_fitness
-## 251 &lt;NA&gt; Strawberry          6 &lt;NA&gt; NA        NA NA      NA         NA
-## 252 &lt;NA&gt;  Cranberry          6 &lt;NA&gt; NA        NA NA      NA         NA
-## 253 &lt;NA&gt;     Cherry          6 &lt;NA&gt; NA        NA NA      NA         NA
-## 254 &lt;NA&gt; Strawberry          7 &lt;NA&gt; NA        NA NA      NA         NA
-## 255 &lt;NA&gt;  Cranberry          7 &lt;NA&gt; NA        NA NA      NA         NA
-## 256 &lt;NA&gt;     Cherry          7 &lt;NA&gt; NA        NA NA      NA         NA
+<pre><code>##     Line    Fruit_s Generation Phase  N Nb_adults sd fitness se_fitness
+## 251 &lt;NA&gt; Strawberry          6  &lt;NA&gt; NA        NA NA      NA         NA
+## 252 &lt;NA&gt;  Cranberry          6  &lt;NA&gt; NA        NA NA      NA         NA
+## 253 &lt;NA&gt;     Cherry          6  &lt;NA&gt; NA        NA NA      NA         NA
+## 254 &lt;NA&gt; Strawberry          7  &lt;NA&gt; NA        NA NA      NA         NA
+## 255 &lt;NA&gt;  Cranberry          7  &lt;NA&gt; NA        NA NA      NA         NA
+## 256 &lt;NA&gt;     Cherry          7  &lt;NA&gt; NA        NA NA      NA         NA
 ##     indic_cherry indic_cranberry indic_strawberry
 ## 251         &lt;NA&gt;               6             &lt;NA&gt;
 ## 252         &lt;NA&gt;               6             &lt;NA&gt;
@@ -2041,7 +2041,7 @@ TEMP_title</code></pre>
   geom_line(size = 0.3,position = pd) + 
   geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == &quot;Cherry&quot;,], 
                      aes(x = factor(Generation), y = fitness_predicted,
-                         colour = &quot;black&quot;, group = Step), size = 0.5) + 
+                         colour = &quot;black&quot;, group = Phase), size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = &quot;white&quot;) + 
   ylim(-3, 3.05) + 
   ylab(&quot;Fitness&quot;) + 
@@ -2063,7 +2063,7 @@ PLOT_FITNESS_CHERRY</code></pre>
   geom_errorbar(aes(ymin =fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.2,color = &quot;black&quot;) + 
   geom_line(size = 0.3,position = pd) + 
-  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == &quot;Cranberry&quot;,], aes(x = factor(Generation), y = fitness_predicted, colour = &quot;black&quot;, group = Step),
+  geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == &quot;Cranberry&quot;,], aes(x = factor(Generation), y = fitness_predicted, colour = &quot;black&quot;, group = Phase),
                 size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = &quot;white&quot;) + 
   ylim(-3, 3.05) + 
@@ -2087,7 +2087,7 @@ PLOT_FITNESS_CRANB</code></pre>
                 width=.1,position = pd, size = 0.2,color = &quot;black&quot;) + 
   geom_line(size = 0.3,position = pd) + 
   geom_line(data = dat_predict_allfruits[dat_predict_allfruits$Fruit_s == &quot;Strawberry&quot;,], 
-            aes(x = factor(Generation), y = fitness_predicted, colour = &quot;black&quot;, group = Step),
+            aes(x = factor(Generation), y = fitness_predicted, colour = &quot;black&quot;, group = Phase),
             size = 0.5) + 
   geom_point(size =1, position = pd, shape =21, fill = &quot;white&quot;) + 
   ylim(-3, 3.05) + 
