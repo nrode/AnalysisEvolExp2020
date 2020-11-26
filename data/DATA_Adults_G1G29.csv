@@ -1,4 +1,4 @@
-Bloc;Date;Generation;Step;Rack;Row;Column;Treatment;Lines;Fruit_s;Nb_adults;T_counted;T_produced
+Bloc;Date;Generation;Phase;Rack;Row;Column;Treatment;Line;Fruit_s;Nb_adults;T_counted;T_produced
 1;2/5/2017;1;first_prepool;A;1;1;Cherry;CE1;Cherry;6;1;
 1;2/5/2017;1;first_prepool;A;2;1;Cherry;CE1;Cherry;17;1;
 1;2/5/2017;1;first_prepool;A;3;1;Cherry;CE1;Cherry;12;1;

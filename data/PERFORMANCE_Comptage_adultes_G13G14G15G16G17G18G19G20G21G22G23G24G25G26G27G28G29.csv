@@ -1,4 +1,4 @@
-﻿Bloc;Date_C_O;Date_C_A;Date;Generation;Rack;Row;Column;Treatment;Lines;Fruit_s;Nb_eggs;Obs_O;Nb_adults;Obs_A;Comment;Recount_Nb_eggs;Obs_recount_eggs;Acariens;Nb_adults_dead;Recount_Nb_adults;Obs_recount_adults
+﻿Block;Date_C_O;Date_C_A;Date;Generation;Rack;Row;Column;Treatment;Line;Fruit_s;Nb_eggs;Obs_O;Nb_adults;Obs_A;Comment;Recount_Nb_eggs;Obs_recount_eggs;Acariens;Nb_adults_dead;Recount_Nb_adults;Obs_recount_adults
 ;;29//12//2017;29/12/2017;12;A;1;1;Cherry;CEA;Cherry;;;26;AA;;;;;;;
 ;;29//12//2017;29/12/2017;12;A;2;1;Cherry;CEA;Cherry;;;15;AA;;;;;;;
 ;;29//12//2017;29/12/2017;12;A;3;1;Cherry;CEA;Cherry;;;26;AA;;;;;;;
