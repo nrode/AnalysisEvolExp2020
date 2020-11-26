@@ -26,11 +26,11 @@ computelogchange_forlongdata <- function(longitudinal_dataset = data_sum){
   # Calculate weighted mean during each step for each line
   TEMP_data_step <- Rmisc::summarySE(longitudinal_dataset,
                                       measurevar = "Nb_adults",
-                                      groupvars = c("Line", "Fruit_s", "Step"))
+                                      groupvars = c("Line", "Fruit_s", "Phase"))
 
   TEMP_data_step <- data.frame(Line=tapply(longitudinal_dataset$Line,longitudinal_dataset$Line,unique),
                                Fruit_s=tapply(longitudinal_dataset$Fruit_s,longitudinal_dataset$Line,unique),
-                               Step=tapply(longitudinal_dataset$Step,longitudinal_dataset$Line,unique),
+                               Phase=tapply(longitudinal_dataset$Phase,longitudinal_dataset$Line,unique),
                                N=tapply(longitudinal_dataset$N,longitudinal_dataset$Line,sum),
                                Nb_adults=sapply(split(longitudinal_dataset,longitudinal_dataset$Line),
                                            function(x) weighted.mean(x$Nb_adults,x$N)),

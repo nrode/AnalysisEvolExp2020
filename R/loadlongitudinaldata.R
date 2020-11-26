@@ -31,7 +31,7 @@ loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generatio
   ######  1- Extract mean for each lines and each generations + se + N (number of tubes)
   data<-Rmisc::summarySE(TEMP_data_fitness_all,
                                  measurevar="Nb_adults",
-                                 groupvars=c("Lines", "Fruit_s", "Generation", "Phase", "T_counted"), na.rm=TRUE)
+                                 groupvars=c("Line", "Fruit_s", "Generation", "Phase", "T_counted"), na.rm=TRUE)
 
   # Replace the N (=Number of tubes used to estimate the mean) for pool Phase (replace NA by T_counted)
   data[data$Phase=="pool",]$N <- data[data$Phase=="pool",]$T_counted
@@ -55,9 +55,6 @@ loadlongitudinaldata <- function(dataset = "DATA_Adults_G1G29.csv", rm_generatio
 
   #Remove useless columns
   data <- subset(data, select = -c(se))
-
-  # Change colname of Line
-  names(data)[names(data) == "Lines"] <- "Line"
 
 
   return(data)

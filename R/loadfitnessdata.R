@@ -21,20 +21,12 @@ loadfitnessdata <- function(dataset = "Selection_Phenotypage_G0_G7_G8.csv", gene
   if(generation!=29){
 
     ## Update variables
-    data$Nb_adultes <- as.numeric(as.character(data$Nb_adultes))
-    data$Nb_oeufs <- as.numeric(as.character(data$Nb_oeufs))
+    data$Nb_adults <- as.numeric(as.character(data$Nb_adults))
+    data$Nb_eggs <- as.numeric(as.character(data$Nb_eggs))
 
-    names(data)[names(data) == "Nb_adultes"] <- "Nb_adults"
-    names(data)[names(data) == "Nb_oeufs"] <- "Nb_eggs"
-    names(data)[names(data) == "Fruit_S"] <- "Fruit_s"
-    names(data)[names(data) == "Traitement"] <- "Treatment"
-    names(data)[names(data) == "Lignee"] <- "Line"
-  } else{
-    names(data)[names(data) == "Lines"] <- "Line"
   }
 
-  ## Update name
-  names(data)[names(data) == "Bloc"] <- "Block"
+
 
   ## Subset dataset
   data <- data[data$Treatment=="Strawberry"|
