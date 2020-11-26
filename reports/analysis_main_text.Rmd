@@ -56,7 +56,30 @@ TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry",
 
 ```
 
+
+
+
+
 # ADAPTATION
+## Proportion of adaptation: raw data
+```{r }
+
+tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)
+tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$Generation=="27"],mean)
+
+## Calcul proportion change between G2 and G7 
+((tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$Generation=="27"],mean) -
+    tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) / 
+  tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) * 100
+
+# 
+# (abs(tapply(data_sum$fitness[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$Generation=="27"],mean) -
+#     tapply(data_sum$fitness[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) / 
+#   abs(tapply(data_sum$fitness[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean))) * 100
+
+```
+
+
 ## Analysis
 ```{r }
 ######## Models
@@ -711,7 +734,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                                Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_text(x = 0.7, y = -1, label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, color="black") +
+  geom_text(x = 0.7, y = -1.2, label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, color="black") +
   geom_errorbar(aes(x = logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
                     ymax = logchange_allop + (1.96*sd_allop),
                     color = Symp, linetype = Line_type),
@@ -720,7 +743,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                      color = Symp, linetype = Line_type),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
-             size =3, fill = "white", stroke =1.2) + 
+             size = 3, fill = "white", stroke =1.2) + 
   xlab("Fitness difference in\nselective environment")  + 
   ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
@@ -757,7 +780,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
                    size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = 0.7, y = -0.8, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black") +
+  geom_text(x = -0.25, y = -0.95, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black") +
   xlab("Fitness difference in\nselective environment")  + 
   ylab("Fitness difference in\nalternative environment")  + 
      ggtitle("Cranberry vs. Strawberry") + 
@@ -792,7 +815,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = 0.5, y = -0.5, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black") +
+  geom_text(x = 0.5, y = -1.3, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black") +
   xlab("Fitness difference in\nselective environment")  + 
   ylab("Fitness difference in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
@@ -947,21 +970,21 @@ legend_trade <- lemon::g_legend(legend_tradevide)
 
 Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() + 
   cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
-            x = 0.00, y = 0.5, width = 0.22, height = 0.45) + 
+            x = 0.01, y = 0.5, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
-            x = 0.26, y = 0.5, width = 0.22, height = 0.45) + 
+            x = 0.31, y = 0.5, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
-            x = 0.52, y = 0.5, width = 0.22, height = 0.45) + 
-  cowplot::draw_plot(legend_trade, x = 0.750, y = 0.5, width = 0.1, height = 0.1) + 
+            x = 0.61, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(legend_trade, x = 0.85, y = 0.5, width = 0.1, height = 0.1) + 
   cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
-            x = 0.00, y = 0, width = 0.22, height = 0.45) + 
+            x = 0.01, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
-            x = 0.26, y = 0, width = 0.22, height = 0.45) + 
+            x = 0.31, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
-            x = 0.52, y = 0, width = 0.22, height = 0.45) + 
+            x = 0.61, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
                     "Final phenotyping step", "D", "E", "F", " "),  
-                  x = c(0.26, 0, 0.26, 0.52, 0.82, 0.2, 0, 0.26, 0.52, 0.82), 
+                  x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.30, 0.01, 0.30, 0.61, 0.92), 
                   y = c(1, 0.95, 0.95, 0.95, 0.95, 0.5, 0.45, 0.45, 0.45, 0.45), 
                   hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
                   vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
@@ -972,7 +995,7 @@ Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() +
 # 
 cowplot::save_plot(file =here::here("figures", "FIG_Correlation.pdf"),
                    Slopeestimates_logchange_pairwise_errorbar,
-                   base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
+                   base_height = 16/cm(1), base_width = 32/cm(1), dpi = 610)
 
 
 
@@ -1030,7 +1053,7 @@ anova(lm_val_G29)[4, 1]
 
 
 
-## Analysis fitness 
+## TEMP: A tej Analysis fitness 
 ```{r }
 ##### 
 #####  G7
