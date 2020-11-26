@@ -268,7 +268,7 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), 
 #To consider fruit maternal effect and GF maternal effect: new plot 
 ## Y-axis = log change = log(Fitness pheno)-log(fitness initial)
 ## X-axis = fitness temp / fitness initial
- ## example: for CEA during first step 
+ ## example: for CEA during first phase 
     ## log(mean (CE1 from G2 to G5) / mean (Cherry G2))
 
 ##To check with Nico: for x-axis: denominator=mean Cherry G2 or mean CE1 G2 (???????????)
@@ -293,9 +293,9 @@ data_compare_longitudinal_pheno <- merge(data_logchange_long,data_fitness_pheno,
 data_compare_longitudinal_pheno <- droplevels(data_compare_longitudinal_pheno)
 
 ## Does not seem to be a correlation between measures
-cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Step=="first_prepool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Step=="first_prepool"])
+cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Phase=="first_prepool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Phase=="first_prepool"])
 
-cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Step=="second_postpool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Step=="second_postpool"])
+cor.test(data_compare_longitudinal_pheno$logchange[data_compare_longitudinal_pheno$Phase=="second_postpool"], data_compare_longitudinal_pheno$logchange_long[data_compare_longitudinal_pheno$Phase=="second_postpool"])
 
 
 ####### Geary test
@@ -306,9 +306,9 @@ data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_p
 ```
 
 
-## Plot
+## PLOT Step=f(Phase)
 ```{r }
-PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Step=="first_prepool",], 
+PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s)) +
   geom_errorbar(aes(x = logchange_long, 
                     ymin = logchange-(1.96*sd_logchange), 
@@ -322,8 +322,8 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference (Longitudinal data)") + 
-  ylab("Fitness difference (Phenotyping step data)") + 
+  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and generation 2") + 
+  ylab("Fitness difference between\nintermediate and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
   ylim(-1.9,0.9) + 
@@ -334,7 +334,7 @@ PLOT_IntermediatePheno_LOGCHANGE
 
 
 PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
-                        [data_compare_longitudinal_pheno$Step=="second_postpool",], 
+                        [data_compare_longitudinal_pheno$Phase=="second_postpool",], 
                         aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
   geom_errorbar(aes(x = logchange_long, 
                     ymin = logchange-(1.96*sd_logchange),
@@ -352,8 +352,8 @@ PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference (Longitudinal data)") + 
-  ylab("Fitness difference (Phenotyping step data)") + 
+  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
+  ylab("Fitness difference between\nfinal and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
   ylim(-0.5,1.7) +
   xlim(-0.5,1.7) +
@@ -388,8 +388,122 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno_Longitudin
 
 
 
+## PLOT Step/Phase=f(Phase)
+```{r }
+
+PLOT_IntermediatePheno_TEMP<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
+       aes(y=logchange/logchange_long,x=logchange_long, color=Fruit_s,shape=Fruit_s)) +
+  geom_errorbarh(aes(y = logchange/logchange_long, 
+                    xmin = logchange_long-1.96*sd_logchange_long,
+                    xmax = logchange_long+1.96*sd_logchange_long, 
+                    linetype=Line_type),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_point(size=3, fill = "#ffffff", stroke=1.3) +
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and generation 2") + 
+  ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
+  labs(color="Selection fruit", shape="Selection fruit") + 
+  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
+  ylim(-3.9,4.4) +
+  xlim(-3.9,4.4) +
+  ggtitle("Intermediate phenotyping step vs. Phase 1") +
+  theme_LO_sober 
+PLOT_IntermediatePheno_TEMP 
 
 
+PLOT_FinalPheno_TEMP <- ggplot(data=data_compare_longitudinal_pheno
+                        [data_compare_longitudinal_pheno$Phase=="second_postpool",], 
+                        aes(y=logchange/logchange_long,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
+  geom_errorbarh(aes(y = logchange/logchange_long, 
+                    xmin = logchange_long-1.96*sd_logchange_long,
+                    xmax = logchange_long+1.96*sd_logchange_long, 
+                    linetype=Line_type),
+                 height=0.02,size=0.2,alpha=1) +
+  geom_abline(intercept = 0, slope = 1, color="black", 
+                 linetype="dashed", size=0.8) +
+  geom_point(size=3, stroke=1) +
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
+  ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
+  labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
+  ylim(-0.5,1.7) +
+  xlim(-0.5,1.7) +
+  ggtitle("Final phenotyping step vs. Phase 3") +
+  theme_LO_sober
+PLOT_FinalPheno_TEMP  
+
+
+    
+
+PLOT_Comparison_TEMP <- cowplot::ggdraw() +
+  cowplot::draw_plot(PLOT_IntermediatePheno_TEMP + 
+                       theme(axis.title.y = element_text(size=10),
+                             axis.title.x = element_text(size=10)),
+            x = 0, y = 0.5, width = 1, height = 0.5) +
+  cowplot::draw_plot(PLOT_FinalPheno_TEMP + 
+                       theme(axis.title.y = element_text(size=10),
+                             axis.title.x = element_text(size=10)),
+            x =0, y = 0, width = 1, height = 0.5) +
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0,0), y = c(1,0.5), 
+                  size = 14) 
+PLOT_Comparison_TEMP
+
+
+cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno-div-Long_Longitudinal.pdf"),
+                   PLOT_Comparison_Pheno_Longitudinal_LOGCHANGE, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+```
+
+## PLOT Maternal effects
+```{r }
+
+m <- lm(logchange ~ logchange_long + offset(logchange_long),
+        data = data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="second_postpool",]) 
+
+# le summary permet directement de vérifier si la pente est significativement différente de 1 à partir de la p-value associée à la variable logchange_long et de tester si l'évolution du changement maternel est significatif (p-value associée à l'intercept)
+
+summary(m)
+#pval of logchange_long = 0.003 => slope is different of 1 
+#pval of Intercept = 0.80 => no evolution of maternal effect??? 
+
+
+## Ratio effet maternels pop dérivée sur effet maternels pop ancestrale??
+exp(coef(m)[1]) 
+
+# proportion of adaptation due to maternal effects
+data_compare_longitudinal_pheno$mateff <- (data_compare_longitudinal_pheno$logchange_long -
+  data_compare_longitudinal_pheno$logchange) / data_compare_longitudinal_pheno$logchange_long
+
+data_compare_longitudinal_pheno
+
+
+#Plot
+PLOT_Maternaleffects<-ggplot(data=data_compare_longitudinal_pheno, 
+       aes(y=mateff,x=logchange_long, color=Fruit_s, shape=Fruit_s, fill=interaction(Phase,Fruit_s))) +
+  geom_point(size=3,  stroke=1.3) +
+  scale_fill_manual(name = "Phase", 
+                      values = c("#ffffff","#BC3C6D", "#ffffff","#FDB424", "#ffffff", "#3FAA96"), 
+                      breaks = c("first_prepool.Cherry", "second_postpool.Cherry"), 
+                      labels = c("Phase 1","Phase 3")) +
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_shape_manual(values=c(21, 22, 24)) + 
+  xlab("Fitness difference between average fitness\nacross generations 2 to 5 (13 to 26) and generation 2") + 
+  ylab("Proportion of adaptation\ndue to evolution of maternal effects") + 
+  labs(color="Selection fruit", shape="Selection fruit") + 
+  guides(fill = guide_legend(override.aes = list(fill = c("white","black"), shape=21))) +
+  theme_LO_sober 
+PLOT_Maternaleffects 
+
+
+cowplot::save_plot(file=here::here("figures", "SUPMAT_Maternal_effects.pdf"),
+                   PLOT_Maternaleffects, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+
+```
 
 
 
