@@ -57,7 +57,64 @@ TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry",
 ```
 
 
+# ALL FRUITS
+```{r }
+## Longitudinal data
+data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
 
+data_sum_allfruits
+pd <- position_dodge(0.3) # move them .05 to the left and right
+
+
+PLOT_ALLFRUITS<-ggplot(data=data_sum_allfruits, 
+                            aes(x=factor(Generation),group=Line, y=fitness, colour=Fruit_s)) + 
+  facet_wrap(~ Fruit_s, nrow = 8) +
+  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax=fitness+1.96*se_fitness),
+                width=.1,position=pd,size=0.2,color="black") +
+  geom_line(size=0.3,position=pd) +
+  geom_point(size=1, position=pd,shape=21, fill="white") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  theme_LO_sober
+PLOT_ALLFRUITS
+
+
+cowplot::save_plot(file =here::here("figures", "PLOT_AllFruits.pdf"), PLOT_ALLFRUITS, base_height = 17/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+
+
+
+###########Check CA4
+data_sum_allfruits<-data_sum_allfruits[data_sum_allfruits$Line!="CA4",]
+
+
+#Models
+mod_all_interaction <- lm(fitness ~ Fruit_s*Generation, 
+            weights = N, data = data_sum_allfruits)
+
+mod_all_fruit_generation<- lm(fitness ~ Fruit_s+Generation , 
+            weights = N, data = data_sum_allfruits)
+
+mod_all_fruit<- lm(fitness ~ Fruit_s , 
+            weights = N, data = data_sum_allfruits)
+
+mod_all_null<- lm(fitness ~ 1 , 
+            weights = N, data = data_sum_allfruits)
+
+MuMIn::AICc(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null)
+
+
+
+
+#Posthoc
+emmeans::emmeans(mod_all_interaction, list(pairwise ~ Fruit_s), adjust = "tukey") #
+summary(mod_all_interaction)
+
+
+
+
+
+```
 
 
 # ADAPTATION
@@ -513,7 +570,7 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf
                                 Estimates = NA )
 
 ## Nbr sample 
-nb_sim = 5000
+nb_sim = 500
 
 
 #########################
