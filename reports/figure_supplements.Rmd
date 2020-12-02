@@ -507,8 +507,272 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_Maternal_effects.pdf"),
 
 
 
+# SUP: Adaptation 8fruits
+## Longitudinal data
+```{r }
+data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max = 5)
+data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
+```
 
 
+## Analysis
+```{r }
+#Models
+mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN)
+
+mod_all_fruit_generation<- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s) , 
+            weights = N, data = data_sum_allfruits_AN)
+
+mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s) , 
+            weights = N, data = data_sum_allfruits_AN)
+
+mod_all_null<- lme4::lmer(fitness ~ 1  + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN)
+
+MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null)
+
+
+
+#Posthoc
+emmeans::emmeans(mod_all_fruit, list(pairwise ~ Fruit_s), adjust = "tukey") #
+
+mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s -1+ (1|Generation) + (1|Generation:Fruit_s) , 
+            weights = N, data = data_sum_allfruits)
+summary(mod_all_fruit)
+
+```
+
+
+
+
+## Plot
+```{r }
+
+pd <- position_dodge(0.3) # move them .05 to the left and right
+
+
+PLOT_ALLFRUITS<-ggplot(data=data_sum_allfruits, 
+                            aes(x=factor(Generation),group=Line, y=fitness, colour=Fruit_s)) + 
+  facet_wrap(~ Fruit_s, nrow = 8) +
+  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax=fitness+1.96*se_fitness),
+                width=.1,position=pd,size=0.2,color="black") +
+  geom_line(size=0.3,position=pd) +
+  geom_point(size=1, position=pd,shape=21, fill="white") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  theme_LO_sober
+PLOT_ALLFRUITS
+
+
+#Extract slope and intercept
+dat_8fruits <- expand.grid(Generation=as.numeric(levels(as.factor(data_sum_allfruits_AN$Generation))),
+                           Fruit_s=unique(data_sum_allfruits_AN$Fruit_s))
+dat_8fruits$fitness_predicted <- predict(mod_all_fruit, newdata = dat_8fruits, 
+                          re.form= NA, type = "response")
+
+
+
+
+
+PLOT_CHERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Cherry",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cherry",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape =21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  xlim("1","2","3","4","5") +
+  scale_color_manual(values = c("#BC3C6D")) + 
+  ggtitle("Cherry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#BC3C6D"))
+PLOT_CHERRY
+
+
+
+PLOT_CRANBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Cranberry",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cranberry",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  ylab("Fitness") + 
+  xlim("1","2","3","4","5") +
+  xlab("Generation") + 
+  scale_color_manual(values = c("#FDB424")) + 
+  ggtitle("Cranberry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#FDB424"))
+PLOT_CRANBERRY
+
+
+PLOT_STRAWBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Strawberry",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Strawberry",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c("#3FAA96")) + 
+  ggtitle("Strawberry") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#3FAA96"))
+PLOT_STRAWBERRY
+
+
+
+PLOT_GRAPE <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Grape",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Grape",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 1.5, position = pd, shape = 21, fill = "white",stroke =1.5) + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c("#7B7554")) + 
+  ggtitle("Grape") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#7B7554"))
+PLOT_GRAPE
+
+PLOT_ROSEHIPS <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Rosehips",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Rosehips",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c("#8ACDEA")) + 
+  ggtitle("Rose hips") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#8ACDEA"))
+PLOT_ROSEHIPS
+
+
+
+PLOT_TOMATO <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Tomato",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Tomato",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c( "#ED6F47")) + 
+  ggtitle("Tomato") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#ED6F47"))
+PLOT_TOMATO
+
+
+PLOT_FIG <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Fig",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Fig",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c("#93194F")) + 
+  ggtitle("Fig") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#93194F"))
+PLOT_FIG
+
+
+PLOT_BLACKCURRANT <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Blackcurrant",], 
+                            aes(x = factor(Generation), group = Line, y = fitness, colour =Fruit_s)) + 
+  geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
+                width=.1,position = pd, size = 0.4,color = "black") + 
+  geom_line(size = 0.5,position = pd) + 
+  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Blackcurrant",], 
+  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  ylim(-5.65, 1.25) +
+  xlim("1","2","3","4","5") +
+  ylab("Fitness") + 
+  xlab("Generation") + 
+  scale_color_manual(values = c( "#203753")) + 
+  ggtitle("Blackcurrant") + 
+  theme_LO_adaptation + theme(plot.title = element_text(color = "#203753"))
+PLOT_BLACKCURRANT
+
+
+DYNAMIC_EIGHT_JOIN <- cowplot::ggdraw() + 
+  cowplot::draw_plot(PLOT_STRAWBERRY, x = 0, y = 0, width = 0.5, height = 0.28) + 
+  cowplot::draw_plot(PLOT_GRAPE+ theme(axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0, y = 0.28, width = 0.5, height = 0.23) + 
+  cowplot::draw_plot(PLOT_CRANBERRY+ theme(axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0, y = 0.53, width = 0.5, height = 0.23) + 
+  cowplot::draw_plot(PLOT_BLACKCURRANT+ theme(axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0, y = 0.78, width = 0.5, height = 0.23) + 
+  cowplot::draw_plot(PLOT_TOMATO+ theme(axis.title.y = element_blank()), 
+                     x = 0.5, y = 0, width = 0.5, height = 0.28) + 
+  cowplot::draw_plot(PLOT_ROSEHIPS+ theme(axis.title.y = element_blank(),
+                                              axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0.5, y = 0.28, width = 0.5, height = 0.23) + 
+  cowplot::draw_plot(PLOT_FIG+ theme(axis.title.y = element_blank(),
+                                              axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0.5, y = 0.53, width = 0.5, height = 0.23) + 
+  cowplot::draw_plot(PLOT_CHERRY + theme(axis.title.y = element_blank(),
+                                              axis.title.x = element_blank(),
+                                              axis.text.x = element_blank(),
+                                              axis.ticks.x = element_blank(),
+                                              axis.line.x = element_blank()),
+                     x = 0.5, y = 0.78, width = 0.5, height = 0.23) +
+  cowplot::draw_plot_label(c("A", "C",  "E", "G", "B",  "D", "F",  "H"),  
+                  x = c(0, 0, 0, 0, 0.5, 0.5, 0.5, 0.5), 
+                  y = c(1, 0.75, 0.50, 0.27, 1, 0.75, 0.5, 0.27), 
+                  hjust = c(-0.5, -0.5, -0.5,-0.5, -0.5, -0.5, -0.5, -0.5), 
+                  vjust = c(1.5, 1.5, 1.5,1.5, 1.5, 1.5,1.5, 1.5),
+                  size = 12) 
+ DYNAMIC_EIGHT_JOIN
+
+
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), PLOT_ALLFRUITS, base_height = 17/cm(1), base_width = 15/cm(1), dpi = 1200)
+
+
+
+```
 
 
 
