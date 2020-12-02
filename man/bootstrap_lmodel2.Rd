@@ -4,11 +4,16 @@
 \alias{bootstrap_lmodel2}
 \title{Lmodel2 with bootstrap}
 \usage{
-bootstrap_lmodel2(seed = 1, data_pairwise = TEMP_dataG7_CheCran)
+bootstrap_lmodel2(
+  seed = 1,
+  data_pairwise = TEMP_dataG7_CheCran,
+  sd_NA = mean_sd_G7
+)
 }
 \arguments{
-\item{data_pairwise}{dataset from pairwise of fruits,
-produces using formattinglogchange()}
+\item{data_pairwise}{dataset from pairwise of fruits, produces using formattinglogchange()}
+
+\item{sd_NA}{average of the sd in all environments, to replace NA value}
 }
 \value{
 
@@ -17,5 +22,5 @@ produces using formattinglogchange()}
 Lmodel2 with bootstrap
 }
 \examples{
-sim <- bootstrap_lmodel2(seed=1, data_pairwise = TEMP_dataG7_CheCran)
+sim <- bootstrap_lmodel2(seed=1, data_pairwise = TEMP_dataG7_CheCran, sd_NA = mean_sd_G7)
 }

@@ -4,26 +4,28 @@
 #'
 #'
 #'
-#' @param data_pairwise dataset from pairwise of fruits,
-#' produces using formattinglogchange()
-
+#' @param data_pairwise dataset from pairwise of fruits, produces using formattinglogchange()
+#' @param sd_NA average of the sd in all environments, to replace NA value
+#'
 #' @return
 #' @export
 #'
 #' @examples
-#'sim <- bootstrap_lmodel2(seed=1, data_pairwise = TEMP_dataG7_CheCran)
+#'sim <- bootstrap_lmodel2(seed=1, data_pairwise = TEMP_dataG7_CheCran, sd_NA = mean_sd_G7)
 
-bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran) {
+bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran, sd_NA = mean_sd_G7) {
 
   set.seed(seed)
+
+
+  # Problem with NA (if one sd missing): replace by 0 (max value)
+  data_pairwise$sd_allop[is.na(data_pairwise$sd_allop)] <- sd_NA
+  data_pairwise$sd_symp[is.na(data_pairwise$sd_symp)] <- sd_NA
+
 
   # Compute vector of probability weights
   data_pairwise$Inv_sum <- 1 / ((data_pairwise$sd_symp^2)+(data_pairwise$sd_allop^2))
   data_pairwise$Vector_sample <- data_pairwise$Inv_sum / sum(data_pairwise$Inv_sum,na.rm = TRUE)
-
-  # Problem with NA (if one sd missing): replace by 0 (max value)
-  data_pairwise$Vector_sample[is.na(data_pairwise$Vector_sample)] <- 0
-
 
   # Weighted sample
   sample_data_pairwise <- data_pairwise[sample(x = nrow(data_pairwise),
