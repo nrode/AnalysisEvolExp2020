@@ -6,19 +6,13 @@
 \usage{
 loadlongitudinaldata_allfruits(
   dataset = "DATA_Adults_G1G29.csv",
-  rm_generation1 = 1,
-  rm_generation2 = 7,
-  rm_generation3 = 29
+  rm_generation_max = 5
 )
 }
 \arguments{
 \item{dataset}{Fitness dataset: csv file}
 
-\item{rm_generation1}{First generation removed due to GF development or parental GF development}
-
-\item{rm_generation2}{Second generation removed due to GF development or parental GF development}
-
-\item{rm_generation3}{Third generation removed due to GF development or parental GF development}
+\item{rm_generation_max}{Last generation of interest}
 }
 \value{
 
@@ -27,5 +21,5 @@ loadlongitudinaldata_allfruits(
 Reads a fitness data file in table format and subset it to return the dataframe with all the generations
 }
 \examples{
-data_sum <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
+data_sum <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max==5)
 }
