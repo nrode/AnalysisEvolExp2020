@@ -352,6 +352,7 @@ PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
+  ggplot2::guides(linetype=FALSE) + 
   xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
   ylab("Fitness difference between\nfinal and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
