@@ -21,7 +21,7 @@ formattingplotpair <- function(logchange_dataset = data_logchange,
   TEMP_data_generation<-logchange_dataset[logchange_dataset$Generation==generation,]
   TEMP_data_generation<-TEMP_data_generation[TEMP_data_generation$Treatment==fruit1|TEMP_data_generation$Treatment==fruit2,]
 
-  data_generation_fruit1_fruit2<-data.table::dcast(data.table::setDT(TEMP_data_generation), Line + Fruit_s  ~ Treatment,
+  data_generation_fruit1_fruit2<-data.table::dcast(data.table::setDT(TEMP_data_generation), Line + Line_type + Fruit_s  ~ Treatment,
                          value.var  = c("logchange", "sd_logchange"))
 
   return(data_generation_fruit1_fruit2)

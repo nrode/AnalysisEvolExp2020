@@ -33,17 +33,12 @@ data_G29 <- loadfitnessdata(dataset =
                             "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv",
                             generation = "29")
 
-```
 
-
-
-
-
-# SUP: Pairwise of Fitness difference
-## Data 
-```{r } 
 #Compute log change
 data_logchange<-computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
+data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+
 
 #Formatting for plotting pairwise
 EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
@@ -53,8 +48,14 @@ EC_Cran_Cher_G29<-formattingplotpair(data_logchange, "29", "Cherry", "Cranberry"
 EC_Straw_Cran_G29<-formattingplotpair(data_logchange, "29", "Cranberry", "Strawberry")
 EC_Straw_Cher_G29<-formattingplotpair(data_logchange, "29", "Strawberry", "Cherry")
 
+
 ```
 
+
+
+
+
+# SUP: Pairwise of Fitness difference
 ## Plot 
 ```{r } 
 #Limit axis 
@@ -115,10 +116,10 @@ PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
 PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = logchange_Cherry, 
                                           group=Line, color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
                   width=0.02, size=0.2, alpha=1) + 
   geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
   ylab("Fitness difference\nin cherry")  + 
@@ -309,15 +310,14 @@ data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_p
 ## PLOT Step=f(Phase)
 ```{r }
 PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
-       aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s)) +
+       aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s, linetype=Line_type)) +
   geom_errorbar(aes(x = logchange_long, 
                     ymin = logchange-(1.96*sd_logchange), 
-                    ymax = logchange+(1.96*sd_logchange), linetype=Line_type),
+                    ymax = logchange+(1.96*sd_logchange)),
                   width=0.02,size=0.2,alpha=1) +
   geom_errorbarh(aes(y = logchange, 
                     xmin = logchange_long-1.96*sd_logchange_long,
-                    xmax = logchange_long+1.96*sd_logchange_long, 
-                    linetype=Line_type),
+                    xmax = logchange_long+1.96*sd_logchange_long),
                  height=0.02,size=0.2,alpha=1) +
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
@@ -328,23 +328,24 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
   ylim(-1.9,0.9) + 
   xlim(-1.9,0.9) +
+  guides(linetype=FALSE) +
   ggtitle("Intermediate phenotyping step vs. Phase 1") +
   theme_LO_sober 
 PLOT_IntermediatePheno_LOGCHANGE 
 
 
-PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
+PLOT_FinalPheno_LOGCHANGE <- 
+  ggplot(data=data_compare_longitudinal_pheno
                         [data_compare_longitudinal_pheno$Phase=="second_postpool",], 
-                        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
+                        aes(y=logchange, x=logchange_long, 
+                            color=Fruit_s, shape=Fruit_s, fill=Fruit_s, linetype=Line_type)) +
   geom_errorbar(aes(x = logchange_long, 
                     ymin = logchange-(1.96*sd_logchange),
-                    ymax = logchange+(1.96*sd_logchange), 
-                    linetype=Line_type),
+                    ymax = logchange+(1.96*sd_logchange)),
                   width=0.02,size=0.2,alpha=1) +
   geom_errorbarh(aes(y = logchange, 
                     xmin = logchange_long-1.96*sd_logchange_long,
-                    xmax = logchange_long+1.96*sd_logchange_long, 
-                    linetype=Line_type),
+                    xmax = logchange_long+1.96*sd_logchange_long),
                  height=0.02,size=0.2,alpha=1) +
   geom_abline(intercept = 0, slope = 1, color="black", 
                  linetype="dashed", size=0.8) +
@@ -352,12 +353,12 @@ PLOT_FinalPheno_LOGCHANGE <- ggplot(data=data_compare_longitudinal_pheno
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  ggplot2::guides(linetype=FALSE) + 
   xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
   ylab("Fitness difference between\nfinal and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
   ylim(-0.5,1.7) +
   xlim(-0.5,1.7) +
+  guides(linetype=FALSE) +
   ggtitle("Final phenotyping step vs. Phase 3") +
   theme_LO_sober
 PLOT_FinalPheno_LOGCHANGE  
@@ -455,7 +456,7 @@ PLOT_Comparison_TEMP
 
 
 cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno-div-Long_Longitudinal.pdf"),
-                   PLOT_Comparison_Pheno_Longitudinal_LOGCHANGE, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
+                   PLOT_Comparison_TEMP, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
 
 ```
 
@@ -559,7 +560,7 @@ PLOT_ALLFRUITS<-ggplot(data=data_sum_allfruits,
   geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax=fitness+1.96*se_fitness),
                 width=.1,position=pd,size=0.2,color="black") +
   geom_line(size=0.3,position=pd) +
-  geom_point(size=1, position=pd,shape=21, fill="white") +
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylab("Fitness") + 
   xlab("Generation") + 
   theme_LO_sober
@@ -583,7 +584,7 @@ PLOT_CHERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "C
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cherry",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape =21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   ylab("Fitness") + 
   xlab("Generation") + 
@@ -602,7 +603,7 @@ PLOT_CRANBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s ==
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cranberry",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   ylab("Fitness") + 
   xlim("1","2","3","4","5") +
@@ -620,7 +621,7 @@ PLOT_STRAWBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s =
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Strawberry",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -639,7 +640,7 @@ PLOT_GRAPE <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Gr
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Grape",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 1.5, position = pd, shape = 21, fill = "white",stroke =1.5) + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -656,7 +657,7 @@ PLOT_ROSEHIPS <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == 
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Rosehips",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -675,7 +676,7 @@ PLOT_TOMATO <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "T
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Tomato",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -693,7 +694,7 @@ PLOT_FIG <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Fig"
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Fig",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -711,7 +712,7 @@ PLOT_BLACKCURRANT <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s
   geom_line(size = 0.5,position = pd) + 
   # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Blackcurrant",], 
   #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
-  geom_point(size = 2.5, position = pd, shape = 21, fill = "white") + 
+  geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
@@ -738,7 +739,7 @@ DYNAMIC_EIGHT_JOIN <- cowplot::ggdraw() +
                                               axis.text.x = element_blank(),
                                               axis.ticks.x = element_blank(),
                                               axis.line.x = element_blank()),
-                     x = 0, y = 0.78, width = 0.5, height = 0.23) + 
+                     x = 0, y = 0.77, width = 0.5, height = 0.23) + 
   cowplot::draw_plot(PLOT_TOMATO+ theme(axis.title.y = element_blank()), 
                      x = 0.5, y = 0, width = 0.5, height = 0.28) + 
   cowplot::draw_plot(PLOT_ROSEHIPS+ theme(axis.title.y = element_blank(),
@@ -758,7 +759,7 @@ DYNAMIC_EIGHT_JOIN <- cowplot::ggdraw() +
                                               axis.text.x = element_blank(),
                                               axis.ticks.x = element_blank(),
                                               axis.line.x = element_blank()),
-                     x = 0.5, y = 0.78, width = 0.5, height = 0.23) +
+                     x = 0.5, y = 0.77, width = 0.5, height = 0.23) +
   cowplot::draw_plot_label(c("A", "C",  "E", "G", "B",  "D", "F",  "H"),  
                   x = c(0, 0, 0, 0, 0.5, 0.5, 0.5, 0.5), 
                   y = c(1, 0.75, 0.50, 0.27, 1, 0.75, 0.5, 0.27), 
@@ -769,7 +770,7 @@ DYNAMIC_EIGHT_JOIN <- cowplot::ggdraw() +
 
 
 
-cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), PLOT_ALLFRUITS, base_height = 17/cm(1), base_width = 15/cm(1), dpi = 1200)
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), DYNAMIC_EIGHT_JOIN, base_height = 17/cm(1), base_width = 15/cm(1), dpi = 1200)
 
 
 
@@ -777,5 +778,29 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), PLO
 
 
 
+
+
+
+
+# SUP: Pooling effect
+## Data
+```{r }
+#Compute log change
+data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+
+
+#Formatting for testing correlation
+TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
+TEMP_dataG7_CranStraw <- formattinglogchange(data_logchange, "7", "Cranberry", "Strawberry")
+TEMP_dataG7_StrawChe <- formattinglogchange(data_logchange, "7", "Strawberry", "Cherry")
+
+TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", "Cherry", "Cranberry")
+TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", "Cranberry", "Strawberry")
+TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry", "Cherry")
+```
+
+## Plot Fig. Correlation 
+```{r }
+```
 
 
