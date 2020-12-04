@@ -137,11 +137,11 @@ mod_DoublePopulationGeneration <- lme4::lmer(fitness ~ Generation*Line +
 
 
 # Model selection: AICC and Loglik
-MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
+# MuMIn::AICc(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
 MuMIn::model.sel(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Double_gene,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration)
 
-anova(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene)
+# anova(mod_nul,mod_Fruits,mod_Generation,mod_Phase,mod_Lines,mod_Generation_Phase,mod_Generation_Fruits,mod_Fruits_Phase,mod_Generation_Fruits_Phase,mod_Doubleinteraction,mod_Double,mod_Double_Generation,mod_Tripleinteraction,mod_DoublePopulationGeneration,mod_Double_gene)
 
 mod_Phase <- lme4::lmer(fitness~ Phase-1 + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum)
