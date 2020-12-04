@@ -1038,5 +1038,31 @@ Fratio
 anova(lm_val_G29)[3, 1]
 anova(lm_val_G29)[4, 1]
 
+
+
+
+
+#####  G29
+##### 
+lm_val_G29 = lm(logchange ~ Treatment  , 
+               weights = Vector_sample, data = data_logchange[data_logchange$Generation=="29"&
+                                                                data_logchange$SA=="1",])
+lm_val_G29_avec = lm(logchange ~ Treatment + Line , 
+               weights = Vector_sample, data = data_logchange[data_logchange$Generation=="29"&
+                                                                data_logchange$SA=="1",])
+
+anova(lm_val_G29,lm_val_G29_avec)
+
+summary(lm_val_G29_avec)
+
+Fratio = anova(lm_val_G29)[3, 3]/anova(lm_val_G29)[4, 3]
+pvalue = 1 - pf(Fratio, anova(lm_val_G29)[3, 1], anova(lm_val_G29)[4, 1]) 
+
+pvalue
+Fratio
+anova(lm_val_G29)[3, 1]
+anova(lm_val_G29)[4, 1]
+
+
 ```
 
