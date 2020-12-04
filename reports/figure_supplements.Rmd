@@ -76,7 +76,7 @@ lim_G29<-max(abs(min(data_logchange[data_logchange$Generation=="29",]$logchange-
 
 #Plot
 PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
-                          aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s, group = Line)) +
+                          aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s)) +
   geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
                     ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
                 width=0.02,size=0.2,alpha=1) + 
@@ -97,7 +97,7 @@ PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
  
  
 PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
-                         aes(x = logchange_Cherry,y = logchange_Strawberry, group=Line, color=Fruit_s)) + 
+                         aes(x = logchange_Cherry,y = logchange_Strawberry, color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
                     ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
                   width=0.02, size=0.2, alpha=1) + 
@@ -119,7 +119,7 @@ PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
 
  
 PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = logchange_Cherry, 
-                                          group=Line, color=Fruit_s)) + 
+                                          color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
                       ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
                   width=0.02, size=0.2, alpha=1) + 
@@ -142,7 +142,7 @@ PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = l
 ################## Final phenotyping step
 #Plot
 PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
-                          aes(x = logchange_Strawberry, y = logchange_Cranberry,  color=Fruit_s,group=Line)) + 
+                          aes(x = logchange_Strawberry, y = logchange_Cranberry,  color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
                       ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
                   width=0.02,size=0.2,alpha=1) + 
@@ -164,7 +164,7 @@ PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
  
  
 PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
-                         aes(x = logchange_Cherry,y = logchange_Strawberry, group=Line , color=Fruit_s)) + 
+                         aes(x = logchange_Cherry,y = logchange_Strawberry,  color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
                       ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
                   width=0.02,size=0.2,alpha=1) + 
@@ -186,7 +186,7 @@ PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
 
  
 PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
-                         aes(x = logchange_Cranberry,y = logchange_Cherry,group=Line, color=Fruit_s)) + 
+                         aes(x = logchange_Cranberry,y = logchange_Cherry, color=Fruit_s)) + 
   geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
                       ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
                   width=0.02,size=0.2,alpha=1) + 
@@ -252,7 +252,6 @@ PAIR_Fig_Sup <-  cowplot::ggdraw() +
                   vjust = c(1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5,1.5),
                   size = 14) 
  PAIR_Fig_Sup
- 
  
 
 cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), PAIR_Fig_Sup, 
@@ -526,6 +525,9 @@ data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN)
 
+mod_all_generation<- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s) , 
+            weights = N, data = data_sum_allfruits_AN)
+
 mod_all_fruit_generation<- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s) , 
             weights = N, data = data_sum_allfruits_AN)
 
@@ -535,7 +537,7 @@ mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fr
 mod_all_null<- lme4::lmer(fitness ~ 1  + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN)
 
-MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null)
+MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null,mod_all_generation)
 
 
 
@@ -979,138 +981,243 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_firstproposition.pdf
 # SUP: Pooling effect: Same plot as previously
 ## Initial plot from main text
 ```{r } 
+PAIR_StrawChe_G29
+PAIR_CranStraw_G29
 PAIR_CheCran_G29
-
 
 ```
 
 ## Data
 ```{r }
 
+
+# EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
+# EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
+# EC_Straw_Cher_G7<-formattingplotpair(data_logchange, "7", "Strawberry", "Cherry")
+
 ########### Hypothesis 1 
 #Hypothesis 1: effect of pool 
 #Take the mean of all populations for each selection fruit 
-CheCran_hypo1 <- formatting_POOL_hypo1(data_G7, "Cherry", "Cranberry")
-
+dataset_hypo1 <- formatting_POOL_hypo1(fitness_dataset_intermediate = data_G7)
 
 ########### Hypothesis 2 
 #Hypothesis 2: effect of pool 
 #Take the fitness difference of the population with the highest fitness in G7 
-fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
-fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Straberry")
-CheCran_hypo2<-EC_Cran_Cher_G7[EC_Cran_Cher_G7$Line==fittest_lines,]
-
+fittest_lines<-formatting_POOL_hypo2(data_G7)
+EC_Cran_Cher_hypo2<-EC_Cran_Cher_G7[EC_Cran_Cher_G7$Line == fittest_lines[1]|
+                                      EC_Cran_Cher_G7$Line == fittest_lines[2]|
+                                      EC_Cran_Cher_G7$Line == fittest_lines[3],]
+EC_Straw_Cran_hypo2<-EC_Straw_Cran_G7[EC_Straw_Cran_G7$Line == fittest_lines[1]|
+                                       EC_Straw_Cran_G7$Line == fittest_lines[2]|
+                                        EC_Straw_Cran_G7$Line == fittest_lines[3],]
+EC_Straw_Cher_hypo2<-EC_Straw_Cher_G7[EC_Straw_Cher_G7$Line == fittest_lines[1]|
+                                       EC_Straw_Cher_G7$Line == fittest_lines[2]|
+                                        EC_Straw_Cher_G7$Line == fittest_lines[3],]
 
 ```
 
 ## Plot
 ```{r }
 
-PLOT_HYPO_1<-PAIR_CheCran_G29 +  ggplot(,
-                          aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s, group = Line)) +
-  geom_errorbar(data = CheCran_hypo1, 
-                aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
-                width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(data = CheCran_hypo1, 
-                 aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
-                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
-                 height=0.02,size=0.2,alpha=1) + 
-  geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3)
-PLOT_HYPO_1
+
+PAIR_CheCran_G29_HYPO_1 <- PAIR_CheCran_G29 +
+  geom_errorbar(data = dataset_hypo1, 
+                aes(x=logchange_Strawberry, 
+                    ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, Line=NA),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = dataset_hypo1, 
+                 aes(y=logchange_Cranberry, 
+                     xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = dataset_hypo1, 
+             aes(x = logchange_Strawberry, y = logchange_Cranberry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_CheCran_G29_HYPO_1
 
 
+PAIR_StrawChe_G29_HYPO_1<-PAIR_StrawChe_G29 +
+  geom_errorbar(data = dataset_hypo1, 
+                aes(x=logchange_Strawberry, 
+                    ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, Line=NA),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = dataset_hypo1, 
+                 aes(y=logchange_Cranberry, 
+                     xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = dataset_hypo1, 
+             aes(x = logchange_Strawberry, y = logchange_Cranberry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_StrawChe_G29_HYPO_1
 
 
-
+PAIR_CranStraw_G29_HYPO_1<-PAIR_StrawChe_G29  + 
+  geom_errorbar(data = dataset_hypo1, 
+                aes(x=logchange_Strawberry, 
+                    ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, Line=NA),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = dataset_hypo1, 
+                 aes(y=logchange_Cranberry, 
+                     xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = dataset_hypo1, 
+             aes(x = logchange_Strawberry, y = logchange_Cranberry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_CranStraw_G29_HYPO_1
  
-<- + 
-  geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
-  ylab("Fitness difference\nin cherry")  + 
-  xlab("Fitness difference\nin cranberry")  + 
-  xlim(-lim_G29,lim_G29) + 
-  ylim(-lim_G29,lim_G29) +   
-  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
-  theme_LO_sober + 
-  theme(axis.title.x = element_text(colour = "#FDB424"),
-        axis.title.y = element_text(colour = "#BC3C6D")) 
- PAIR_CheCran_G29
-ggplot(data = EC_Cran_Cher_G29,
-                         aes(x = logchange_Cranberry,y = logchange_Cherry,group=Line, color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
-                  width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
-                  height=0.02,size=0.2,alpha=1)
- 
- 
-
-
-PLOT_HYPO_2<-PAIR_CheCran_G29 +  
-  geom_errorbar(data=CheCran_hypo2, 
-                aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
-                  width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(data=CheCran_hypo2, aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
-                  height=0.02,size=0.2,alpha=1) +
-  geom_point(data=CheCran_hypo2, aes(fill = Fruit_s), shape=21, size = 6, fill = "white", stroke = 2) 
-PLOT_HYPO_2
 
 
 
-# CheCran_G29 + geom_point(data = data_adults_sum_hypo1[data_adults_sum_hypo1$Fruit_s == c("Cherry","Cranberry"),]
-#                            size=1.5, position=pd, fill="white") + 
-# 
-# CranStraw_G29
-# StrawChe_G29
- 
- 
-# legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
-#                           aes(x =logchange, y = logchange,  color = Symp,fill = Symp, shape = Allop)) + 
-#   geom_point(size =2.5, fill = "white") + 
-#   labs(shape = "Test fruit", color = "Selection fruit") + 
-#   scale_shape_manual(values = c(16, 15, 17)) + 
-#   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
-#   theme_LO_sober
-# legend_trade <- lemon::g_legend(legend_tradevide)
-
-
-# SUP_MAT <- cowplot::ggdraw() + 
-#   cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
-#             x = 0.01, y = 0.5, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
-#             x = 0.31, y = 0.5, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
-#             x = 0.61, y = 0.5, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot(legend_trade, x = 0.85, y = 0.5, width = 0.1, height = 0.1) + 
-#   cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
-#             x = 0.01, y = 0, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
-#             x = 0.31, y = 0, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
-#             x = 0.61, y = 0, width = 0.22, height = 0.45) + 
-#   cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
-#                     "Final phenotyping step", "D", "E", "F", " "),  
-#                   x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.250, 0.01, 0.30, 0.61, 0.92), 
-#                   y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45), 
-#                   hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
-#                   vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
-#                   size = 16) 
-#  SUP_MAT
-# #  
-# #  
-# # 
-# cowplot::save_plot(file =here::here("figures", "SUP_MAT_Correlation.pdf"),
-#                    SUP_MAT,
-#                    base_height = 18/cm(1), base_width = 34/cm(1), dpi = 610)
-# 
-# 
 
 
 
+
+
+
+
+
+
+PAIR_CranStraw_G29_HYPO_2 <- PAIR_CranStraw_G29 +
+  geom_errorbar(data = EC_Straw_Cran_hypo2, 
+                aes(x=logchange_Strawberry, 
+                    ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = EC_Straw_Cran_hypo2, 
+                 aes(y=logchange_Cranberry, 
+                     xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = EC_Straw_Cran_hypo2, 
+             aes(x = logchange_Strawberry, y = logchange_Cranberry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_CranStraw_G29_HYPO_2
+
+
+
+PAIR_StrawChe_G29_HYPO_2 <- PAIR_StrawChe_G29 +
+  geom_errorbar(data = EC_Straw_Cher_hypo2, 
+                aes(x=logchange_Cherry, 
+                    ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                    ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = EC_Straw_Cher_hypo2, 
+                 aes(y=logchange_Strawberry, 
+                     xmin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                     xmax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = EC_Straw_Cher_hypo2, 
+             aes(x = logchange_Cherry, y = logchange_Strawberry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_StrawChe_G29_HYPO_2
+
+
+PAIR_CheCran_G29_HYPO_2<-PAIR_CheCran_G29  + 
+  geom_errorbar(data = EC_Cran_Cher_hypo2, 
+                aes(x=logchange_Cranberry, 
+                    ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                    ymax = logchange_Cherry+1.96*sd_logchange_Cherry),
+                width=0.02, size=0.2, alpha=1) + 
+  geom_errorbarh(data = EC_Cran_Cher_hypo2, 
+                 aes(y=logchange_Cherry, 
+                     xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                     xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry),
+                 height=0.02, size=0.2, alpha=1) + 
+  geom_point(data = EC_Cran_Cher_hypo2, 
+             aes(x = logchange_Cranberry, y = logchange_Cherry), 
+             shape=21, size=4,  fill = "#ffffff", stroke=1.5)
+PAIR_CheCran_G29_HYPO_2
+
+
+
+#legend1
+legend_tradevide<- ggplot(EC_Cran_Cher_hypo2, aes(x=logchange_Cranberry, 
+                                                  y=logchange_Cherry, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  labs(colour = "Population \nevolved on:") + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+
+legend_tradevide<-lemon::g_legend(legend_tradevide)
+
+ #legend hypo 1
+legend_hypo1<- ggplot(EC_Cran_Cher_hypo2, aes(x=logchange_Cranberry, 
+                                                  y=logchange_Cherry, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  labs(colour = "Mean of population\nevolved on:") + 
+  geom_point(size=2, shape=21, fill="white", stroke = 2) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+
+extract_legend_hypo1<-lemon::g_legend(legend_hypo1)
+
+ #legend2
+legend_hypo2<- ggplot(EC_Cran_Cher_hypo2, aes(x=logchange_Cranberry, 
+                                                  y=logchange_Cherry, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  labs(colour = "Population with \nthe highest fitness \non each selection fruit:") + 
+  geom_point(size=2, shape=21, fill="white", stroke = 2) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+extract_legend_hypo2<-lemon::g_legend(legend_hypo2)
+
+
+
+
+ERRORCROSSES_G7_HYPO1 <- cowplot::ggdraw() +
+  cowplot::draw_plot(PAIR_CheCran_G29_HYPO_1+theme(legend.position = "none"), 
+            x =0.00, y = 0, width = 0.25, height = 1) +
+  cowplot::draw_plot(PAIR_CranStraw_G29_HYPO_1+theme(legend.position = "none"), 
+            x = 0.26, y = 0, width = 0.25, height = 1) +
+  cowplot::draw_plot(PAIR_StrawChe_G29_HYPO_1+theme(legend.position = "none"), 
+            x = 0.52, y = 0, width = 0.25, height = 1) + 
+  cowplot::draw_plot(legend_tradevide, x = 0.8, y = 0.73, width = 0.11, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo1, x = 0.83, y = 0.25, width = 0.1, height = 0.1) 
+ERRORCROSSES_G7_HYPO1
+
+
+
+ERRORCROSSES_G7_HYPO2 <- cowplot::ggdraw() +
+  cowplot::draw_plot(PAIR_CheCran_G29_HYPO_2+theme(legend.position = "none"), 
+            x =0.00, y = 0, width = 0.25, height = 1) +
+  cowplot::draw_plot(PAIR_CranStraw_G29_HYPO_2+theme(legend.position = "none"), 
+            x = 0.26, y = 0, width = 0.25, height = 1) +
+  cowplot::draw_plot(PAIR_StrawChe_G29_HYPO_2+theme(legend.position = "none"), 
+            x = 0.52, y = 0, width = 0.25, height = 1) + 
+  cowplot::draw_plot(legend_tradevide, x = 0.78, y = 0.73, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo2, x = 0.82, y = 0.25, width = 0.1, height = 0.1) 
+ERRORCROSSES_G7_HYPO2
+
+
+
+
+
+
+
+
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis1.pdf"),
+                   ERRORCROSSES_G7_HYPO1,
+                   base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
+
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis2.pdf"),
+                   ERRORCROSSES_G7_HYPO2,
+                   base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
 
 
 
