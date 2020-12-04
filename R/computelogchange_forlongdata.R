@@ -38,7 +38,11 @@ computelogchange_forlongdata <- function(longitudinal_dataset = data_sum){
                                          function(x) radiant.data::weighted.sd(x$Nb_adults,x$N)))
 
   # Calculate G2 mean and sd
-  TEMP_G2 <- longitudinal_dataset[longitudinal_dataset$Generation=="2",]
+  TEMP_G2 <- longitudinal_dataset[longitudinal_dataset$Generation=="2"|
+                                    longitudinal_dataset$Generation=="3"|
+                                    longitudinal_dataset$Generation=="4"|
+                                    longitudinal_dataset$Generation=="5",]
+
   TEMP_mean_G2 <- data.frame(Mean_G2 = sapply(split(TEMP_G2,TEMP_G2$Fruit_s),
                                               function(x) weighted.mean(x$Nb_adults,x$N)),
                              Sd_G2 = sapply(split(TEMP_G2,TEMP_G2$Fruit_s),
@@ -62,3 +66,4 @@ computelogchange_forlongdata <- function(longitudinal_dataset = data_sum){
   return(data_logchange_long)
 
 }
+
