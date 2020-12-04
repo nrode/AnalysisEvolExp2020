@@ -39,10 +39,6 @@ computelogchange_POOL_hypo2 <- function(fitness_dataset_intermediate = data_G7, 
                                           groupvars=c("Line","Fruit_s","Treatment"))
 
   # Extract line with the highest mean
-
-
-
-
   temp_fruit1<-data_adults_sum_hypo2[data_adults_sum_hypo2$Fruit_s == fruit1&
                                 data_adults_sum_hypo2$Treatment == fruit1,]
   temp_fruit2<-data_adults_sum_hypo2[data_adults_sum_hypo2$Fruit_s == fruit2&

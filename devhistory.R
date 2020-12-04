@@ -27,7 +27,8 @@ usethis::use_r("polygon_limits")
 usethis::use_r("bootstrap_lmodel2")
 usethis::use_r("computelogchange_POOL_hypo1")
 usethis::use_r("computelogchange_POOL_hypo2")
-
+usethis::use_r("formatting_POOL_hypo1")
+usethis::use_r("formatting_POOL_hypo2")
 
 
 usethis::use_r("simfitnessdiff")
