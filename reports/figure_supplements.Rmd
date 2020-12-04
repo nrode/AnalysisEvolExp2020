@@ -40,7 +40,7 @@ data_logchange<-computelogchange(fitness_dataset_intermediate = data_G7, fitness
 data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
 
 
-#Formatting for plotting pairwise
+#Formatting for plotting pairwise of fitness difference
 EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
 EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
 EC_Straw_Cher_G7<-formattingplotpair(data_logchange, "7", "Strawberry", "Cherry")
@@ -184,7 +184,6 @@ PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
  PAIR_StrawChe_G29
 
 
-
  
 PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
                          aes(x = logchange_Cranberry,y = logchange_Cherry,group=Line, color=Fruit_s)) + 
@@ -227,7 +226,6 @@ PAIR_plot_legend<- ggplot(data=TEMP_data_logchange_sum_Straw_Cher_G7,
 PAIR_legend<-lemon::g_legend(PAIR_plot_legend)
 
 rm(TEMP_data_logchange_sum_Straw_Cher_G7)
-
 
 
 
@@ -587,14 +585,14 @@ PLOT_CHERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "C
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cherry",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cherry",],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   ylab("Fitness") + 
   xlab("Generation") + 
   xlim("1","2","3","4","5") +
-  scale_color_manual(values = c("#BC3C6D")) + 
+  scale_color_manual(values = c("black", "#BC3C6D")) + 
   ggtitle("Cherry") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#BC3C6D"))
 PLOT_CHERRY
@@ -606,14 +604,14 @@ PLOT_CRANBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s ==
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cranberry",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Cranberry",],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   ylab("Fitness") + 
   xlim("1","2","3","4","5") +
   xlab("Generation") + 
-  scale_color_manual(values = c("#FDB424")) + 
+  scale_color_manual(values = c("black","#FDB424")) + 
   ggtitle("Cranberry") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#FDB424"))
 PLOT_CRANBERRY
@@ -624,14 +622,14 @@ PLOT_STRAWBERRY <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s =
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Strawberry",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Strawberry",],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c("#3FAA96")) + 
+  scale_color_manual(values = c("black","#3FAA96")) + 
   ggtitle("Strawberry") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#3FAA96"))
 PLOT_STRAWBERRY
@@ -643,14 +641,14 @@ PLOT_GRAPE <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Gr
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Grape",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Grape"&dat_8fruits$Generation == c(2,3),],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c("#7B7554")) + 
+  scale_color_manual(values = c("black","#7B7554")) + 
   ggtitle("Grape") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#7B7554"))
 PLOT_GRAPE
@@ -660,14 +658,14 @@ PLOT_ROSEHIPS <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == 
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Rosehips",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Rosehips"&dat_8fruits$Generation != 5,],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c("#8ACDEA")) + 
+  scale_color_manual(values = c("black","#8ACDEA")) + 
   ggtitle("Rose hips") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#8ACDEA"))
 PLOT_ROSEHIPS
@@ -679,14 +677,14 @@ PLOT_TOMATO <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "T
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Tomato",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Tomato"&dat_8fruits$Generation != 5,],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c( "#ED6F47")) + 
+  scale_color_manual(values = c( "black","#ED6F47")) + 
   ggtitle("Tomato") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#ED6F47"))
 PLOT_TOMATO
@@ -697,14 +695,14 @@ PLOT_FIG <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s == "Fig"
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Fig",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Fig"&dat_8fruits$Generation != 5,],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c("#93194F")) + 
+  scale_color_manual(values = c("black","#93194F")) + 
   ggtitle("Fig") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#93194F"))
 PLOT_FIG
@@ -715,14 +713,14 @@ PLOT_BLACKCURRANT <- ggplot(data = data_sum_allfruits[data_sum_allfruits$Fruit_s
   geom_errorbar(aes(ymin = fitness-1.96*se_fitness, ymax = fitness + 1.96*se_fitness),
                 width=.1,position = pd, size = 0.4,color = "black") + 
   geom_line(size = 0.5,position = pd) + 
-  # geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Blackcurrant",], 
-  #                    aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) + 
+  geom_line(data = dat_8fruits[dat_8fruits$Fruit_s == "Blackcurrant"&dat_8fruits$Generation == c(2,3),],
+                     aes(x = factor(Generation), y = fitness_predicted, colour = "black", group=NA), size = 0.7) +
   geom_point(size = 2, position = pd, shape = 21, fill = "white", stroke = 1.2) + 
   ylim(-5.65, 1.25) +
   xlim("1","2","3","4","5") +
   ylab("Fitness") + 
   xlab("Generation") + 
-  scale_color_manual(values = c( "#203753")) + 
+  scale_color_manual(values = c( "black","#203753")) + 
   ggtitle("Blackcurrant") + 
   theme_LO_adaptation + theme(plot.title = element_text(color = "#203753"))
 PLOT_BLACKCURRANT
@@ -787,19 +785,12 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), DYN
 
 
 
-# SUP: Pooling effect
+# SUP: Pooling effect: Same plot as main text
 ## Initial plot from main text
 ```{r } 
 ymin = -50
 ymax = 50
- 
-  
-#####################################################################################
-##################################      G29        ##################################
-#####################################################################################
-TEMP_dataG29_CheCran
-TEMP_dataG29_CranStraw
-TEMP_dataG29_StrawChe
+
 
 
 # Limits
@@ -831,67 +822,164 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
  CheCran_G29
 
 
+```
 
-# Limits
-ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
-ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
+## Data
+```{r }
 
-#Plot
- CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw) + 
-   geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp),
-                  width= 0.02, size = 0.3, alpha = 0.8) + 
-   geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp),
-                 height = 0.02, size = 0.3, alpha = 0.8) + 
-   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
-                 size =3, fill = "white", stroke =1.2) + 
-   xlab("Fitness difference in\nselective environment")  + 
-   ylab("Fitness difference in\nalternative environment")  + 
-   ggtitle("Cranberry vs. Strawberry") + 
-   coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
-                  xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
-   labs(shape = "Test fruit", color = "Selection fruit") + 
-   scale_shape_manual(values = c(15, 17)) + 
-   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
-   theme_LO_sober
- CranStraw_G29
-
+########### Hypothesis 1 
+#Hypothesis 1: effect of pool 
+#Take the mean of all populations for each selection fruit 
  
- 
- 
-# Limits
-ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
-ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG29_StrawChe$logchange_symp + 1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
+CheCran_hypo1 <- computelogchange_POOL_hypo1(data_G7, "Cherry", "Cranberry")
 
 
-StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) + 
-  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
+
+########### Hypothesis 2 
+#Hypothesis 2: effect of pool 
+#Take the fitness difference of the population with the highest fitness in G7 
+TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
+fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
+CheCran_hypo2<-TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Line==fittest_lines,]
+
+
+```
+
+## Plot
+```{r }
+
+PLOT_HYPO_1<-CheCran_G29 +  
+  geom_errorbar(data = CheCran_hypo1, aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
                     ymax = logchange_allop + (1.96*sd_allop),
                     color = Symp),
                   width= 0.02, size = 0.2, alpha =1) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+  geom_errorbarh(data = CheCran_hypo1, 
+                 aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
                  color = Symp),
                  height = 0.02, size = 0.2, alpha =1) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
-                 size =3, fill = "white", stroke =1.2) + 
-  coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
-                  xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
-    xlab("Fitness difference in\nselective environment")  + 
-    ylab("Fitness difference in\nalternative environment")  + 
-  ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Test fruit", color = "Selection fruit") + 
-  scale_shape_manual(values = c(16, 17)) + 
-  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
-  theme_LO_sober
- StrawChe_G29
+  geom_point(data = CheCran_hypo1,
+             aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size = 6, fill = "white", stroke = 2) +
+    geom_point(data = CheCran_hypo1,
+             aes(x =logchange_symp, y = logchange_allop,  fill = Symp, shape = Allop),
+                 size = 3, fill = "white", color = "white", stroke = 2) +
+  ggtitle("Hypothesis 1: Mean of populations effect")
+PLOT_HYPO_1
 
 
+
+PLOT_HYPO_2<-CheCran_G29 +  
+  geom_errorbar(data = CheCran_hypo2, aes(x = logchange_symp, 
+                                          ymin = logchange_allop-(1.96*sd_allop), 
+                    ymax = logchange_allop + (1.96*sd_allop),
+                    color = Symp),
+                  width= 0.02, size = 0.2, alpha =1) + 
+  geom_errorbarh(data = CheCran_hypo2, 
+                 aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
+                 color = Symp),
+                 height = 0.02, size = 0.2, alpha =1) + 
+  geom_point(data = CheCran_hypo2,
+             aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+                 size = 6, fill = "white", stroke = 2) +
+    geom_point(data = CheCran_hypo2,
+             aes(x = logchange_symp, y = logchange_allop,  fill = Symp, shape = Allop),
+                 size = 3, fill = "white", color = "white", stroke = 2) +
+  ggtitle("Hypothesis 2: Fittest population effect")
+PLOT_HYPO_2
+
+
+
+
+
+
+#legend1
+legend_tradevide<- ggplot(CheCran_hypo2, aes(x=logchange_symp, y=logchange_allop, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  geom_errorbar(aes(ymin=logchange_allop-(1.96*sd_allop), ymax=logchange_allop+(1.96*sd_allop),),
+                  width=0.4,size=0.4, alpha=0.3) +
+  labs(colour = "Population \nevolved on:") + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+
+legend_tradevide<-lemon::g_legend(legend_tradevide)
+
+ #legend hypo 1
+legend_hypo1<- ggplot(CheCran_hypo2, aes(x=logchange_symp, y=logchange_allop, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  geom_errorbar(aes(ymin=logchange_allop-(1.96*sd_allop), ymax=logchange_allop+(1.96*sd_allop),),
+                  width=0.4,size=0.4, alpha=0.3) +
+  labs(colour = "Mean of population\nevolved on:") + 
+  geom_point(size=2, shape=21, fill="white", stroke = 2) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+
+extract_legend_hypo1<-lemon::g_legend(legend_hypo1)
+
+ #legend2
+legend_hypo2<- ggplot(CheCran_hypo2, aes(x=logchange_symp, y=logchange_allop, group=Fruit_s, colour=Fruit_s)) +
+  geom_point(size=1.5, position=pd, fill="white", alpha=0.6) + 
+  geom_errorbar(aes(ymin=logchange_allop-(1.96*sd_allop), ymax=logchange_allop+(1.96*sd_allop),),
+                  width=0.4,size=0.4, alpha=0.3) +
+  labs(colour = "Population with \nthe highest fitness \non each selection fruit:") + 
+  geom_point(size=2, shape=21, fill="white", stroke = 2) + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424","#3FAA96"), 
+                     label=c("Cherry","Cranberry", "Strawberry")) +   
+  theme_LO_sober +
+  theme(legend.title = element_text(colour="black", size=10, face="bold"), 
+          legend.text = element_text(colour="black", size=8))
+
+extract_legend_hypo2<-lemon::g_legend(legend_hypo2)
+
+
+
+ERRORCROSSES_G7_HYPO1_2 <- cowplot::ggdraw() +
+  cowplot::draw_plot(PLOT_HYPO_1+theme(legend.position = "none"), 
+            x =0.00, y = 0.5, width = 0.75, height = 0.5) +
+  cowplot::draw_plot(PLOT_HYPO_2+theme(legend.position = "none"), 
+            x = 0.0, y = 0, width = 0.75, height = 0.5) +
+  cowplot::draw_plot(legend_tradevide, x = 0.78, y = 0.85, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo1, x = 0.82, y = 0.7, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(legend_tradevide, x = 0.76, y = 0.35, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo2, x = 0.82, y = 0.2, width = 0.1, height = 0.1) 
+ERRORCROSSES_G7_HYPO1_2
+
+
+
+
+
+
+
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_firstproposition.pdf"),
+                   ERRORCROSSES_G7_HYPO1_2,
+                   base_height = 18/cm(1), base_width = 15/cm(1), dpi = 610)
+
+
+
+
+
+
+
+
+```
+
+
+
+
+
+
+
+
+# SUP: Pooling effect: Same plot as previously
+## Initial plot from main text
+```{r } 
+PAIR_CheCran_G29
 
 
 ```
@@ -902,16 +990,76 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
 ########### Hypothesis 1 
 #Hypothesis 1: effect of pool 
 #Take the mean of all populations for each selection fruit 
+CheCran_hypo1 <- formatting_POOL_hypo1(data_G7, "Cherry", "Cranberry")
 
-# Mean per fruit
-data_adults_sum_hypo1<-Rmisc::summarySE(data_logchange[data_logchange$Generation == "7",],
-          measurevar="logchange",
-          groupvars=c("Fruit_s","Treatment"))
+
+########### Hypothesis 2 
+#Hypothesis 2: effect of pool 
+#Take the fitness difference of the population with the highest fitness in G7 
+fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
+fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Straberry")
+CheCran_hypo2<-EC_Cran_Cher_G7[EC_Cran_Cher_G7$Line==fittest_lines,]
+
 
 ```
 
 ## Plot
 ```{r }
+
+PLOT_HYPO_1<-PAIR_CheCran_G29 +  ggplot(,
+                          aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s, group = Line)) +
+  geom_errorbar(data = CheCran_hypo1, 
+                aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+                width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(data = CheCran_hypo1, 
+                 aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
+                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
+                 height=0.02,size=0.2,alpha=1) + 
+  geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3)
+PLOT_HYPO_1
+
+
+
+
+
+ 
+<- + 
+  geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
+  ylab("Fitness difference\nin cherry")  + 
+  xlab("Fitness difference\nin cranberry")  + 
+  xlim(-lim_G29,lim_G29) + 
+  ylim(-lim_G29,lim_G29) +   
+  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober + 
+  theme(axis.title.x = element_text(colour = "#FDB424"),
+        axis.title.y = element_text(colour = "#BC3C6D")) 
+ PAIR_CheCran_G29
+ggplot(data = EC_Cran_Cher_G29,
+                         aes(x = logchange_Cranberry,y = logchange_Cherry,group=Line, color=Fruit_s)) + 
+  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+                  width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+                  height=0.02,size=0.2,alpha=1)
+ 
+ 
+
+
+PLOT_HYPO_2<-PAIR_CheCran_G29 +  
+  geom_errorbar(data=CheCran_hypo2, 
+                aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
+                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+                  width=0.02,size=0.2,alpha=1) + 
+  geom_errorbarh(data=CheCran_hypo2, aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
+                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+                  height=0.02,size=0.2,alpha=1) +
+  geom_point(data=CheCran_hypo2, aes(fill = Fruit_s), shape=21, size = 6, fill = "white", stroke = 2) 
+PLOT_HYPO_2
+
+
 
 # CheCran_G29 + geom_point(data = data_adults_sum_hypo1[data_adults_sum_hypo1$Fruit_s == c("Cherry","Cranberry"),]
 #                            size=1.5, position=pd, fill="white") + 
@@ -967,6 +1115,8 @@ data_adults_sum_hypo1<-Rmisc::summarySE(data_logchange[data_logchange$Generation
 
 
 ```
+
+
 
 
 
