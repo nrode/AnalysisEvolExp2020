@@ -405,7 +405,7 @@ PLOT_IntermediatePheno_TEMP<-ggplot(data=data_compare_longitudinal_pheno[data_co
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and generation 2") + 
+  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and average fitness\nacross generations 2 to 5") + 
   ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
@@ -430,7 +430,7 @@ PLOT_FinalPheno_TEMP <- ggplot(data=data_compare_longitudinal_pheno
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
+  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and average fitness\nacross generations 2 to 5") + 
   ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
   ylim(-0.5,1.7) +
