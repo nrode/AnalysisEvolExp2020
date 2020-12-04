@@ -25,6 +25,10 @@ usethis::use_r("computelogchange_forlongdata")
 usethis::use_r("filldata_maregression")
 usethis::use_r("polygon_limits")
 usethis::use_r("bootstrap_lmodel2")
+usethis::use_r("computelogchange_POOL_hypo1")
+usethis::use_r("computelogchange_POOL_hypo2")
+
+
 
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")

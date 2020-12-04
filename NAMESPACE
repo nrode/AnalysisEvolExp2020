@@ -3,6 +3,8 @@
 export(boot_fitnessdata)
 export(bootstrap_lmodel2)
 export(computelogchange)
+export(computelogchange_POOL_hypo1)
+export(computelogchange_POOL_hypo2)
 export(computelogchange_forlongdata)
 export(computemeanvar_fitnessdata)
 export(computemeanvar_fitnessdifferencedata)
