@@ -10,15 +10,15 @@ computelogchange_forlongdata(longitudinal_dataset = data_sum)
 \item{longitudinal_dataset}{Longitudinal dataset created using loadlongitudinaldata()}
 }
 \value{
-dataset of fitness difference between fitness during step and G2 mean per fruit
+dataset of fitness difference between fitness during step and phase 1 mean per fruit
 }
 \description{
 Log change in fitness in the three phase for the population i in selective fruit j
 
-= log(mean(nb_adults_ij_allgenerationphase1/mean(nb_adlts_j_G2))
-= log(mean(nb_adults_ij_allgenerationphase3/mean(nb_adlts_j_G2))
+= log(mean(nb_adults_ij_allgenerationphase1/mean(nb_adlts_j_phase1))
+= log(mean(nb_adults_ij_allgenerationphase3/mean(nb_adlts_j_phase1))
 Example for CE2 during phase1
-log(mean (CE2 in G2 G3 G4 G5) / mean (all lines Cherry in G2))
+log(mean (CE2 in G2 G3 G4 G5) / mean (all lines Cherry in phase1))
 
 Mean and sd are weighted by the number of tubes counted
 }
