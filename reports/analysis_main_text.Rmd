@@ -151,6 +151,73 @@ summary(mod_Phase)
 
 #Posthoc
 emmeans::emmeans(mod_Phase, list(pairwise ~ Phase), adjust = "tukey") #
+
+
+
+############################################## TEST ADAPTATION
+mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod2 <- lme4::lmer(fitness~ Phase + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE)
+mod3 <- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod4 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod5 <- lme4::lmer(fitness ~ Fruit_s*Phase + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod6 <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod7 <- lme4::lmer(fitness ~ Fruit_s+Phase + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+mod8 <- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum, REML = FALSE) 
+
+MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5,mod6,mod7,mod8)
+
+summary(mod7)
+
+emmeans::emmeans(mod5, list(pairwise ~ Phase:Fruit_s), adjust = "tukey") #
+emmeans::emmeans(mod5, list(pairwise ~ Phase:Fruit_s), adjust = "tukey") #
+
+
+##############################################
+################### PHASE 1 ################ saute 
+##
+mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="first_prepool",], REML = FALSE) 
+mod2 <- lme4::lmer(fitness~ Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="first_prepool",], REML = FALSE)
+mod3 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="first_prepool",], REML = FALSE) 
+
+
+anova(mod1,mod2)
+MuMIn::model.sel(mod1,mod2,mod3)
+
+
+
+################### PHASE 3
+mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
+mod2 <- lme4::lmer(fitness~ Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
+mod3 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
+mod4 <- lme4::lmer(fitness~ log(Generation)*Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
+mod5 <- lme4::lmer(fitness~ log(Generation)+Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
+
+
+anova(mod1,mod2)
+MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5)
+
+
+
+mod3 <- lme4::lmer(fitness ~ Fruit_s-1 + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
+
+summary(mod3)
 ```
 
 
@@ -467,7 +534,6 @@ cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),
 ## Analysis MA and correlation
 ```{r }
 
-
 # ##### Create empty dataframe with slopes and confidence interval for all pairwise
 Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf","cor_CI_sup",
                                                        "slope", "intercept"),2),3),
@@ -518,7 +584,8 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
 
 
 
-
+#Save sim G7 to calculate proportion later: 
+sim_CheCranG7<-sim
 
 ####### 
 #######  Cranberry Strawberry
@@ -666,6 +733,20 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
 
 Estimates_pairwise
 
+
+
+
+
+#Cherry Cranbery 
+#Calcul proportion of simulations correlations G7 are lower than correlation estimated on G29 
+cor_G29_CheCran<-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="correlation"]
+#Estimates of correlation during final phenotyping for Cherry Cranberry 
+p_val_decreaseCheCran<-length(sim_CheCranG7$correlation.cor[sim_CheCranG7$correlation.cor<cor_G29_CheCran])/nb_sim
+
+
+p_val_decreaseCheCran
 ```
 
 
