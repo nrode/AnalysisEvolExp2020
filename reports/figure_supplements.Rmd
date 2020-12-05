@@ -309,7 +309,7 @@ data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_p
 ```
 
 
-## PLOT Step=f(Phase)
+## Plot long vs fitness
 ```{r }
 PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s, linetype=Line_type)) +
@@ -324,7 +324,7 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and generation 2") + 
+  xlab("Fitness difference between average fitness across generations 2 to 5\nand average fitness across generations 2 to 5") + 
   ylab("Fitness difference between\nintermediate and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
@@ -355,7 +355,7 @@ PLOT_FinalPheno_LOGCHANGE <-
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and generation 2") + 
+  xlab("Fitness difference between average fitness across generations 13 to 26\nand average fitness across generations 2 to 5") + 
   ylab("Fitness difference between\nfinal and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
   ylim(-0.5,1.7) +
@@ -391,91 +391,18 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno_Longitudin
 
 
 
-
-## PLOT Step/Phase=f(Phase)
-```{r }
-
-PLOT_IntermediatePheno_TEMP<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
-       aes(y=logchange/logchange_long,x=logchange_long, color=Fruit_s,shape=Fruit_s)) +
-  geom_errorbarh(aes(y = logchange/logchange_long, 
-                    xmin = logchange_long-1.96*sd_logchange_long,
-                    xmax = logchange_long+1.96*sd_logchange_long, 
-                    linetype=Line_type),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_point(size=3, fill = "#ffffff", stroke=1.3) +
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 2 to 5 and average fitness\nacross generations 2 to 5") + 
-  ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
-  labs(color="Selection fruit", shape="Selection fruit") + 
-  geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
-  ylim(-3.9,4.4) +
-  xlim(-3.9,4.4) +
-  ggtitle("Intermediate phenotyping step vs. Phase 1") +
-  theme_LO_sober 
-PLOT_IntermediatePheno_TEMP 
-
-
-PLOT_FinalPheno_TEMP <- ggplot(data=data_compare_longitudinal_pheno
-                        [data_compare_longitudinal_pheno$Phase=="second_postpool",], 
-                        aes(y=logchange/logchange_long,x=logchange_long, color=Fruit_s,shape=Fruit_s,fill=Fruit_s)) +
-  geom_errorbarh(aes(y = logchange/logchange_long, 
-                    xmin = logchange_long-1.96*sd_logchange_long,
-                    xmax = logchange_long+1.96*sd_logchange_long, 
-                    linetype=Line_type),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_abline(intercept = 0, slope = 1, color="black", 
-                 linetype="dashed", size=0.8) +
-  geom_point(size=3, stroke=1) +
-  scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 13 to 26 and average fitness\nacross generations 2 to 5") + 
-  ylab("Fitness difference between phenotyping steps /\nFitness difference between phases") + 
-  labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
-  ylim(-0.5,1.7) +
-  xlim(-0.5,1.7) +
-  ggtitle("Final phenotyping step vs. Phase 3") +
-  theme_LO_sober
-PLOT_FinalPheno_TEMP  
-
-
-    
-
-PLOT_Comparison_TEMP <- cowplot::ggdraw() +
-  cowplot::draw_plot(PLOT_IntermediatePheno_TEMP + 
-                       theme(axis.title.y = element_text(size=10),
-                             axis.title.x = element_text(size=10)),
-            x = 0, y = 0.5, width = 1, height = 0.5) +
-  cowplot::draw_plot(PLOT_FinalPheno_TEMP + 
-                       theme(axis.title.y = element_text(size=10),
-                             axis.title.x = element_text(size=10)),
-            x =0, y = 0, width = 1, height = 0.5) +
-  cowplot::draw_plot_label(c("A", "B"),  
-                  x = c(0,0), y = c(1,0.5), 
-                  size = 14) 
-PLOT_Comparison_TEMP
-
-
-cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno-div-Long_Longitudinal.pdf"),
-                   PLOT_Comparison_TEMP, base_height = 20/cm(1), base_width = 15/cm(1), dpi = 1200)
-
-```
-
-## PLOT Maternal effects
+## Extra plot Maternal effects
 ```{r }
 
 m <- lm(logchange ~ logchange_long + offset(logchange_long),
         data = data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="second_postpool",]) 
 
-# le summary permet directement de vérifier si la pente est significativement différente de 1 à partir de la p-value associée à la variable logchange_long et de tester si l'évolution du changement maternel est significatif (p-value associée à l'intercept)
-
 summary(m)
 #pval of logchange_long = 0.003 => slope is different of 1 
-#pval of Intercept = 0.80 => no evolution of maternal effect??? 
+#pval of Intercept = 0.80 => no evolution of maternal effect?
 
 
-## Ratio effet maternels pop dérivée sur effet maternels pop ancestrale??
+## Ratio maternal effects derived pop / maternal effect ancestral population 
 exp(coef(m)[1]) 
 
 # proportion of adaptation due to maternal effects
@@ -523,30 +450,49 @@ data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 ```{r }
 #Models
 mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum_allfruits_AN)
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
 mod_all_generation<- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s) , 
-            weights = N, data = data_sum_allfruits_AN)
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
 mod_all_fruit_generation<- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s) , 
-            weights = N, data = data_sum_allfruits_AN)
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
 mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s) , 
-            weights = N, data = data_sum_allfruits_AN)
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
+
+mod_all_line<- lme4::lmer(fitness ~ Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
 mod_all_null<- lme4::lmer(fitness ~ 1  + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum_allfruits_AN)
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null,mod_all_generation)
+mod_all_interaction_line_generation <- lme4::lmer(fitness ~ Line*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
+
+mod_line_generation <- lme4::lmer(fitness ~ Line+Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN, REML = FALSE)
+
+MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null,mod_all_generation,mod_all_line,mod_all_interaction_line_generation,mod_line_generation)
+
+summary(mod_all_interaction)
+
+
+
+
 
 
 
 #Posthoc
-emmeans::emmeans(mod_all_fruit, list(pairwise ~ Fruit_s), adjust = "tukey") #
+mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN)
+summary(mod_all_interaction)
 
-mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s -1+ (1|Generation) + (1|Generation:Fruit_s) , 
-            weights = N, data = data_sum_allfruits)
-summary(mod_all_fruit)
+emt1 <- emmeans::emtrends(mod_all_interaction, "Fruit_s", var = "Generation")
+emt1          ### estimated slopes of Generation for each level of Fruit_s
+pairs(emt1)   ### comparison of slopes
+
+
 
 ```
 
@@ -558,24 +504,10 @@ summary(mod_all_fruit)
 
 pd <- position_dodge(0.3) # move them .05 to the left and right
 
-
-PLOT_ALLFRUITS<-ggplot(data=data_sum_allfruits, 
-                            aes(x=factor(Generation),group=Line, y=fitness, colour=Fruit_s)) + 
-  facet_wrap(~ Fruit_s, nrow = 8) +
-  geom_errorbar(aes(ymin=fitness-1.96*se_fitness, ymax=fitness+1.96*se_fitness),
-                width=.1,position=pd,size=0.2,color="black") +
-  geom_line(size=0.3,position=pd) +
-  geom_point(size = 2, position = pd, shape = 21, fill = "white",stroke = 1.2) + 
-  ylab("Fitness") + 
-  xlab("Generation") + 
-  theme_LO_sober
-PLOT_ALLFRUITS
-
-
 #Extract slope and intercept
 dat_8fruits <- expand.grid(Generation=as.numeric(levels(as.factor(data_sum_allfruits_AN$Generation))),
                            Fruit_s=unique(data_sum_allfruits_AN$Fruit_s))
-dat_8fruits$fitness_predicted <- predict(mod_all_fruit, newdata = dat_8fruits, 
+dat_8fruits$fitness_predicted <- predict(mod_all_interaction, newdata = dat_8fruits, 
                           re.form= NA, type = "response")
 
 
@@ -787,9 +719,33 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), DYN
 
 
 
-# SUP: Pooling effect: Same plot as main text
-## Initial plot from main text
-```{r } 
+# SUP: Pooling effect
+## Data
+```{r }
+
+########### Hypothesis 1 
+#Hypothesis 1: effect of pool 
+#Take the mean of all populations for each selection fruit 
+ 
+CheCran_hypo1 <- computelogchange_POOL_hypo1(data_G7, "Cherry", "Cranberry")
+
+
+
+########### Hypothesis 2 
+#Hypothesis 2: effect of pool 
+#Take the fitness difference of the population with the highest fitness in G7 
+TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
+fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
+CheCran_hypo2<-TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Line==fittest_lines,]
+
+
+
+
+```
+
+## Plot
+```{r }
+#Initial plot from main text
 ymin = -50
 ymax = 50
 
@@ -822,33 +778,10 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
                   xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
   theme_LO_sober
  CheCran_G29
-
-
-```
-
-## Data
-```{r }
-
-########### Hypothesis 1 
-#Hypothesis 1: effect of pool 
-#Take the mean of all populations for each selection fruit 
  
-CheCran_hypo1 <- computelogchange_POOL_hypo1(data_G7, "Cherry", "Cranberry")
-
-
-
-########### Hypothesis 2 
-#Hypothesis 2: effect of pool 
-#Take the fitness difference of the population with the highest fitness in G7 
-TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
-fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
-CheCran_hypo2<-TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Line==fittest_lines,]
-
-
-```
-
-## Plot
-```{r }
+ 
+ 
+ 
 
 PLOT_HYPO_1<-CheCran_G29 +  
   geom_errorbar(data = CheCran_hypo1, aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
@@ -958,7 +891,7 @@ ERRORCROSSES_G7_HYPO1_2
 
 
 
-cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_firstproposition.pdf"),
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis.pdf"),
                    ERRORCROSSES_G7_HYPO1_2,
                    base_height = 18/cm(1), base_width = 15/cm(1), dpi = 610)
 
@@ -978,19 +911,14 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_firstproposition.pdf
 
 
 
-# SUP: Pooling effect: Same plot as previously
-## Initial plot from main text
+## Extra plot
 ```{r } 
 PAIR_StrawChe_G29
 PAIR_CranStraw_G29
 PAIR_CheCran_G29
 
-```
 
 ## Data
-```{r }
-
-
 # EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
 # EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
 # EC_Straw_Cher_G7<-formattingplotpair(data_logchange, "7", "Strawberry", "Cherry")
@@ -1013,11 +941,6 @@ EC_Straw_Cran_hypo2<-EC_Straw_Cran_G7[EC_Straw_Cran_G7$Line == fittest_lines[1]|
 EC_Straw_Cher_hypo2<-EC_Straw_Cher_G7[EC_Straw_Cher_G7$Line == fittest_lines[1]|
                                        EC_Straw_Cher_G7$Line == fittest_lines[2]|
                                         EC_Straw_Cher_G7$Line == fittest_lines[3],]
-
-```
-
-## Plot
-```{r }
 
 
 PAIR_CheCran_G29_HYPO_1 <- PAIR_CheCran_G29 +
@@ -1209,15 +1132,15 @@ ERRORCROSSES_G7_HYPO2
 
 
 
-
-cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis1.pdf"),
-                   ERRORCROSSES_G7_HYPO1,
-                   base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
-
-
-cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis2.pdf"),
-                   ERRORCROSSES_G7_HYPO2,
-                   base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
+# 
+# cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis1.pdf"),
+#                    ERRORCROSSES_G7_HYPO1,
+#                    base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
+# 
+# 
+# cowplot::save_plot(file =here::here("figures", "SUPMAT_Pool_Hypothesis2.pdf"),
+#                    ERRORCROSSES_G7_HYPO2,
+#                    base_height = 7/cm(1), base_width = 28/cm(1), dpi = 610)
 
 
 
