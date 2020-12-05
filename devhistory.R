@@ -22,11 +22,11 @@ usethis::use_r("theme_LO_sober")
 usethis::use_r("formattingplotpair")
 usethis::use_r("computefitness")
 usethis::use_r("computelogchange_forlongdata")
-usethis::use_r("filldata_maregression")
-usethis::use_r("polygon_limits")
+usethis::use_r("filldata_maregression") #to potentially delete
+usethis::use_r("polygon_limits") #to potentially delete
 usethis::use_r("bootstrap_lmodel2")
-usethis::use_r("computelogchange_POOL_hypo1")
-usethis::use_r("computelogchange_POOL_hypo2")
+usethis::use_r("computelogchange_POOL_hypo1") #to potentially delete
+usethis::use_r("computelogchange_POOL_hypo2") #to potentially delete
 usethis::use_r("formatting_POOL_hypo1")
 usethis::use_r("formatting_POOL_hypo2")
 
