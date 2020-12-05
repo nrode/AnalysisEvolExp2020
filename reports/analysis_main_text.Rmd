@@ -74,6 +74,12 @@ tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$G
 #     tapply(data_sum$fitness[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) / 
 #   abs(tapply(data_sum$fitness[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean))) * 100
 
+
+## Calcul proportion change between G2 and G8 
+((tapply(data_sum$Nb_adults[data_sum$Phase=="pool"],data_sum$Fruit_s[data_sum$Phase=="pool"],mean) -
+    tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) / 
+  tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) * 100
+
 ```
 
 
