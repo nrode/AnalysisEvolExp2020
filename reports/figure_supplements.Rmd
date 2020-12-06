@@ -54,6 +54,12 @@ TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", "Cherry", "Cra
 TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", "Cranberry", "Strawberry")
 TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry", "Cherry")
 
+
+
+
+## Data longitudinal 
+data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max = 5)
+data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 ```
 
 
@@ -439,13 +445,6 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_Maternal_effects.pdf"),
 
 
 # SUP: Adaptation 8fruits
-## Longitudinal data
-```{r }
-data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max = 5)
-data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
-```
-
-
 ## Analysis
 ```{r }
 #Models
