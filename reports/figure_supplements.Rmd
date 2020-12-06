@@ -749,6 +749,7 @@ ymin = -50
 ymax = 50
 
 
+pd <- position_dodge(0.3) # move them .05 to the left and right
 
 # Limits
 ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
@@ -887,13 +888,40 @@ ERRORCROSSES_G7_HYPO1_2
 
 
 
+ERRORCROSSES_G7_HYPO1 <- cowplot::ggdraw() +
+  cowplot::draw_plot(PLOT_HYPO_1+theme(legend.position = "none", 
+                                       plot.title = element_blank()), 
+            x =0.00, y = 0, width = 0.75, height = 1) +
+  cowplot::draw_plot(legend_tradevide, x = 0.78, y = 0.3, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo1, x = 0.82, y = 0.55, width = 0.1, height = 0.1)
+ERRORCROSSES_G7_HYPO1
+
+ERRORCROSSES_G7_HYPO2 <- cowplot::ggdraw() +
+  cowplot::draw_plot(PLOT_HYPO_2+theme(legend.position = "none", 
+                                       plot.title = element_blank()), 
+            x =0.00, y = 0, width = 0.75, height = 1) +
+  cowplot::draw_plot(legend_tradevide, x = 0.76, y = 0.3, width = 0.1, height = 0.1) +
+  cowplot::draw_plot(extract_legend_hypo2, x = 0.82, y = 0.55, width = 0.1, height = 0.1)
+ERRORCROSSES_G7_HYPO2
 
 
 
-cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis.pdf"),
-                   ERRORCROSSES_G7_HYPO1_2,
-                   base_height = 18/cm(1), base_width = 15/cm(1), dpi = 610)
 
+# 
+# cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis.pdf"),
+#                    ERRORCROSSES_G7_HYPO1_2,
+#                    base_height = 18/cm(1), base_width = 15/cm(1), dpi = 610)
+# 
+# 
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis1.pdf"),
+                   ERRORCROSSES_G7_HYPO1,
+                   base_height = 12/cm(1), base_width = 15/cm(1), dpi = 610)
+
+
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis2.pdf"),
+                   ERRORCROSSES_G7_HYPO2,
+                   base_height = 12/cm(1), base_width = 15/cm(1), dpi = 610)
 
 
 
