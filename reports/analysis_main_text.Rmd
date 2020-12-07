@@ -76,7 +76,7 @@ tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$G
 
 
 ## Calcul proportion change between G2 and phase2 (because G8 is not representative)  
-((tapply(data_sum$Nb_adults[data_sum$Phase=="pool"],data_sum$Fruit_s[data_sum$Phase=="pool"],mean) -
+((tapply(data_sum$Nb_adults[data_sum$Generation=="11"],data_sum$Fruit_s[data_sum$Generation=="11"],mean) -
     tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) / 
   tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) * 100
 
@@ -278,36 +278,6 @@ cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_
 
 
 
-```
-
-
-## Population effect - Phase   
-```{r }
-################### PHASE 1
-#See figure_supplements.Rmd
-
-################### PHASE 3
-mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod2 <- lme4::lmer(fitness~ Line + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-mod3 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod4 <- lme4::lmer(fitness~ Generation*Line + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-mod5 <- lme4::lmer(fitness~ Generation+Line + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-
-
-anova(mod1,mod2)
-MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5)
-
-
-
-mod3 <- lme4::lmer(fitness ~ Fruit_s-1 + (1|Generation) + (1|Generation:Fruit_s), 
-            weights = N, data = data_sum[data_sum$Phase=="second_postpool",]) 
-
-summary(mod3)
 ```
 
 
