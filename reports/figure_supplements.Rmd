@@ -736,9 +736,12 @@ mod6 <- lme4::lmer(fitness ~ Generation*Fruit_s + (1|Generation) + (1|Generation
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
 mod7 <- lme4::lmer(fitness ~ Generation+Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
+mod8 <- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
+
 
 anova(mod1,mod2)
-MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5,mod6, mod7)
+MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5,mod6, mod7, mod8)
 
 
 
