@@ -81,7 +81,7 @@ tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$G
   tapply(data_sum$Nb_adults[data_sum$Generation=="2"],data_sum$Fruit_s[data_sum$Generation=="2"],mean)) * 100
 
 
-## Calcul proportion change between G2 and phase2 (because G8 is not representative)  
+## Compute proportion change between G2 and phase 2 (because G8 is not representative)  
 ((tapply(data_sum$Nb_adults[data_sum$Phase=="pool"],data_sum$Fruit_s[data_sum$Phase=="pool"],mean) -
     tapply(data_sum$Nb_adults[data_sum$Phase=="first_prepool"],data_sum$Fruit_s[data_sum$Phase=="first_prepool"],mean)) / 
   tapply(data_sum$Nb_adults[data_sum$Phase=="first_prepool"],data_sum$Fruit_s[data_sum$Phase=="first_prepool"],mean)) * 100
@@ -111,9 +111,9 @@ mod5 <- lme4::lmer(fitness ~ Fruit_s*Phase + (1|Generation) + (1|Generation:Frui
             weights = N, data = data_sum, REML = FALSE) 
 mod6 <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod7 <- lme4::lmer(fitness ~ Fruit_s+Phase + (1|Generation) + (1|Generation:Fruit_s), 
+mod7 <- lme4::lmer(fitness ~ Fruit_s + Phase + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod8 <- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod8 <- lme4::lmer(fitness ~ Fruit_s + Generation + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
 
 MuMIn::model.sel(mod1,mod2,mod3,mod4,mod5,mod6,mod7,mod8)
