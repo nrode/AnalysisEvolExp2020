@@ -40,7 +40,7 @@ data_logchange<-computelogchange(fitness_dataset_intermediate = data_G7, fitness
 data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
 
 
-#Formatting for plotting pairwise of fitness difference
+#Formatting for plotting pairwise of fitness change
 EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
 EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
 EC_Straw_Cher_G7<-formattingplotpair(data_logchange, "7", "Strawberry", "Cherry")
@@ -66,7 +66,7 @@ data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 
 
 
-# SUP: Pairwise of Fitness difference
+# SUP: Pairwise of Fitness change
 ## Plot 
 ```{r } 
 #Limit axis 
@@ -90,8 +90,8 @@ PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
                      xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
                  height=0.02,size=0.2,alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  xlab("Fitness difference\nin strawberry")  +     
-  ylab("Fitness difference\nin cranberry")  +
+  xlab("Fitness change\nin strawberry")  +     
+  ylab("Fitness change\nin cranberry")  +
   xlim(-lim_G7,lim_G7) + 
   ylim(-lim_G7,lim_G7) +  
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -111,8 +111,8 @@ PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
                      xmax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  ylab("Fitness difference\nin strawberry")  + 
-  xlab("Fitness difference\nin cherry")  + 
+  ylab("Fitness change\nin strawberry")  + 
+  xlab("Fitness change\nin cherry")  + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   xlim(-lim_G7,lim_G7) + 
   ylim(-lim_G7,lim_G7) +    
@@ -133,8 +133,8 @@ PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = l
                        xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
-  ylab("Fitness difference\nin cherry")  + 
-  xlab("Fitness difference\nin cranberry")  + 
+  ylab("Fitness change\nin cherry")  + 
+  xlab("Fitness change\nin cranberry")  + 
   xlim(-lim_G7, lim_G7) + 
   ylim(-lim_G7, lim_G7) +     
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -156,8 +156,8 @@ PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
                        xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
-  xlab("Fitness difference\nin strawberry")  +     
-  ylab("Fitness difference\nin cranberry")  +
+  xlab("Fitness change\nin strawberry")  +     
+  ylab("Fitness change\nin cranberry")  +
   xlim(-lim_G29,lim_G29) + 
   ylim(-lim_G29,lim_G29) +     
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -178,8 +178,8 @@ PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
                        xmax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
-  ylab("Fitness difference\nin strawberry")  + 
-  xlab("Fitness difference\nin cherry")  + 
+  ylab("Fitness change\nin strawberry")  + 
+  xlab("Fitness change\nin cherry")  + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   xlim(-lim_G29,lim_G29) + 
@@ -200,8 +200,8 @@ PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
                        xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
-  ylab("Fitness difference\nin cherry")  + 
-  xlab("Fitness difference\nin cranberry")  + 
+  ylab("Fitness change\nin cherry")  + 
+  xlab("Fitness change\nin cranberry")  + 
   xlim(-lim_G29,lim_G29) + 
   ylim(-lim_G29,lim_G29) +   
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
@@ -330,8 +330,8 @@ PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[da
   geom_point(size=3, fill = "#ffffff", stroke=1.3) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness across generations 2 to 5\nand average fitness across generations 2 to 5") + 
-  ylab("Fitness difference between\nintermediate and initial phenotyping steps") + 
+  xlab("Fitness change between average fitness across generations 2 to 5\nand average fitness across generations 2 to 5") + 
+  ylab("Fitness change between\nintermediate and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   geom_abline(intercept = 0, slope = 1, color="black", linetype="dashed", size=0.8) +
   ylim(-1.9,0.9) + 
@@ -361,8 +361,8 @@ PLOT_FinalPheno_LOGCHANGE <-
   scale_fill_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness across generations 13 to 26\nand average fitness across generations 2 to 5") + 
-  ylab("Fitness difference between\nfinal and initial phenotyping steps") + 
+  xlab("Fitness change between average fitness across generations 13 to 26\nand average fitness across generations 2 to 5") + 
+  ylab("Fitness change between\nfinal and initial phenotyping steps") + 
   labs(color="Selection fruit", shape="Selection fruit", fill="Selection fruit") + 
   ylim(-0.5,1.7) +
   xlim(-0.5,1.7) +
@@ -428,7 +428,7 @@ PLOT_Maternaleffects<-ggplot(data=data_compare_longitudinal_pheno,
                       labels = c("Phase 1","Phase 3")) +
   scale_color_manual(values=c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_shape_manual(values=c(21, 22, 24)) + 
-  xlab("Fitness difference between average fitness\nacross generations 2 to 5 (13 to 26) and generation 2") + 
+  xlab("Fitness change between average fitness\nacross generations 2 to 5 (13 to 26) and generation 2") + 
   ylab("Proportion of adaptation\ndue to evolution of maternal effects") + 
   labs(color="Selection fruit", shape="Selection fruit") + 
   guides(fill = guide_legend(override.aes = list(fill = c("white","black"), shape=21))) +
@@ -768,7 +768,7 @@ CheCran_hypo1 <- computelogchange_POOL_hypo1(data_G7, "Cherry", "Cranberry")
 
 ########### Hypothesis 2 
 #Hypothesis 2: effect of pool 
-#Take the fitness difference of the population with the highest fitness in G7 
+#Take the fitness change of the population with the highest fitness in G7 
 TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
 fittest_lines<-computelogchange_POOL_hypo2(data_G7, "Cherry", "Cranberry")
 CheCran_hypo2<-TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Line==fittest_lines,]
@@ -804,8 +804,8 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
                  size =3, fill = "white", stroke =1.2) + 
-  xlab("Fitness difference in\nselective environment")  + 
-  ylab("Fitness difference in\nalternative environment")  + 
+  xlab("Fitness change in\nselective environment")  + 
+  ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
   labs(shape = "Test fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(16, 15)) + 
@@ -993,7 +993,7 @@ dataset_hypo1 <- formatting_POOL_hypo1(fitness_dataset_intermediate = data_G7)
 
 ########### Hypothesis 2 
 #Hypothesis 2: effect of pool 
-#Take the fitness difference of the population with the highest fitness in G7 
+#Take the fitness change of the population with the highest fitness in G7 
 fittest_lines<-formatting_POOL_hypo2(data_G7)
 EC_Cran_Cher_hypo2<-EC_Cran_Cher_G7[EC_Cran_Cher_G7$Line == fittest_lines[1]|
                                       EC_Cran_Cher_G7$Line == fittest_lines[2]|
