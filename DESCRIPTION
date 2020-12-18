@@ -28,4 +28,5 @@ Imports:
     MASS,
     fitdistrplus,
     ggplot2,
-    lme4
+    lme4,
+    sjstats

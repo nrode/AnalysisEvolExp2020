@@ -38,6 +38,7 @@ usethis::use_r("boot_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
 
+usethis::use_r("computeCIcordifG29G7")
 
 dir.create("data")
 dir.create("reports")
@@ -56,6 +57,7 @@ usethis::use_package("lmodel2")
 usethis::use_package("lemon")
 usethis::use_package("data.table")
 usethis::use_package("radiant.data")
+usethis::use_package("sjstats")
 
 
 ## Update NAMESPACE file
