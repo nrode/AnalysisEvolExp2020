@@ -33,6 +33,7 @@ bootstrap_lmodel2 <- function(seed = 1, data_pairwise = TEMP_dataG7_CheCran, sd_
                                                replace = TRUE,
                                                prob = data_pairwise$Vector_sample), ]
 
+  # Compute correlation only if at least than three data points
   if ( length(unique(sample_data_pairwise$Line)) > 2 ) {
     # 1- Correlation
     correlation_test<- cor.test(sample_data_pairwise$logchange_allop,sample_data_pairwise$logchange_symp)
