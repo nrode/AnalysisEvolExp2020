@@ -448,7 +448,7 @@ cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),
 
 # CORRELATED RESPONSES 
 ## Analysis MA and correlation
-```{r }
+```{r}
 
 # ##### Create empty dataframe with slopes and confidence interval for all pairwise
 Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf","cor_CI_sup",
@@ -457,7 +457,230 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf
                                  Pairwise = rep(c("Cherry_Cranberry",
                                                      "Cranberry_Strawberry", 
                                                      "Strawberry_Cherry"), each=10),
-                                Estimates = NA )
+                                Estimates = NA)
+
+#########################
+######################### G7
+#########################
+
+####### 
+#######  Cherry Cranberry
+####### 
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop),], nperm=0)
+
+## The estimation of the confidence interval with cor.test is wrong
+cor.test(x=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_symp"], y=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_allop"])
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+####### 
+#######  Cranberry Strawberry
+####### 
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG7_CranStraw, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG7_CranStraw[rep(1:nrow(TEMP_dataG7_CranStraw), TEMP_dataG7_CranStraw$N_sumsympallop),], nperm=0)
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+####### 
+#######  Strawberry  Cherry
+####### 
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG7_StrawChe, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG7_StrawChe[rep(1:nrow(TEMP_dataG7_StrawChe), TEMP_dataG7_StrawChe$N_sumsympallop),], nperm=0)
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+#########################
+######################### G29
+######################### 
+
+
+####### 
+#######  Cherry Cranberry
+####### 
+
+
+## Compute unweighted correlation
+unweightedcor <- cor.test(x=TEMP_dataG29_CheCran$logchange_symp, y=TEMP_dataG29_CheCran$logchange_allop)
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG29_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG29_CheCran[rep(1:nrow(TEMP_dataG29_CheCran), TEMP_dataG29_CheCran$N_sumsympallop),], nperm=0)
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+####### 
+#######  Cranberry Strawberry
+####### 
+
+## Compute unweighted correlation
+unweightedcor <- cor.test(x=TEMP_dataG29_CranStraw$logchange_symp, y=TEMP_dataG29_CranStraw$logchange_allop)
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG29_CranStraw, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG29_CranStraw[rep(1:nrow(TEMP_dataG29_CranStraw), TEMP_dataG29_CranStraw$N_sumsympallop),], nperm=0)
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+####### 
+#######  Strawberry  Cherry
+####### 
+
+## Compute unweighted correlation
+unweightedcor <- cor.test(x=TEMP_dataG29_StrawChe$logchange_symp, y=TEMP_dataG29_StrawChe$logchange_allop)
+
+## Compute weighted correlation
+weightedcor <- sjstats:::weighted_correlation(TEMP_dataG29_StrawChe, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+## Compute Major Axis regression
+model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
+                            range.y = "interval",range.x = "interval",
+                            data = TEMP_dataG29_StrawChe[rep(1:nrow(TEMP_dataG29_StrawChe), TEMP_dataG29_StrawChe$N_sumsympallop),], nperm=0)
+
+# Fill in data
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
+Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
+                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
+                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+
+
+
+Estimates_pairwise
+```
+
+## Compute confidence interval of the difference
+```{r}
+
+computeCIcordifG29G7(pair="Cherry_Cranberry")
+computeCIcordifG29G7(pair="Cranberry_Strawberry")
+computeCIcordifG29G7(pair="Strawberry_Cherry")
+
+```
+
+```{r, eval=FALSE}
+
+# ##### Create empty dataframe with slopes and confidence interval for all pairwise
+Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf","cor_CI_sup",
+                                                       "slope", "intercept"),2),3),
+                                 Generation = rep(c(rep(7, 5), rep(29, 5)),3),
+                                 Pairwise = rep(c("Cherry_Cranberry",
+                                                     "Cranberry_Strawberry", 
+                                                     "Strawberry_Cherry"), each=10),
+                                Estimates = NA ,
+                                EstimatesWeighed = NA ,
+                                EstimatesUnweighed = NA )
 
 # Calculate sd in case of NA value 
 mean_sd_G7 <- sqrt(mean(data_logchange$sd_logchange[data_logchange$Generation=="7"]^2, na.rm = TRUE))
@@ -504,25 +727,35 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
                               Estimates_pairwise$Variables=="slope"] <- mean(sim$slope, na.rm = TRUE)
 
+## Add other correlations
+Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$estimate
+
+Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$ci[1]
+
+Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$ci[2]
+
+Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="correlation"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$estimate
+
+Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_inf"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$conf.int[1]
+
+Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
+                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
+                              Estimates_pairwise$Variables=="cor_CI_sup"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$conf.int[2]
+
 
 
 #Save sim G7 to calculate proportion later: 
 sim_CheCranG7<-sim
-
-## Check that estimate consistent with a weighted correlation coefficient
-TEST_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
-TEST_dataG7_CheCran$sd_allop[is.na(TEST_dataG7_CheCran$sd_allop)] <- rep(mean_sd_G7, sum(is.na(TEST_dataG7_CheCran$sd_allop)))
-
-TEST_dataG7_CheCran$sumsquaredse_logchange <- 1/(TEST_dataG7_CheCran$sd_allop^2+TEST_dataG7_CheCran$sd_symp^2)
-TEST_dataG7_CheCran$weight_logchange <- TEST_dataG7_CheCran$sumsquaredse_logchange/sum(TEST_dataG7_CheCran$sumsquaredse_logchange)
-
-## weighted correlation coefficient
-cov.wt(TEST_dataG7_CheCran[, c("logchange_symp", "logchange_allop")], wt = TEST_dataG7_CheCran$weight_logchange, method = "unbiased", cor = TRUE)
-
-## unweighted correlation coefficient
-cor.test(x=TEST_dataG7_CheCran$logchange_symp, y=TEST_dataG7_CheCran$logchange_allop)
-
-
 
 ####### 
 #######  Cranberry Strawberry
@@ -549,7 +782,8 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
 
 
-
+## Save sim G7 to calculate correlation difference later: 
+sim_CranStrawG7<-sim
 
 
 
@@ -580,7 +814,8 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
                               Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
 
 
-
+## Save sim G7 to calculate correlation difference later: 
+sim_StrawCheG7<-sim
 
 
 
@@ -614,7 +849,8 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
 
 
-
+## Save sim G29 to calculate correlation difference later: 
+sim_CheCranG29<-sim
 
 ####### 
 #######  Cranberry Strawberry
@@ -640,7 +876,8 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
                               Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
 
-
+## Save sim G29 to calculate correlation difference later: 
+sim_CranStrawG29<-sim
 
 ####### 
 #######  Strawberry  Cherry
@@ -670,12 +907,21 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
 
 Estimates_pairwise
 
+## Save sim G29 to calculate correlation difference later: 
+sim_StrawCheG29<-sim
 
+## Compute the confidence interval of the difference between correlations in G7 and G29
+difcorCheCran <- sim_CheCranG29$correlation.cor-sim_CheCranG7$correlation.cor
+quantile(difcorCheCran, probs = c(0.025, 0.975), na.rm=TRUE)
 
+difcorCranStraw <- sim_CranStrawG29$correlation.cor-sim_CranStrawG7$correlation.cor
+quantile(difcorCranStraw, probs = c(0.025, 0.975), na.rm=TRUE)
 
+difcorStrawChe <- sim_StrawCheG29$correlation.cor-sim_StrawCheG7$correlation.cor
+quantile(difcorStrawChe, probs = c(0.025, 0.975), na.rm=TRUE)
 
 #Cherry Cranbery 
-#Calcul proportion of simulations correlations G7 are lower than correlation estimated on G29 
+#Compute proportion of simulations correlations G7 are lower than correlation estimated on G29 
 cor_G29_CheCran<-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
                               Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
                               Estimates_pairwise$Variables=="correlation"]
@@ -687,15 +933,33 @@ p_val_decreaseCheCran
 ```
 
 
-
 ## Plot 
 ```{r } 
 ymin = -50
 ymax = 50
 
+
 ## Function equation R
 eq_r <- function(gen = 7, pair = "Cherry_Cranberry") {
-  as.character(
+  if(gen == 7 &pair == "Cherry_Cranberry"){
+            as.character(
+      as.expression(
+        substitute(~~italic(r)^2~"="~r2~"["~inf~","~sup~"]",
+                  list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
+  Estimates_pairwise$Pairwise == pair &
+  Estimates_pairwise$Variables == "correlation"], digits = 2), 
+                  inf = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
+  Estimates_pairwise$Pairwise == pair &
+  Estimates_pairwise$Variables == "cor_CI_inf"], digits = 1, nsmall=2), 
+                  sup = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
+  Estimates_pairwise$Pairwise == pair &
+  Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
+      )
+    )
+      
+
+  }else{
+      as.character(
     as.expression(
       substitute(~~italic(r)^2~"="~r2~"["~inf~","~sup~"]",
                 list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
@@ -703,12 +967,14 @@ Estimates_pairwise$Pairwise == pair &
 Estimates_pairwise$Variables == "correlation"], digits = 2), 
                 inf = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
 Estimates_pairwise$Pairwise == pair &
-Estimates_pairwise$Variables == "cor_CI_inf"], digits = 2), 
+Estimates_pairwise$Variables == "cor_CI_inf"], digits = 2, nsmall=2), 
                 sup = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
 Estimates_pairwise$Pairwise == pair &
 Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
     )
   )
+  }
+
 }
 
 
