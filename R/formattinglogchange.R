@@ -32,6 +32,9 @@ formattinglogchange <- function(logchange_dataset = data_logchange,
   data_sum_G7G29_logchange <- data_sum_G7G29_logchange_temp[data_sum_G7G29_logchange_temp$SA=="0",]
 
   names(data_sum_G7G29_logchange)[names(data_sum_G7G29_logchange)=="N"] <- "N_allop"
+
+  data_sum_G7G29_logchange$N_sumsympallop <- data_sum_G7G29_logchange$N_symp + data_sum_G7G29_logchange$N_allop
+
   # Create pairwise dataset
   data_pairwise_generation<-data_sum_G7G29_logchange[data_sum_G7G29_logchange$Generation==generation&
                                                        data_sum_G7G29_logchange$Symp==fruit1|
