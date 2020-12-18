@@ -40,6 +40,7 @@ head(data_G29)
 dim(data_G29)
 
 #Compute log change
+## !! sd_logchange are standard errors, not standard deviations
 data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
 #Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
 data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
@@ -459,9 +460,15 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf
                                 Estimates = NA )
 
 # Calculate sd in case of NA value 
-mean_sd_G7 <- mean(data_logchange$sd_logchange[data_logchange$Generation=="7"], na.rm = TRUE)
-mean_sd_G29 <- mean(data_logchange$sd_logchange[data_logchange$Generation=="29"], na.rm = TRUE)
+mean_sd_G7 <- sqrt(mean(data_logchange$sd_logchange[data_logchange$Generation=="7"]^2, na.rm = TRUE))
+mean_sd_G29 <- sqrt(mean(data_logchange$sd_logchange[data_logchange$Generation=="29"]^2, na.rm = TRUE))
 
+## Check whether the squared standard errors are of the same magnitude across fruit media (answer:yes)
+tapply(data_logchange$sd_logchange^2, list(data_logchange$Treatment, data_logchange$Generation), mean, na.rm = TRUE)
+
+## Impute directly the missing standard errors
+data_logchange$se_logchange <- data_logchange$sd_logchange
+data_logchange$se_logchange[data_logchange$Generation=="7"&is.na(data_logchange$se_logchange)] <- rep(mean_sd_G7, sum(data_logchange$Generation=="7"&is.na(data_logchange$se_logchange)))
 
 
 ## Nbr sample 
@@ -501,6 +508,21 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
 
 #Save sim G7 to calculate proportion later: 
 sim_CheCranG7<-sim
+
+## Check that estimate consistent with a weighted correlation coefficient
+TEST_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
+TEST_dataG7_CheCran$sd_allop[is.na(TEST_dataG7_CheCran$sd_allop)] <- rep(mean_sd_G7, sum(is.na(TEST_dataG7_CheCran$sd_allop)))
+
+TEST_dataG7_CheCran$sumsquaredse_logchange <- 1/(TEST_dataG7_CheCran$sd_allop^2+TEST_dataG7_CheCran$sd_symp^2)
+TEST_dataG7_CheCran$weight_logchange <- TEST_dataG7_CheCran$sumsquaredse_logchange/sum(TEST_dataG7_CheCran$sumsquaredse_logchange)
+
+## weighted correlation coefficient
+cov.wt(TEST_dataG7_CheCran[, c("logchange_symp", "logchange_allop")], wt = TEST_dataG7_CheCran$weight_logchange, method = "unbiased", cor = TRUE)
+
+## unweighted correlation coefficient
+cor.test(x=TEST_dataG7_CheCran$logchange_symp, y=TEST_dataG7_CheCran$logchange_allop)
+
+
 
 ####### 
 #######  Cranberry Strawberry
