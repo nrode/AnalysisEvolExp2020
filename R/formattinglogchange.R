@@ -15,7 +15,7 @@
 #'data_sum <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruit1 = "Cherry",fruit2 = "Cranberry")
 
 formattinglogchange <- function(logchange_dataset = data_logchange,
-                                generation = "7", fruit1 = "Cherry",fruit2 = "Cranberry"){
+                                generation = "7", fruit1 = "Cherry", fruit2 = "Cranberry"){
 
   #Temporary dataset
   TEMP_data_sum_G7G29_logchange<-logchange_dataset
@@ -26,13 +26,13 @@ formattinglogchange <- function(logchange_dataset = data_logchange,
 
   #Select sympatric environments
   #Create temporary data with logchange only in sympatric environments
-  temp_symp<-TEMP_data_sum_G7G29_logchange[TEMP_data_sum_G7G29_logchange$SA=="1",c("Line","logchange","sd_logchange")]
-  colnames(temp_symp)<-c("Line", "logchange_symp","sd_symp")
-  data_sum_G7G29_logchange_temp<-merge(TEMP_data_sum_G7G29_logchange,temp_symp,by="Line")
-  data_sum_G7G29_logchange<-data_sum_G7G29_logchange_temp[data_sum_G7G29_logchange_temp$SA=="0",]
+  temp_symp <- TEMP_data_sum_G7G29_logchange[TEMP_data_sum_G7G29_logchange$SA=="1", c("Line","logchange","sd_logchange", "N")]
+  colnames(temp_symp)<-c("Line", "logchange_symp", "sd_symp", "N_symp")
+  data_sum_G7G29_logchange_temp <- merge(TEMP_data_sum_G7G29_logchange, temp_symp, by="Line")
+  data_sum_G7G29_logchange <- data_sum_G7G29_logchange_temp[data_sum_G7G29_logchange_temp$SA=="0",]
 
-
-  #Create pairwise dataset
+  names(data_sum_G7G29_logchange)[names(data_sum_G7G29_logchange)=="N"] <- "N_allop"
+  # Create pairwise dataset
   data_pairwise_generation<-data_sum_G7G29_logchange[data_sum_G7G29_logchange$Generation==generation&
                                                        data_sum_G7G29_logchange$Symp==fruit1|
                                                        data_sum_G7G29_logchange$Generation==generation&
