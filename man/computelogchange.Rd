@@ -6,13 +6,16 @@
 \usage{
 computelogchange(
   fitness_dataset_intermediate = data_G7,
-  fitness_dataset_final = data_G29
+  fitness_dataset_final = data_G29,
+  trait = "Nb_adults"
 )
 }
 \arguments{
 \item{fitness_dataset_intermediate}{Intermediate phenotyping dataset created using loadfitnessdata()}
 
 \item{fitness_dataset_final}{Final phenotyping dataset created using loadfitnessdata()}
+
+\item{trait}{Trait for which logchange should be computed (e.g. Nb_eggs, Nb_adults, Emergence_rate)}
 }
 \value{
 dataset of fitness difference between the phenotyping step and the initial phenotyping step
@@ -37,5 +40,5 @@ In our case: x2=N0 and s2=sd N0
 se(logchange)=sqrt((s1²/n1x1²))=sqrt((sdNt+1²/NNt+1 x meanNt+1²)+(sdN0²/N0 x meanN0²))
 }
 \examples{
-data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")
 }
