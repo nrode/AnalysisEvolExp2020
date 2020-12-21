@@ -64,7 +64,7 @@ computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dat
   data_logchange$SA <- as.factor(ifelse(as.character(data_logchange$Treatment)==as.character(data_logchange$Fruit_s),1,0))
 
   # Subset
-  data_logchange <- subset(data_logchange, select = -c(Nb_adults, sd, se, Mean_initial, Sd_initial, N_initial,ci))
+  data_logchange <- data_logchange[, !names(data_logchange)%in%c(trait, "sd", "se", "Mean_initial", "Sd_initial", "N_initial", "ci")]
 
   # Add symp and allop
   data_logchange$Symp <- data_logchange$Fruit_s
