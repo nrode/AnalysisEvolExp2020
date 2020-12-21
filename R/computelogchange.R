@@ -23,49 +23,48 @@
 #'
 #' @param fitness_dataset_intermediate Intermediate phenotyping dataset created using loadfitnessdata()
 #' @param fitness_dataset_final Final phenotyping dataset created using loadfitnessdata()
-
+#' @param trait Trait for which logchange should be computed (e.g. Nb_eggs, Nb_adults, Emergence_rate)
 #' @return dataset of fitness difference between the phenotyping step and the initial phenotyping step
 #' @export
 #'
 #' @examples
-#'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
+#'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")
 
-computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29){
+computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults"){
 
   # Add generation
   fitness_dataset_intermediate$Generation <- "7"
   fitness_dataset_final$Generation <- "29"
 
   # Merge intermediate and final
-  fitnessdataset<-rbind(fitness_dataset_intermediate,fitness_dataset_final)
-
+  fitnessdataset <- rbind(fitness_dataset_intermediate,fitness_dataset_final)
 
   # Calculate mean during phenotyping steps
   TEMP_data_G7G29 <- Rmisc::summarySE(fitnessdataset,
-                       measurevar = "Nb_adults",
+                       measurevar = trait,
                        groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
 
   # Calculate initial mean and sd
-  TEMP_mean_G1 <- data.frame(Mean_initial = tapply(data_G0$Nb_adults, data_G0$Treatment, mean),
-                         Sd_initial = tapply(data_G0$Nb_adults, data_G0$Treatment, sd),
-                         N_initial = tapply(data_G0$Nb_adults, data_G0$Treatment, length),
-                         Treatment = rownames(tapply(data_G0$Nb_adults, data_G0$Treatment, mean)))
+  TEMP_mean_G1 <- data.frame(Mean_initial = tapply(data_G0[, trait], data_G0$Treatment, mean),
+                         Sd_initial = tapply(data_G0[, trait], data_G0$Treatment, sd),
+                         N_initial = tapply(data_G0[, trait], data_G0$Treatment, length),
+                         Treatment = levels(data_G0$Treatment))
 
   # Merge three phenotyping steps
   data_logchange <- merge(TEMP_data_G7G29, TEMP_mean_G1, by="Treatment")
 
   # Calculate logchange
-  data_logchange$logchange <- log(data_logchange$Nb_adults / data_logchange$Mean_initial)
+  data_logchange$logchange <- log(data_logchange[, trait] / data_logchange$Mean_initial)
 
   # Calculate sd logchange
-  data_logchange$sd_logchange <- sqrt(((data_logchange$sd^2) / (data_logchange$N*(data_logchange$Nb_adults^2))) +
+  data_logchange$sd_logchange <- sqrt(((data_logchange$sd^2) / (data_logchange$N*(data_logchange[, trait]^2))) +
                                       ((data_logchange$Sd_initial^2) / (data_logchange$N_initial*(data_logchange$Mean_initial^2))))
 
   # Add sympatry indic
-  data_logchange$SA<-as.factor(ifelse(as.character(data_logchange$Treatment)==as.character(data_logchange$Fruit_s),1,0))
+  data_logchange$SA <- as.factor(ifelse(as.character(data_logchange$Treatment)==as.character(data_logchange$Fruit_s),1,0))
 
   # Subset
-  data_logchange<-subset(data_logchange, select = -c(Nb_adults,sd,se,Mean_initial,Sd_initial,N_initial,ci))
+  data_logchange <- subset(data_logchange, select = -c(Nb_adults, sd, se, Mean_initial, Sd_initial, N_initial,ci))
 
   # Add symp and allop
   data_logchange$Symp <- data_logchange$Fruit_s
