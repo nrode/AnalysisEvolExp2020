@@ -66,7 +66,7 @@ data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 
 
 
-# SUP: Pairwise of Fitness change
+# SUP: Pairwise fitness change
 ## Plot 
 ```{r } 
 #Limit axis 
@@ -447,29 +447,39 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_Maternal_effects.pdf"),
 # SUP: Adaptation 
 ## Analysis Phase 1 (8 fruits)
 ```{r }
+
+## Check random effect structure
+mod1 <- lme4::lmer(fitness ~ Line*Generation + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN, REML = TRUE)
+mod2 <- lme4::lmer(fitness ~ Line*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum_allfruits_AN, REML = TRUE)
+MuMIn::model.sel(mod1, mod2)
+
+##Cl: the model with the same generation effect across lines does not increase the likelihood and does not provide a better fit to the data
+
 #Models
-mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_generation<- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s) , 
+mod_all_generation <- lme4::lmer(fitness ~ Generation + (1|Generation:Fruit_s) , 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_fruit_generation<- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation) + (1|Generation:Fruit_s) , 
+mod_all_fruit_generation <- lme4::lmer(fitness ~ Fruit_s+Generation + (1|Generation:Fruit_s) , 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_fruit<- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s) , 
+mod_all_fruit <- lme4::lmer(fitness ~ Fruit_s + (1|Generation:Fruit_s) , 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_line<- lme4::lmer(fitness ~ Line + (1|Generation) + (1|Generation:Fruit_s), 
+mod_all_line <- lme4::lmer(fitness ~ Line + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_null<- lme4::lmer(fitness ~ 1  + (1|Generation) + (1|Generation:Fruit_s), 
+mod_all_null <- lme4::lmer(fitness ~ 1  + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_all_interaction_line_generation <- lme4::lmer(fitness ~ Line*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod_all_interaction_line_generation <- lme4::lmer(fitness ~ Line*Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
-mod_line_generation <- lme4::lmer(fitness ~ Line+Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod_line_generation <- lme4::lmer(fitness ~ Line+Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN, REML = FALSE)
 
 MuMIn::model.sel(mod_all_interaction,mod_all_fruit_generation,mod_all_fruit,mod_all_null,mod_all_generation,mod_all_line,mod_all_interaction_line_generation,mod_line_generation)
@@ -722,21 +732,33 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Fitness8Fruits.pdf"), DYN
 
 ################### PHASE 3
 
-mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
+
+
+## Test for random effects
+mod0 <- lme4::lmer(fitness~ Generation*Line + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = TRUE)
+mod1 <- lme4::lmer(fitness~ Generation*Line + (1|Generation) + (1|Generation:Fruit_s), 
+            weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = TRUE)
+MuMIn::model.sel(mod0, mod1)
+
+## Cl: only a very slight increase in likelihood when adding the second random effect
+
+## Test for fixed effects
+mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod2 <- lme4::lmer(fitness~ Line + (1|Generation) + (1|Generation:Fruit_s), 
+mod2 <- lme4::lmer(fitness~ Line  + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-mod3 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+mod3 <- lme4::lmer(fitness ~ Fruit_s  + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod4 <- lme4::lmer(fitness~ Generation*Line + (1|Generation) + (1|Generation:Fruit_s), 
+mod4 <- lme4::lmer(fitness~ Generation*Line + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-mod5 <- lme4::lmer(fitness~ Generation+Line + (1|Generation) + (1|Generation:Fruit_s), 
+mod5 <- lme4::lmer(fitness~ Generation+Line + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE)
-mod6 <- lme4::lmer(fitness ~ Generation*Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+mod6 <- lme4::lmer(fitness ~ Generation*Fruit_s + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod7 <- lme4::lmer(fitness ~ Generation+Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+mod7 <- lme4::lmer(fitness ~ Generation+Fruit_s + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
-mod8 <- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod8 <- lme4::lmer(fitness ~ Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = FALSE) 
 
 
