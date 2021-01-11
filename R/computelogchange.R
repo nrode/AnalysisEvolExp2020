@@ -13,13 +13,13 @@
 #'
 #'   sd log change with Hedges et al. 1999
 #'
-#'   se(logchange)=sqrt((s1²/n1x1²)+(s2²/n2x2²)) with s1 and s2 the standard deviation of Nt+1 and Nt respesctively,
+#'   se(logchange)=sqrt((s1²/n1x1²)+(s2²/n2x2²)) with s1 and s2 the standard deviation of Nt+1 and Nt respectively,
 #'
 #'   and n1 and n2 the sample size of  Nt+1 and Nt respesctively
 #'
 #'   In our case: x2=N0 and s2=sd N0
 #'
-#'   se(logchange)=sqrt((s1²/n1x1²))=sqrt((sdNt+1²/NNt+1 x meanNt+1²)+(sdN0²/N0 x meanN0²))
+#'   se(logchange)=sqrt(s1²/n1x1²)=sqrt((sdNt+1²/(NNt+1 x meanNt+1²))+(sdN0²/(N0 x meanN0²)))
 #'
 #' @param fitness_dataset_intermediate Intermediate phenotyping dataset created using loadfitnessdata()
 #' @param fitness_dataset_final Final phenotyping dataset created using loadfitnessdata()
