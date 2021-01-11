@@ -21,24 +21,33 @@
 #'
 #'   se(logchange)=sqrt(s1²/n1x1²)=sqrt((sdNt+1²/(NNt+1 x meanNt+1²))+(sdN0²/(N0 x meanN0²)))
 #'
-#' @param fitness_dataset_intermediate Intermediate phenotyping dataset created using loadfitnessdata()
-#' @param fitness_dataset_final Final phenotyping dataset created using loadfitnessdata()
+#' @param fitness_dataset_ancestral phenotyping dataset of the ancestral population created using loadfitnessdata()
+#' @param fitness_dataset_evolved phenotyping dataset of the ancestral population created using loadfitnessdata()
 #' @param trait Trait for which logchange should be computed (e.g. Nb_eggs, Nb_adults, Emergence_rate)
+#' @param gen Generation
+#' @param byRack Compute fitness difference by rack
 #' @return dataset of fitness difference between the phenotyping step and the initial phenotyping step
 #' @export
 #'
 #' @examples
 #'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")
 
-computelogchange <- function(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G60, trait="Nb_adults", gen=60){
+computelogchange <- function(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G60, trait="Nb_adults", gen=7, byRack=FALSE){
 
   # Add generation
   fitness_dataset_evolved$Generation <- as.character(gen)
+  if(byRack){
+    # Calculate mean during phenotyping steps
+    TEMP_data_Gevolved <- Rmisc::summarySE(fitness_dataset_evolved,
+                                           measurevar = trait,
+                                           groupvars = c("Line", "Fruit_s", "Generation", "Rack", "Treatment"))
+  }else{
+    # Calculate mean during phenotyping steps
+    TEMP_data_Gevolved <- Rmisc::summarySE(fitness_dataset_evolved,
+                                           measurevar = trait,
+                                           groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
+  }
 
-  # Calculate mean during phenotyping steps
-  TEMP_data_Gevolved <- Rmisc::summarySE(fitness_dataset_evolved,
-                                         measurevar = trait,
-                                         groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
 
   # Calculate initial mean and sd
   TEMP_mean_G0 <- data.frame(Mean_initial = tapply(fitness_dataset_ancestral[, trait], fitness_dataset_ancestral$Treatment, mean),
