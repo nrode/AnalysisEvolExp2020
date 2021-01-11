@@ -2,3 +2,4 @@
 ^\.Rproj\.user$
 ^\.DS_Store$
 ^data/FitnessData_G60\.xlsx$
+^reports/analysis_G60\.Rmd$
