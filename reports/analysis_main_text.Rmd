@@ -41,9 +41,11 @@ dim(data_G29)
 
 #Compute log change
 ## !! sd_logchange are standard errors, not standard deviations
-data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Nb_adults")
-data_logchangeNb_eggs <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Nb_eggs")
-data_logchangeEmergence_rate <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Emergence_rate")
+data_logchange <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_adults", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_adults", gen=29))
+
+data_logchangeNb_eggs <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_eggs", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_eggs", gen=29))
+
+data_logchangeEmergence_rate <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Emergence_rate", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Emergence_rate", gen=29))
 
 ## Combine datasets
 data_logchangeNb_eggsEmergence_rate <- data.frame(data_logchange, Nb_eggslogchange=data_logchangeNb_eggs$logchange, sdNb_eggslogchange=data_logchangeNb_eggs$sd_logchange, Emergence_ratelogchange=data_logchangeEmergence_rate$logchange, sdEmergence_ratelogchange=data_logchangeEmergence_rate$sd_logchange)
@@ -461,8 +463,6 @@ tapply(data_G0$Emergence_rate, data_G0$Treatment, mean)
 diag(tapply(data_G7$Emergence_rate, list(data_G7$Treatment,data_G7$Fruit_s), mean))
 diag(tapply(data_G29$Emergence_rate, list(data_G29$Treatment,data_G29$Fruit_s), mean))
 
-xyplot(Emergence_ratelogchange~Nb_eggslogchange|Fruit_s*Generation, data=data_logchangeNb_eggsEmergence_rate)
-
 #Plot
 
 Nb_eggsEmergence_rateG7 <- ggplot(data = data_logchangeNb_eggsEmergence_rate[data_logchangeNb_eggsEmergence_rate$Generation==7,],
@@ -484,7 +484,7 @@ Nb_eggsEmergence_rateG7 <- ggplot(data = data_logchangeNb_eggsEmergence_rate[dat
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   theme_LO_sober
- Nb_eggsEmergence_rateG7 <- Nb_eggsEmergence_rateG7 + facet_grid(~ Fruit_s)
+ Nb_eggsEmergence_rateG7 <- Nb_eggsEmergence_rateG7 + facet_wrap(~ Fruit_s)
 
  
  
@@ -507,7 +507,7 @@ Nb_eggsEmergence_rateG7 <- ggplot(data = data_logchangeNb_eggsEmergence_rate[dat
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   theme_LO_sober
-Nb_eggsEmergence_rateG29 <- Nb_eggsEmergence_rateG29 + facet_grid(~ Fruit_s)
+Nb_eggsEmergence_rateG29 <- Nb_eggsEmergence_rateG29 + facet_wrap(~ Fruit_s)
  
 legend_trade <- lemon::g_legend(Nb_eggsEmergence_rateG29)
 
