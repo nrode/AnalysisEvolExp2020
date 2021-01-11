@@ -1,0 +1,66 @@
+---
+title: "Simulation of log fitness change"
+author: "Laure Olazcuaga, Nicolas Rode"
+date: "`r format(Sys.Date(), '%d-%B-%Y')`"
+output: 
+  html_document:
+    theme: "journal"
+    toc: true
+    toc_depth: 3
+    number_sections: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
+editor_options: 
+  chunk_output_type: console
+---
+
+
+```{r setup, include =FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
+devtools::load_all()
+```
+
+
+# DATA
+```{r }
+## Longitudinal data
+data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
+
+## Phenotyping steps
+data_G0 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1")
+data_G7 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G7")
+data_G29 <- loadfitnessdata(dataset = 
+                            "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv",
+                            generation = "29")
+head(data_sum)
+head(data_G0)
+head(data_G7)
+head(data_G29)
+dim(data_G29)
+
+#Compute log change
+## !! sd_logchange are standard errors, not standard deviations
+data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Nb_adults")
+data_logchangeNb_eggs <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Nb_eggs")
+data_logchangeEmergence_rate <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait = "Emergence_rate")
+
+## Combine datasets
+data_logchangeNb_eggsEmergence_rate <- data.frame(data_logchange, Nb_eggslogchange=data_logchangeNb_eggs$logchange, sdNb_eggslogchange=data_logchangeNb_eggs$sd_logchange, Emergence_ratelogchange=data_logchangeEmergence_rate$logchange, sdEmergence_ratelogchange=data_logchangeEmergence_rate$sd_logchange)
+
+#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
+data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+data_logchangeNb_eggs$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+data_logchangeEmergence_rate$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+
+
+#Formatting for testing correlation
+TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
+TEMP_dataG7_CranStraw <- formattinglogchange(data_logchange, "7", "Cranberry", "Strawberry")
+TEMP_dataG7_StrawChe <- formattinglogchange(data_logchange, "7", "Strawberry", "Cherry")
+
+TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", "Cherry", "Cranberry")
+TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", "Cranberry", "Strawberry")
+TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry", "Cherry")
+
+```
