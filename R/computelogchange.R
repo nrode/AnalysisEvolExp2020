@@ -30,28 +30,24 @@
 #' @examples
 #'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")
 
-computelogchange <- function(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults"){
+computelogchange <- function(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G60, trait="Nb_adults", gen=60){
 
   # Add generation
-  fitness_dataset_intermediate$Generation <- "7"
-  fitness_dataset_final$Generation <- "29"
-
-  # Merge intermediate and final
-  fitnessdataset <- rbind(fitness_dataset_intermediate,fitness_dataset_final)
+  fitness_dataset_evolved$Generation <- as.character(gen)
 
   # Calculate mean during phenotyping steps
-  TEMP_data_G7G29 <- Rmisc::summarySE(fitnessdataset,
-                       measurevar = trait,
-                       groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
+  TEMP_data_Gevolved <- Rmisc::summarySE(fitness_dataset_evolved,
+                                         measurevar = trait,
+                                         groupvars = c("Line", "Fruit_s", "Generation", "Treatment"))
 
   # Calculate initial mean and sd
-  TEMP_mean_G1 <- data.frame(Mean_initial = tapply(data_G0[, trait], data_G0$Treatment, mean),
-                         Sd_initial = tapply(data_G0[, trait], data_G0$Treatment, sd),
-                         N_initial = tapply(data_G0[, trait], data_G0$Treatment, length),
-                         Treatment = levels(data_G0$Treatment))
+  TEMP_mean_G0 <- data.frame(Mean_initial = tapply(fitness_dataset_ancestral[, trait], fitness_dataset_ancestral$Treatment, mean),
+                             Sd_initial = tapply(fitness_dataset_ancestral[, trait], fitness_dataset_ancestral$Treatment, sd),
+                             N_initial = tapply(fitness_dataset_ancestral[, trait], fitness_dataset_ancestral$Treatment, length),
+                             Treatment = levels(fitness_dataset_ancestral$Treatment))
 
-  # Merge three phenotyping steps
-  data_logchange <- merge(TEMP_data_G7G29, TEMP_mean_G1, by="Treatment")
+  # Merge two phenotyping steps
+  data_logchange <- merge(TEMP_data_Gevolved, TEMP_mean_G0, by="Treatment")
 
   # Calculate logchange
   data_logchange$logchange <- log(data_logchange[, trait] / data_logchange$Mean_initial)
