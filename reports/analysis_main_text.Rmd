@@ -41,11 +41,11 @@ dim(data_G29)
 
 #Compute log change
 ## !! sd_logchange are standard errors, not standard deviations
-data_logchange <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_adults", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_adults", gen=29))
+data_logchange <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_adults", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_adults", gen=29))
 
-data_logchangeNb_eggs <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_eggs", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_eggs", gen=29))
+data_logchangeNb_eggs <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_eggs", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_eggs", gen=29))
 
-data_logchangeEmergence_rate <- rbind(computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Emergence_rate", gen=7), computelogchangenew(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Emergence_rate", gen=29))
+data_logchangeEmergence_rate <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Emergence_rate", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Emergence_rate", gen=29))
 
 ## Combine datasets
 data_logchangeNb_eggsEmergence_rate <- data.frame(data_logchange, Nb_eggslogchange=data_logchangeNb_eggs$logchange, sdNb_eggslogchange=data_logchangeNb_eggs$sd_logchange, Emergence_ratelogchange=data_logchangeEmergence_rate$logchange, sdEmergence_ratelogchange=data_logchangeEmergence_rate$sd_logchange)
@@ -1683,8 +1683,9 @@ anova(lm_val_G29)[3, 1]
 anova(lm_val_G29)[4, 1]
 
 
-
-
+```
+## Analysis fitness change (partie bizarre)
+```{r }
 
 #####  G29
 ##### 
