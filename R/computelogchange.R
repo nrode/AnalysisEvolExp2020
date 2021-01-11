@@ -32,7 +32,7 @@
 #' @examples
 #'data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")
 
-computelogchange <- function(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G60, trait="Nb_adults", gen=7, byRack=FALSE){
+computelogchange <- function(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G60, trait="Nb_adults", gen = 7, byRack = FALSE){
 
   # Add generation
   fitness_dataset_evolved$Generation <- as.character(gen)
