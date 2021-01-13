@@ -5,3 +5,4 @@
 .DS_Store
 data/FitnessData_G60.xlsx
 reports/analysis_G60.Rmd
+figures/FIG_fitnessG60.pdf
