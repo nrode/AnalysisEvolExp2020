@@ -2,7 +2,7 @@
 % Please edit documentation in R/boot_fitnessdata.R
 \name{boot_fitnessdata}
 \alias{boot_fitnessdata}
-\title{Bootstrap Function That Resample Fitness Date}
+\title{Bootstrap Function}
 \usage{
 boot_fitnessdata(seed, vecindpertube)
 }
@@ -15,7 +15,7 @@ boot_fitnessdata(seed, vecindpertube)
 
 }
 \description{
-Bootstrap Function That Resample Fitness Date
+Bootstrap function that resample fitness data
 }
 \examples{
 bootfunc(seed=1, vecindpertube=sim_derived)
