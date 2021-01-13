@@ -58,6 +58,7 @@ usethis::use_package("lemon")
 usethis::use_package("data.table")
 usethis::use_package("radiant.data")
 usethis::use_package("sjstats")
+usethis::use_package("plyr")
 
 
 ## Update NAMESPACE file

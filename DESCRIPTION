@@ -29,4 +29,5 @@ Imports:
     fitdistrplus,
     ggplot2,
     lme4,
-    sjstats
+    sjstats,
+    plyr
