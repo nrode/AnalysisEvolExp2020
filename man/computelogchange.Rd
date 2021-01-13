@@ -5,17 +5,23 @@
 \title{Calculation difference in fitness: from fitness data to logchange}
 \usage{
 computelogchange(
-  fitness_dataset_intermediate = data_G7,
-  fitness_dataset_final = data_G29,
-  trait = "Nb_adults"
+  fitness_dataset_ancestral = data_G0,
+  fitness_dataset_evolved = data_G60,
+  trait = "Nb_adults",
+  gen = 7,
+  byRack = FALSE
 )
 }
 \arguments{
-\item{fitness_dataset_intermediate}{Intermediate phenotyping dataset created using loadfitnessdata()}
+\item{fitness_dataset_ancestral}{phenotyping dataset of the ancestral population created using loadfitnessdata()}
 
-\item{fitness_dataset_final}{Final phenotyping dataset created using loadfitnessdata()}
+\item{fitness_dataset_evolved}{phenotyping dataset of the ancestral population created using loadfitnessdata()}
 
 \item{trait}{Trait for which logchange should be computed (e.g. Nb_eggs, Nb_adults, Emergence_rate)}
+
+\item{gen}{Generation}
+
+\item{byRack}{Compute fitness difference by rack}
 }
 \value{
 dataset of fitness difference between the phenotyping step and the initial phenotyping step
@@ -31,13 +37,13 @@ logchange=ln((meanNt+1)/mean(Nt))
 
 sd log change with Hedges et al. 1999
 
-se(logchange)=sqrt((s1²/n1x1²)+(s2²/n2x2²)) with s1 and s2 the standard deviation of Nt+1 and Nt respesctively,
+se(logchange)=sqrt((s1²/n1x1²)+(s2²/n2x2²)) with s1 and s2 the standard deviation of Nt+1 and Nt respectively,
 
 and n1 and n2 the sample size of  Nt+1 and Nt respesctively
 
 In our case: x2=N0 and s2=sd N0
 
-se(logchange)=sqrt((s1²/n1x1²))=sqrt((sdNt+1²/NNt+1 x meanNt+1²)+(sdN0²/N0 x meanN0²))
+se(logchange)=sqrt(s1²/n1x1²)=sqrt((sdNt+1²/(NNt+1 x meanNt+1²))+(sdN0²/(N0 x meanN0²)))
 }
 \examples{
 data_sum <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29, trait="Nb_adults")

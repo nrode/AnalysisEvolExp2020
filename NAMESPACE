@@ -3,6 +3,7 @@
 export(boot_fitnessdata)
 export(bootstrap_lmodel2)
 export(computeCIcordifG29G7)
+export(computecorrelation)
 export(computelogchange)
 export(computelogchange_POOL_hypo1)
 export(computelogchange_POOL_hypo2)

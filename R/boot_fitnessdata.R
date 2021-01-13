@@ -1,5 +1,5 @@
-##
-#' Bootstrap Function That Resample Fitness Date
+#' @title Bootstrap Function
+#' @description Bootstrap function that resample fitness data
 #'
 #' @param seed Seed used of reproductibility of results
 #' @param vecindpertube vector with fitness data
