@@ -4,7 +4,13 @@
 \alias{estim_overdisp}
 \title{Analyze A Dataset Using A Negative Binomial Distribution}
 \usage{
-estim_overdisp(colfactorlevel, colfactor, data, generation)
+estim_overdisp(
+  colfactorlevel,
+  colfactor,
+  data,
+  generation,
+  trait = "Nb_adults"
+)
 }
 \arguments{
 \item{colfactorlevel}{Level of factor considered (e.g. cherry)}
@@ -14,6 +20,8 @@ estim_overdisp(colfactorlevel, colfactor, data, generation)
 \item{data}{Dataset considered}
 
 \item{generation}{Generation considered}
+
+\item{trait}{Trait considered (default Nb_adults)}
 }
 \value{
 "number_tubes_counted",
