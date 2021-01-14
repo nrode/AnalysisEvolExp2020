@@ -30,4 +30,5 @@ Imports:
     ggplot2,
     lme4,
     sjstats,
-    plyr
+    plyr,
+    sjPlot
