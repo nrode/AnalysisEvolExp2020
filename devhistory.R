@@ -37,6 +37,8 @@ usethis::use_r("sim_fitnessdata")
 usethis::use_r("boot_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdata")
 usethis::use_r("computemeanvar_fitnessdifferencedata")
+usethis::use_r("bCI_tab")
+
 
 usethis::use_r("computeCIcordifG29G7")
 
@@ -58,6 +60,7 @@ usethis::use_package("lemon")
 usethis::use_package("data.table")
 usethis::use_package("radiant.data")
 usethis::use_package("sjstats")
+usethis::use_package("sjPlot")
 usethis::use_package("plyr")
 
 
