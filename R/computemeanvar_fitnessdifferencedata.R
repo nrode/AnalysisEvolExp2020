@@ -21,12 +21,23 @@ computemeanvar_fitnessdifferencedata <- function(seed=1, ntubes_ancestor=30, N_a
   boot_meanfitness_ancestor <- sapply(1:100, boot_fitnessdata, vecindpertube=fitness_ancestor)
   boot_meanfitness_derived <- sapply(1:100, boot_fitnessdata, vecindpertube=fitness_derived)
   diff_meanfitness <- boot_meanfitness_derived-boot_meanfitness_ancestor
+
+
+  ## Negative binomial model
+  data <- data.frame(fitness=c(fitness_ancestor, fitness_derived), line=c(rep("Anc", ntubes_ancestor), rep("Evolved", ntubes_derived)))
+  mnegbin <- MASS::glm.nb(fitness ~ line, data=data)
+  ## Compute 95CI
+  CIglm <- confint(mnegbin)[2, ]
+
+
   ## Compute quantiles
   quant <- quantile(diff_meanfitness, c(0.025, 0.975))
   quantnormaprox <- 1.96 * sqrt(var(fitness_derived) / (ntubes_derived*mean(fitness_derived)^2) + var(fitness_ancestor)/(ntubes_ancestor*mean(fitness_ancestor)^2))
   quantnormaprox <- c(`2.5%` = log(mean(fitness_derived) / mean(fitness_ancestor)) - quantnormaprox, `97.5%` = log(mean(fitness_derived) / mean(fitness_ancestor)) + quantnormaprox)
+  ## Indicator variables
   indboot <- as.numeric(ifelse(quant[1]<log(N_derived/N_ancestor) & quant[2]>log(N_derived/N_ancestor), 1, 0))
   indnormaprox <- as.numeric(ifelse(quantnormaprox[1]<log(N_derived/N_ancestor) & quantnormaprox[2]>log(N_derived/N_ancestor), 1, 0))
-return(c(expected_meanfitnessdiff=log(N_derived/N_ancestor), observed_meanfitnessdiff = log(mean(fitness_derived)/mean(fitness_ancestor)), bootstrapped_meanfitnessdiff=mean(diff_meanfitness), deltamethod_varfitnessdiff=1/(ntubes_ancestor*N_ancestor) + 1/(ntubes_ancestor*theta_ancestor) + 1/(ntubes_derived*ntubes_derived) + 1/(ntubes_derived*theta_derived), deltamethod_varestimfitnessdiff=var(fitness_ancestor)/(ntubes_ancestor*mean(fitness_ancestor)^2)+var(fitness_derived)/(ntubes_derived*mean(fitness_derived)^2), boot_varestimfitnessdiff=var(diff_meanfitness), CIboot=quant, indicboot=indboot, CInormapprox=quantnormaprox, indicnormapprox=indnormaprox))
+  indglm <- as.numeric(ifelse(CI[1]<log(N_derived/N_ancestor) & CI[2]>log(N_derived/N_ancestor), 1, 0))
+return(c(expected_meanfitnessdiff=log(N_derived/N_ancestor), observed_meanfitnessdiff = log(mean(fitness_derived)/mean(fitness_ancestor)), bootstrapped_meanfitnessdiff=mean(diff_meanfitness), deltamethod_varfitnessdiff=1/(ntubes_ancestor*N_ancestor) + 1/(ntubes_ancestor*theta_ancestor) + 1/(ntubes_derived*ntubes_derived) + 1/(ntubes_derived*theta_derived), deltamethod_varestimfitnessdiff=var(fitness_ancestor)/(ntubes_ancestor*mean(fitness_ancestor)^2)+var(fitness_derived)/(ntubes_derived*mean(fitness_derived)^2), boot_varestimfitnessdiff=var(diff_meanfitness), CIboot=quant, indicboot=indboot, CInormapprox=quantnormaprox, indicnormapprox=indnormaprox, CIglm=CIglm, indglm=indglm))
 
 }
