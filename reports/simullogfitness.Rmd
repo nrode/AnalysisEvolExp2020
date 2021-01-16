@@ -213,7 +213,7 @@ computemeanvar_fitnessdifferencedata(seed=1, ntubes_ancestor=30, N_ancestor=25, 
 ## Check the reliability of the bootstrap procedure
 ```{r }
 ## Check the function for a set of realistic parameters
-sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)))
+sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)))
 
 ## Variance estimates ~ OK
 hist(sim$boot_varestimfitnessdiff, xlab="Variance estimate based on boostrap")
@@ -222,6 +222,7 @@ abline(v=sim$deltamethod_varfitnessdiff, col="red")
 ## 95% confidence interval is actually a 90% CI
 mean(sim$indicboot)
 mean(sim$indicnormapprox)
+mean(sim$indicglm)
 
 ## Check the influence of the number of tubes on power
 Ntube <- seq(4, 32, by=1)
@@ -230,24 +231,27 @@ Ntube <- seq(4, 32, by=1)
 bias <- c()
 coverageboot <- c()
 coveragenormapprox <- c()
+coverageglm <- c()
 
 for (ntubes_tested in Ntube){
-  sim <- data.frame(t(sapply(1:10000, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=25, theta_ancestor=3, ntubes_derived=ntubes_tested, N_derived=30, theta_derived=3)))
+  sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=25, theta_ancestor=3, ntubes_derived=ntubes_tested, N_derived=30, theta_derived=3)))
   bias <- c(bias, mean(sim$expected_meanfitnessdiff-sim$observed_meanfitnessdiff))
   coverageboot <- c(coverageboot, mean(sim$indicboot))
   coveragenormapprox <- c(coveragenormapprox, mean(sim$indicnormapprox))
+  coverageglm <- c(coverageglm, mean(sim$indicglm))
 }
 
 ## No bias
 data.frame(Ntube, bias)
 ## Check coverage
-data.frame(Ntube, coveragenormapprox)
+data.frame(Ntube, coveragenormapprox, coverageglm)
 
 pdf(file="figures/FIG_SX_confidenceinterval_Nb_adults.pdf")
 
-plot(Ntube, coveragenormapprox, xlab="Number of vials", ylab="Coverage of the confidence interval", xlim=c(0, 30), ylim=c(0, 1), las=1, type="l", xaxt='n', lty=1, bty='n')
+plot(Ntube, coverageglm, xlab="Number of vials", ylab="Coverage of the confidence interval", xlim=c(0, 30), ylim=c(0, 1), las=1, type="l", xaxt='n', lty=1, bty='n')
 axis(1, at=seq(0, 30, by=10))
 abline(h=0.95, col="red", lwd=2)
+#lines(Ntube, coveragenormapprox, lty=2)
 
 dev.off()
 ```
