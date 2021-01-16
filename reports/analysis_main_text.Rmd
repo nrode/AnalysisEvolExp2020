@@ -23,6 +23,7 @@ devtools::load_all()
 
 
 # DATA
+## Load data
 ```{r }
 ## Longitudinal data
 data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
@@ -38,6 +39,22 @@ head(data_G0)
 head(data_G7)
 head(data_G29)
 dim(data_G29)
+
+## Add line variable
+levels(data_G0$Line) <- rep("Anc", nlevels(data_G0$Line))
+## Combine datsets
+data <- rbind(data_G0, data_G7, data_G29)
+data <- data.frame(Generation = c(rep("0", nrow(data_G0)), rep("7", nrow(data_G7)), rep("29", nrow(data_G29))), data, Obs= as.factor(1:nrow(data)))
+head(data)
+
+## New variable for analyses
+data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit_s, data$Treatment, sep="_"))
+data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
+data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
+
+
+## Je pense qu'on peut suprimer le code de la ligne 56 à la ligne 83 et utiliser celui des sections suivantes
+
 
 #Compute log change
 ## !! sd_logchange are standard errors, not standard deviations
@@ -67,6 +84,107 @@ TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry",
 
 ```
 
+## Compute fitess change per population
+### Fitness
+```{r }
+
+mfitness <- MASS::glm.nb(Nb_adults ~ -1+Treatment+Line:Treatment, data=data)
+summary(mfitness)
+
+CIfitness <- confint(mfitness)
+```
+
+### Fecundity
+```{r }
+
+mfecundity <- MASS::glm.nb(Nb_eggs ~ -1+Treatment+Line:Treatment, data=data)
+summary(mfecundity)
+
+CIfecundity <- confint(mfecundity)
+
+```
+### Egg-to-adult viability
+```{r }
+## 4 tubes with more adults than eggs
+sum(data$Nb_adults>data$Nb_eggs)
+
+## Number of adults=number of eggs
+data$Nb_eggs[data$Nb_adults>data$Nb_eggs] <- data$Nb_adults[data$Nb_adults>data$Nb_eggs]
+
+## Fit model
+megg_to_ad <- glm(cbind(Nb_adults, Nb_eggs) ~ -1+Treatment+Line:Treatment, data=data, family="binomial")
+summary(megg_to_ad)
+
+CImegg_to_ad <- confint(megg_to_ad)
+
+```
+## Build data_logchange dataset
+```{r }
+## Extract all CIs
+## J'ai garder le nom logchange pour que le code pour la Fig. 4 marche, mais je pense que ça vaudrait le coup que le nom soit plus informatif, comme logfitnesschange par exemple
+data_logchange <- data.frame(logchange=coef(mfitness),  lowCIlogfitnesschange=CIfitness[, 1],  upCIlogfitnesschange=CIfitness[, 2], logfecundchange=coef(mfecundity),  lowCIlogfecundchange=CIfecundity[, 1],  upCIlogfecundchange=CIfecundity[, 2], logeggtoadchange=coef(megg_to_ad),  lowCIlogeggtoadchange=CImegg_to_ad[, 1],  upCIlogeggtoadchange=CImegg_to_ad[, 2])
+head(data_logchange)
+
+## Remove estimates from ancestral population
+data_logchange <- data_logchange[4:nrow(data_logchange), ]
+  
+## Extract information regarding line, selective and test media
+rowname <- strsplit(rownames(data_logchange), split=":")
+Treatment <- as.factor(gsub("Treatment", "", lapply(rowname, `[[`, 1)))
+Generation <- Line <- as.factor(gsub("Line", "", lapply(rowname, `[[`, 2)))
+## Change Fruit_s levels
+Fruit_s <- as.factor(substr(Line, 1, 2))
+levels(Fruit_s) <- levels(Treatment)
+## Change levels
+levels(Generation) <- ifelse(is.na(as.numeric(substr(levels(Generation), 3, 3))), "29", "7")
+
+## Combine data
+data_info <- data.frame(Treatment, Line, Fruit_s, Generation)
+data_info$Line_Treatement <- paste(data_info$Line, data_info$Treatment, sep="_")
+# Add symp and allop
+data_info$SA <- ifelse(data_info$Treatment == data_info$Fruit_s , 1, 0)
+
+## Compute sample size per line and test medium
+sample_size <- aggregate(Nb_eggs~Line:Treatment, length, data=data[data$Generation!="0",])
+sample_size$Line_Treatement <- paste(sample_size$Line, sample_size$Treatment, sep="_")
+names(sample_size)[3] <- "N"
+
+## Merge the three datasets
+data_logchange <- data.frame(merge(x=data_info, y=sample_size[, 3:4], by="Line_Treatement"), data_logchange)[, -1]
+
+head(data_logchange)
+```
+## Build sympatric/allopatric datasets
+```{r }
+## Proposition de fonction simplifiée
+formattinglogchange <- function(logchange_dataset = data_logchange, generation="29", fruitcomb=c("Cherry", "Cranberry")){
+## Extract sympatric combinations
+TEMP_symp <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==1,]
+names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "symp")
+
+## Extract allopatric combinations
+TEMP_allop <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==0,]
+names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "allop")
+
+  ## Combine datasets
+  if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+    return(data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9]))
+  }else{
+    print("Error: sympatric and allopatric datasets are not in the same order")
+  }
+
+}
+
+
+#Formatting for testing correlation
+TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry"))
+TEMP_dataG7_CranStraw <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Strawberry", "Cranberry"))
+TEMP_dataG7_StrawChe <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Strawberry"))
+
+TEMP_dataG29_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="29", fruitcomb=c("Cherry", "Cranberry"))
+TEMP_dataG29_CranStraw <- formattinglogchange(logchange_dataset = data_logchange, generation="29", fruitcomb=c("Strawberry", "Cranberry"))
+TEMP_dataG29_StrawChe <- formattinglogchange(logchange_dataset = data_logchange, generation="29", fruitcomb=c("Cherry", "Strawberry"))
+```
 
 # ADAPTATION
 ## Proportion of adaptation: raw data
@@ -451,7 +569,206 @@ cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),
                    SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
 
 ```
+## Analysis fitness
+### Compare fit of Poisson lognormal and negative binomial distributions
+```{r }
+## Poisson lognormal model
+mpoislognormal <- lme4::glmer(Nb_adults ~ Generation*Fruit_s*Treatment + (1|Obs), family="poisson", data=data)
+summary(mpoislognormal)
 
+## Check convergence
+derivs1 <- mpoislognormal@optinfo$derivs
+sc_grad1 <- with(derivs1,solve(Hessian,gradient))
+max(abs(sc_grad1))
+
+## Negative binomial model
+mnegbin <- MASS::glm.nb(Nb_adults ~ Generation*Fruit_s*Treatment, data=data)
+
+## Compare AIC
+AIC(mnegbin, mpoislognormal)
+
+
+## Simulate data with Poisson lognormal distribution
+x.teo.poislognormal <- unlist(simulate(mpoislognormal))
+x.teo.negbin <- unlist(simulate(mnegbin))
+
+
+## QQplot to compared Negative binomial and Poisson log normal distributions
+qqplot(data$Nb_adults, x.teo.negbin, main="QQ-plot", xlab="Observed data", ylab="Simulated data", las=1, xlim = c(0, 100), ylim = c(0, 100)) ## QQ-plot
+points(sort(data$Nb_adults), sort(x.teo.poislognormal), pch=1, col='red')
+abline(0,1)
+## Add legend
+legend(0, 70, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), pch=1, bty="n")
+
+## Negative binomial distribution provides a better fit to the data
+```
+### Compare average fitess changes
+```{r }
+
+m0 <- MASS::glm.nb(Nb_adults ~ Generation*Fruit_s, data=data)
+summary(m0)
+
+## G7: fitness increase for strawberry populations, fitness increased for cherry and cranberry populations
+## G29: fitness increase for strawberry populations, no fitness change for cherry and cranberry populations
+
+m1 <- MASS::glm.nb(Nb_adults ~ -1 + Generation_Fruit_s_Treatment, data=data)
+summary(m1)
+## G0: no difference among different fruit media
+## G7: fitness increase for strawberry populations on strawberry, but not on cherry or cranberry fruit media
+## G7: no fitness change for cherry or cranberry populations
+
+## G29: fitness increase for cherry populations on cherry medium, but not on strawberry or cranberry medium
+## G29: fitness increase for strawberry populations on strawberry medium, but no change on cranberry medium and fitness decrease on cherry medium
+## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
+
+m2 <- lme4::glmer.nb(Nb_adults ~ -1+ Generation_Fruit_s_Treatment + (1|Line), data = data, verbose=TRUE)
+summary(m2)
+MuMIn::model.sel(m0, m1, m2)
+
+## Get overdispersion parameter
+getME(m2, "glmer.nb.theta")
+
+## Check residuals for the different experimental populations
+plot(m2, resid(.) ~ as.numeric(Line))
+
+## Check random effect
+sjPlot::plot_model(m2, type="re", dot.size=1.5, group.terms = c(1, rep(2, nlevels(data_G7$Line)), rep(3, nlevels(data_G29$Line))))
+
+mySumm <- function(.) {
+    c(beta=c(fixef(.)[1:3], fixef(.)[13:21] - rep(fixef(.)[1:3], 3), fixef(.)[4:12] - rep(fixef(.)[1:3], 3)), sigma=sqrt(unlist(VarCorr(.))))
+}
+
+boo01 <- lme4::bootMer(m2, mySumm, nsim = 500, re.form = NA)
+
+head(data.frame(boo01))
+
+## Extract all CIs
+bCI_tab(boo01)
+
+## G0: no difference among different fruit media (beta.TreatmentrelCherry / beta.TreatmentrelCranberry include zero)
+## G7: no fitness change for strawberry, cherry or cranberry populations
+
+## G29: fitness increase for cherry populations on cherry medium, but not on strawberry or cranberry medium
+
+## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
+
+## G29: strawberry population with no change on strawberry or cranberry medium and fitness decrease on cherry medium
+```
+
+## Analysis fecundity
+### Compare fit of Poisson lognormal and negative binomial distributions
+```{r }
+## Poisson lognormal model
+mpoislognormal <- lme4::glmer(Nb_eggs ~ Generation*Fruit_s*Treatment + (1|Obs), family="poisson", data=data)
+summary(mpoislognormal)
+
+## Check convergence
+derivs1 <- mpoislognormal@optinfo$derivs
+sc_grad1 <- with(derivs1,solve(Hessian,gradient))
+max(abs(sc_grad1))
+
+## Negative binomial model
+mnegbin <- MASS::glm.nb(Nb_eggs ~ Generation*Fruit_s*Treatment, data=data)
+
+## Compare AIC
+AIC(mnegbin, mpoislognormal)
+
+
+## Simulate data with Poisson lognormal distribution
+x.teo.poislognormal <- unlist(simulate(mpoislognormal))
+x.teo.negbin <- unlist(simulate(mnegbin))
+
+
+## QQplot to compared Negative binomial and Poisson log normal distributions
+qqplot(data$Nb_eggs, x.teo.negbin, main="QQ-plot", xlab="Observed data", ylab="Simulated data", las=1, xlim = c(0, 100), ylim = c(0, 100)) ## QQ-plot
+points(sort(data$Nb_eggs), sort(x.teo.poislognormal), pch=1, col='red')
+abline(0,1)
+## Add legend
+legend(0, 70, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), pch=1, bty="n")
+
+## Negative binomial distribution provides a better fit to the data
+```
+### Compare changes in fecundity
+```{r }
+
+m0 <- MASS::glm.nb(Nb_eggs ~ Generation*Fruit_s, data=data)
+summary(m0)
+
+m1 <- MASS::glm.nb(Nb_eggs ~ -1 + Generation_Fruit_s_Treatment, data=data)
+summary(m1)
+
+m2 <- lme4::glmer.nb(Nb_eggs ~ -1 + Generation_Fruit_s_Treatment + (1|Line), data = data, verbose=TRUE)
+summary(m2)
+
+MuMIn::model.sel(m0, m1, m2)
+
+m3 <- lme4::glmer.nb(Nb_eggs ~ Generation*Fruit_s*Treatmentrel + (1|Line), data = data, verbose=TRUE)
+summary(m3)
+
+## Get overdispersion parameter
+getME(m2, "glmer.nb.theta")
+
+## Check residuals for the different experimental populations
+plot(m2, resid(.) ~ as.numeric(Line))
+
+boo01 <- lme4::bootMer(m2, mySumm, nsim = 50, re.form = NA)
+
+head(data.frame(boo01))
+
+## Extract CI
+bCI_tab(boo01)
+
+## G0: no difference among different fruit media (beta.TreatmentrelCherry / beta.TreatmentrelCranberry include zero)
+## G7: no fitness change for strawberry, cherry or cranberry populations
+
+## G29: fitness increase for cherry populations on cherry and cranberry medium, but not on strawberry medium
+
+## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
+
+## G29: strawberry population with no change on strawberry or cranberry medium and fitness decrease on cherry medium
+```
+
+## Analysis egg-to-adult viability
+
+```{r }
+head(data)
+
+
+
+m0 <- glm(cbind(Nb_adults, Nb_eggs) ~ Generation*Fruit_s, data=data, family="binomial")
+summary(m0)
+
+m1 <- glm(cbind(Nb_adults, Nb_eggs) ~ -1 + Generation_Fruit_s_Treatment, data=data, family="binomial")
+summary(m1)
+
+m2 <- lme4::glmer(cbind(Nb_adults, Nb_eggs) ~ -1 + Generation_Fruit_s_Treatment + (1|Line), data = data, verbose=TRUE, family="binomial")
+summary(m2)
+MuMIn::model.sel(m0, m1, m2)
+
+## Check residuals for the different experimental populations
+plot(m2, resid(.) ~ as.numeric(Line))
+
+boo01 <- lme4::bootMer(m2, mySumm, nsim = 500, re.form = NA)
+
+head(data.frame(boo01))
+
+## Extract CI
+bCI_tab(boo01)
+
+## G0: no difference among different fruit media (beta.TreatmentrelCherry / beta.TreatmentrelCranberry include zero)
+## G7: no fitness change for strawberry, cherry or cranberry populations
+
+## G29: fitness increase for cherry populations on cherry and cranberry medium, but not on strawberry medium
+
+## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
+
+## G29: strawberry population with no change on strawberry or cranberry medium and fitness decrease on cherry medium
+
+
+m3 <- lme4::glmer(cbind(Nb_adults, Nb_eggs) ~ -1 + Generation*Fruit_s*Treatmentrel + (1|Line), data = data, verbose=TRUE, family="binomial")
+
+summary(m3)
+```
 # CORRELATED RESPONSES 
 ## Analysis MA and correlation
 ```{r}
