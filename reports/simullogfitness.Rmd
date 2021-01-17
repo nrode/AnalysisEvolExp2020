@@ -209,8 +209,7 @@ computemeanvar_fitnessdifferencedata(seed=1, ntubes_ancestor=30, N_ancestor=25, 
 
 ```
 
-
-## Check the reliability of the bootstrap procedure
+## Check the coverage of the 95% CI
 ```{r }
 ## Check the function for a set of realistic parameters
 sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=25, theta_ancestor=3, ntubes_derived=30, N_derived=30, theta_derived=3)))
@@ -256,7 +255,7 @@ abline(h=0.95, col="red", lwd=2)
 dev.off()
 ```
 
-# Check delta method approximation for the number of eggs
+# Check fecundity difference between ancestral and evolved populations
 ## Compare estimates per experimental population
 ```{r }
 
@@ -277,13 +276,9 @@ levels(overdisp$fruit) <- c("Cherry", "Cherry", "Cranberry", "Cranberry", "Straw
 ## Sort final dataset
 overdisp[order(overdisp$fruit, overdisp$generation, overdisp$fitted_mean_nb_eggs),]
 
-## Check standardized mean
-overdisp[as.numeric(as.character(overdisp$standardized_mean_small_sample))<3, ]
-## All population pass Geary's test (the threshold of a standardized mean greater than 3)
-
 ```
 
-## Check the reliability of the bootstrap procedure
+## Check the coverage of the 95% CI
 ```{r }
 ## Check the function for a set of realistic parameters
 sim <- data.frame(t(sapply(1:1000, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=150, theta_ancestor=9, ntubes_derived=30, N_derived=180, theta_derived=9)))
@@ -295,6 +290,7 @@ abline(v=sim$deltamethod_varfitnessdiff, col="red")
 ## 95% confidence interval is actually a 90% CI
 mean(sim$indicboot)
 mean(sim$indicnormapprox)
+mean(sim$indicglm)
 
 ## Check the influence of the number of tubes on power
 Ntube <- seq(4, 32, by=1)
@@ -303,20 +299,22 @@ Ntube <- seq(4, 32, by=1)
 bias <- c()
 coverageboot <- c()
 coveragenormapprox <- c()
+coverageglm <- c()
 
 for (ntubes_tested in Ntube){
   sim <- data.frame(t(sapply(1:500, computemeanvar_fitnessdifferencedata, ntubes_ancestor=100, N_ancestor=150, theta_ancestor=9, ntubes_derived=ntubes_tested, N_derived=180, theta_derived=9)))
   bias <- c(bias, mean(sim$expected_meanfitnessdiff-sim$observed_meanfitnessdiff))
   coverageboot <- c(coverageboot, mean(sim$indicboot))
   coveragenormapprox <- c(coveragenormapprox, mean(sim$indicnormapprox))
+  coverageglm <- c(coverageglm, mean(sim$indicglm))
 }
 
 ## No bias
 data.frame(Ntube, bias)
 ## Check coverage
-data.frame(Ntube, coveragenormapprox)
+data.frame(Ntube, indicglm)
 
-plot(Ntube, coveragenormapprox, xlab="Number of vials", ylab="Coverage of the confidence interval", xlim=c(0, 30), ylim=c(0, 1), las=1, type="l", xaxt='n', lty=1, bty='n')
+plot(Ntube, indicglm, xlab="Number of vials", ylab="Coverage of the confidence interval", xlim=c(0, 30), ylim=c(0, 1), las=1, type="l", xaxt='n', lty=1, bty='n')
 axis(1, at=seq(0, 30, by=10))
 abline(h=0.95, col="red", lwd=2)
 
