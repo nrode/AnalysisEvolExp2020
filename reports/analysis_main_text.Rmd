@@ -122,6 +122,10 @@ CImegg_to_ad <- confint(megg_to_ad)
 ```{r }
 ## Extract all CIs
 ## J'ai garder le nom logchange pour que le code pour la Fig. 4 marche, mais je pense que ça vaudrait le coup que le nom soit plus informatif, comme logfitnesschange par exemple
+## Check that the coef are in the same order
+identical(names(coef(mfitness)), names(coef(mfecundity)))
+identical(names(coef(mfitness)), names(coef(megg_to_ad)))
+
 data_logchange <- data.frame(logchange=coef(mfitness),  lowCIlogfitnesschange=CIfitness[, 1],  upCIlogfitnesschange=CIfitness[, 2], logfecundchange=coef(mfecundity),  lowCIlogfecundchange=CIfecundity[, 1],  upCIlogfecundchange=CIfecundity[, 2], logeggtoadchange=coef(megg_to_ad),  lowCIlogeggtoadchange=CImegg_to_ad[, 1],  upCIlogeggtoadchange=CImegg_to_ad[, 2])
 head(data_logchange)
 
@@ -150,7 +154,10 @@ sample_size$Line_Treatement <- paste(sample_size$Line, sample_size$Treatment, se
 names(sample_size)[3] <- "N"
 
 ## Merge the three datasets
-data_logchange <- data.frame(merge(x=data_info, y=sample_size[, 3:4], by="Line_Treatement"), data_logchange)[, -1]
+data_info <- merge(x=data_info, y=sample_size[, 3:4], by="Line_Treatement")
+data_info$Line_Treatment <- paste0("Treatment", data_info$Treatment, ":Line", data_info$Line)
+data_logchange$Line_Treatment <- rownames(data_logchange)
+data_logchange <- merge(x=data_info, y=data_logchange, by = "Line_Treatment")[, -c(1, 2)]
 
 head(data_logchange)
 ```
@@ -569,6 +576,289 @@ cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),
                    SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
 
 ```
+
+## Plot fecundity
+```{r }
+pd <-  position_dodge(width = 0.5)
+
+################### INTERMEDIATE PHENOTYPING
+# Re-order levels of Line
+data_sum_G7 <- data_logchange[data_logchange$Generation == "7",]
+data_sum_G7$Line <- factor(data_sum_G7$Line, levels= c("CE2", "CE1", "CE4", "CE3",
+                                                       "CR2", "CR3", "CR5", "CR1", "CR4",
+                                                       "FR2", "FR3", "FR5", "FR1", "FR4"))
+
+#Plot: 
+symp_allop_g7 <- ggplot(data = data_sum_G7, 
+                      aes(x = Line, y = logfecundchange, group = Treatment, 
+                          color = Fruit_s, shape = Treatment, fill = Fruit_s)) + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+  geom_errorbar(aes(ymin = lowCIlogfecundchange, 
+                    ymax =upCIlogfecundchange, linetype = "dashed"),
+                  width = 0.2, size = 0.5, alpha = 0.6, position = pd) + 
+  geom_point(position = pd, fill = "white", size =3) + 
+  ylab("Change in log fecundity between\nintermediate and initial phenotyping steps")  + 
+  xlab("Populations") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  guides(color = FALSE,
+           shape = guide_legend(override.aes = list(fill = c("black")))) + 
+  scale_shape_manual(values = c(21, 22, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  theme_LO_sober + theme(axis.text.x  = element_blank()) +
+  coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 15),clip = "off") + 
+  ggtitle("Intermediate phenotyping step") + 
+  annotate("text", x = 2.5, y =1.5, label = 'bold(" Evolved\non cherry")',
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
+  annotate("text", x = 7.5, y =1.5, label = 'bold("   Evolved\non cranberry")',
+                     size =3,colour = "#FDB424",parse = TRUE) + 
+  annotate("text", x = 12.5, y =1.5, label = 'bold("   Evolved\non strawberry")',
+                     size =3,colour = "#3FAA96",parse = TRUE)
+symp_allop_g7
+
+################### FINAL PHENOTYPING
+
+# Re-order levels of Line
+data_sum_G29 <- data_logchange[data_logchange$Generation == "29",]
+data_sum_G29$Line <- factor(data_sum_G29$Line, levels = c("CEA", "CEB", "CEC", 
+                                                          "CRD", "CRA", "CRC", "CRB", "CRE",
+                                                          "FRA", "FRC", "FRB"))
+
+symp_allop_G29 <- ggplot(data = data_sum_G29, 
+              aes(x = Line, y=logfecundchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+      geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+    geom_point(size =3, position = pd) + 
+    geom_errorbar(aes(ymin =lowCIlogfecundchange, ymax =upCIlogfecundchange),
+                width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
+    ylab("Change in log fecundity between\nfinal and initial phenotyping steps")  + 
+    xlab("Populations") + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
+    guides(fill = FALSE, alpha = FALSE) + 
+    scale_shape_manual(values = c(21, 22, 24)) + 
+    scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    theme_LO_sober + theme(axis.text.x  = element_blank()) +
+    coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") + 
+  annotate("text", x = 2, y =1.5, label = 'bold(" Evolved\non cherry")',
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
+  annotate("text", x = 6, y =1.5, label = 'bold("   Evolved\non cranberry")',
+                     size =3,colour = "#FDB424",parse = TRUE) + 
+  annotate("text", x = 10, y =1.5, label = 'bold("   Evolved\non strawberry")',
+                     size =3,colour = "#3FAA96",parse = TRUE) + 
+  ggtitle("Final phenotyping step") 
+symp_allop_G29
+
+
+
+## Je te laisse revoir le script à partir d'ici pour mettre symp_allop_G7 et symp_allop_G29 sur une même figure 
+
+### Add stroke
+DIF_FITNESS_G7 <- symp_allop_g7 + 
+  geom_point(aes(alpha = SA, color = interaction(SA, Fruit_s)), position = pd, size =3, stroke =1.5, fill = "white") + 
+  scale_alpha_manual(values = c(0, 1)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
+DIF_FITNESS_G7
+
+DIF_FITNESS_G29 <- symp_allop_G29 + geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5) + 
+      scale_alpha_manual(values = c(0, 1)) + 
+      scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
+DIF_FITNESS_G29
+
+
+plot_legend <- ggplot(data = data_logchange, aes(x = Line, y=logchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+    geom_point(size =3, position = pd) + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
+    scale_shape_manual(values = c(21, 22, 24)) + 
+    scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    theme_LO_sober + 
+    guides(fill = FALSE) + 
+    theme(legend.key.size = unit(0.5, "cm"),
+        axis.text.x  = element_blank()) +
+    coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") 
+
+
+###########################################################
+#############################################ALL PLOT
+legend_trade <- lemon::g_legend(plot_legend)
+    
+
+SYMP_ALLOP_TOTAL <- cowplot::ggdraw() + 
+  cowplot::draw_plot(DIF_FITNESS_G7 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
+            x = 0, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot(DIF_FITNESS_G29 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
+            x = 0, y = 0, width = 1, height = 0.5) + 
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0, 0), y = c(1, 0.5), 
+                  size = 14) + 
+  cowplot::draw_plot(legend_trade, x = 0.93, y = 0.5, width = 0.001, height = 0.001) 
+
+DIF_FITNESS_G7Nb_eggs <- DIF_FITNESS_G7
+DIF_FITNESS_G29Nb_eggs <- DIF_FITNESS_G29
+
+cowplot::save_plot(file =here::here("figures", "FIG_SX_HeterogeneityNb_eggs.pdf"),  
+                   SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
+
+```
+
+## Plot egg-to-adult viability
+```{r }
+pd <-  position_dodge(width = 0.5)
+
+
+
+################### INTERMEDIATE PHENOTYPING
+
+# Re-order levels of Line
+data_sum_G7 <- data_logchange[data_logchange$Generation == "7",]
+data_sum_G7$Line <- factor(data_sum_G7$Line, levels= c("CE2", "CE1", "CE4", "CE3",
+                                                       "CR2", "CR3", "CR5", "CR1", "CR4",
+                                                       "FR2", "FR3", "FR5", "FR1", "FR4"))
+
+#Plot: 
+symp_allop_g7 <- ggplot(data = data_sum_G7, 
+                      aes(x = Line, y = logeggtoadchange, group = Treatment, 
+                          color = Fruit_s, shape = Treatment, fill = Fruit_s)) + 
+  geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+  geom_errorbar(aes(ymin = lowCIlogeggtoadchange, 
+                    ymax =upCIlogeggtoadchange, linetype = "dashed"),
+                  width = 0.2, size = 0.5, alpha = 0.6,position = pd) + 
+  geom_point(position = pd, fill = "white", size =3) + 
+  ylab("Change in logit egg-to-adult viability\nbetween intermediate and initial phenotyping steps")  + 
+  xlab("Populations") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  guides(color = FALSE,
+           shape = guide_legend(override.aes = list(fill = c("black")))) + 
+  scale_shape_manual(values = c(21, 22, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+  theme_LO_sober + theme(axis.text.x  = element_blank()) +
+  coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 15),clip = "off") + 
+  ggtitle("Intermediate phenotyping step") + 
+  annotate("text", x = 2.5, y =1.5, label = 'bold(" Evolved\non cherry")',
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
+  annotate("text", x = 7.5, y =1.5, label = 'bold("   Evolved\non cranberry")',
+                     size =3,colour = "#FDB424",parse = TRUE) + 
+  annotate("text", x = 12.5, y =1.5, label = 'bold("   Evolved\non strawberry")',
+                     size =3,colour = "#3FAA96",parse = TRUE)
+symp_allop_g7
+
+################### FINAL PHENOTYPING
+
+# Re-order levels of Line
+data_sum_G29 <- data_logchange[data_logchange$Generation == "29",]
+data_sum_G29$Line <- factor(data_sum_G29$Line, levels = c("CEA", "CEB", "CEC", 
+                                                          "CRD", "CRA", "CRC", "CRB", "CRE",
+                                                          "FRA", "FRC", "FRB"))
+
+symp_allop_G29 <- ggplot(data = data_sum_G29, 
+              aes(x = Line, y=logeggtoadchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+      geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
+    geom_point(size =3, position = pd) + 
+    geom_errorbar(aes(ymin =lowCIlogeggtoadchange, ymax =upCIlogeggtoadchange),
+                width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
+    ylab("Change in logit egg-to-adult viability\nbetween final and initial phenotyping steps")  + 
+    xlab("Populations") + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
+    guides(fill = FALSE, alpha = FALSE) + 
+    scale_shape_manual(values = c(21, 22, 24)) + 
+    scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    theme_LO_sober + theme(axis.text.x  = element_blank()) +
+    coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") + 
+  annotate("text", x = 2, y =1.5, label = 'bold(" Evolved\non cherry")',
+                     size =3,colour = "#BC3C6D",parse = TRUE) + 
+  annotate("text", x = 6, y =1.5, label = 'bold("   Evolved\non cranberry")',
+                     size =3,colour = "#FDB424",parse = TRUE) + 
+  annotate("text", x = 10, y =1.5, label = 'bold("   Evolved\non strawberry")',
+                     size =3,colour = "#3FAA96",parse = TRUE) + 
+  ggtitle("Final phenotyping step") 
+symp_allop_G29
+
+
+
+## Je te laisse revoir le script à partir d'ici pour mettre symp_allop_G7 et symp_allop_G29 sur une même figure 
+##################################################################################################################
+
+### Add stroke
+DIF_FITNESS_G7 <- symp_allop_g7 + 
+  geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5, fill = "white") + 
+  scale_alpha_manual(values = c(0, 1)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
+DIF_FITNESS_G7
+
+DIF_FITNESS_G29 <- symp_allop_G29 + geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5) + 
+      scale_alpha_manual(values = c(0, 1)) + 
+      scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
+DIF_FITNESS_G29
+
+
+plot_legend <- ggplot(data = data_logchange, aes(x = Line, y=logchange, group = Treatment, 
+                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+    geom_point(size =3, position = pd) + 
+    labs(shape = "Test fruit", color = "Selection fruit") + 
+    scale_shape_manual(values = c(21, 22, 24)) + 
+    scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
+    theme_LO_sober + 
+    guides(fill = FALSE) + 
+    theme(legend.key.size = unit(0.5, "cm"),
+        axis.text.x  = element_blank()) +
+    coord_cartesian(expand = FALSE, ylim = c(-2, 2), xlim=c(0, 11),clip = "off") 
+
+
+###########################################################
+#############################################ALL PLOT
+legend_trade <- lemon::g_legend(plot_legend)
+    
+
+SYMP_ALLOP_TOTAL <- cowplot::ggdraw() + 
+  cowplot::draw_plot(DIF_FITNESS_G7 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
+            x = 0, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot(DIF_FITNESS_G29 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
+            x = 0, y = 0, width = 1, height = 0.5) + 
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0, 0), y = c(1, 0.5), 
+                  size = 14) + 
+  cowplot::draw_plot(legend_trade, x = 0.93, y = 0.5, width = 0.001, height = 0.001) 
+
+SYMP_ALLOP_TOTAL
+
+
+cowplot::save_plot(file =here::here("figures", "FIG_SX_HeterogeneityEgg-to-adultviability.pdf"),  
+                   SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
+
+
+
+SYMP_ALLOP_TOTAL <- cowplot::ggdraw() + 
+  cowplot::draw_plot(DIF_FITNESS_G7Nb_eggs + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
+            x = 0, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot(DIF_FITNESS_G29Nb_eggs + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
+            x = 0, y = 0, width = 1, height = 0.5) + 
+  cowplot::draw_plot(DIF_FITNESS_G7 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
+            x = 0.5, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot(DIF_FITNESS_G29 + theme(legend.position = 'none', 
+                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
+            x = 0.5, y = 0, width = 1, height = 0.5) + 
+  cowplot::draw_plot_label(c("A", "B", "C", "D"),  
+                  x = c(0, 0, 0.5, 0.5), y = c(1, 0.5, 1, 0.5), 
+                  size = 14) + 
+  cowplot::draw_plot(legend_trade, x = 0.93, y = 0.5, width = 0.001, height = 0.001) 
+
+cowplot::save_plot(file =here::here("figures", "FIG_SX_HeterogeneityNb_Egges_Egg-to-adultviability.pdf"),  
+                   SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 30/cm(1), dpi = 1200)
+
+```
+
+
 ## Analysis fitness
 ### Compare fit of Poisson lognormal and negative binomial distributions
 ```{r }
