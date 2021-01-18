@@ -148,6 +148,8 @@ data_info$Line_Treatement <- paste(data_info$Line, data_info$Treatment, sep="_")
 # Add symp and allop
 data_info$SA <- ifelse(data_info$Treatment == data_info$Fruit_s , 1, 0)
 
+data.frame(names(coef(mfitness))[4:length(coef(mfitness))], data_info)
+
 ## Compute sample size per line and test medium
 sample_size <- aggregate(Nb_eggs~Line:Treatment, length, data=data[data$Generation!="0",])
 sample_size$Line_Treatement <- paste(sample_size$Line, sample_size$Treatment, sep="_")
@@ -164,24 +166,29 @@ head(data_logchange)
 ## Build sympatric/allopatric datasets
 ```{r }
 ## Proposition de fonction simplifiée
-formattinglogchange <- function(logchange_dataset = data_logchange, generation="29", fruitcomb=c("Cherry", "Cranberry")){
+formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry")){
 ## Extract sympatric combinations
 TEMP_symp <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==1,]
-names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "symp")
+names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
+## Sort dataset
+TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
 
 ## Extract allopatric combinations
 TEMP_allop <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==0,]
-names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "allop")
+names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
+## Sort dataset
+TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
 
   ## Combine datasets
   if(identical(TEMP_symp$Line, TEMP_allop$Line)){
-    return(data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9]))
+    TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
+    TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+    return(TEMP)
   }else{
     print("Error: sympatric and allopatric datasets are not in the same order")
   }
 
 }
-
 
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry"))
@@ -434,8 +441,6 @@ cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_
 ## Plot fitness
 ```{r }
 pd <-  position_dodge(width = 0.5)
-
-
 
 ################### INTERMEDIATE PHENOTYPING
 
@@ -1281,270 +1286,6 @@ computeCIcordifG29G7(pair="Cranberry_Strawberry")
 computeCIcordifG29G7(pair="Strawberry_Cherry")
 
 ```
-
-```{r, eval=FALSE}
-
-# ##### Create empty dataframe with slopes and confidence interval for all pairwise
-Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf","cor_CI_sup",
-                                                       "slope", "intercept"),2),3),
-                                 Generation = rep(c(rep(7, 5), rep(29, 5)),3),
-                                 Pairwise = rep(c("Cherry_Cranberry",
-                                                     "Cranberry_Strawberry", 
-                                                     "Strawberry_Cherry"), each=10),
-                                Estimates = NA ,
-                                EstimatesWeighed = NA ,
-                                EstimatesUnweighed = NA )
-
-# Calculate sd in case of NA value 
-mean_sd_G7 <- sqrt(mean(data_logchange$sd_logchange[data_logchange$Generation=="7"]^2, na.rm = TRUE))
-mean_sd_G29 <- sqrt(mean(data_logchange$sd_logchange[data_logchange$Generation=="29"]^2, na.rm = TRUE))
-
-## Check whether the squared standard errors are of the same magnitude across fruit media (answer:yes)
-tapply(data_logchange$sd_logchange^2, list(data_logchange$Treatment, data_logchange$Generation), mean, na.rm = TRUE)
-
-## Impute directly the missing standard errors
-data_logchange$se_logchange <- data_logchange$sd_logchange
-data_logchange$se_logchange[data_logchange$Generation=="7"&is.na(data_logchange$se_logchange)] <- rep(mean_sd_G7, sum(data_logchange$Generation=="7"&is.na(data_logchange$se_logchange)))
-
-
-## Nbr sample 
-nb_sim = 5000
-
-
-#########################
-######################### G7
-#########################
-
-####### 
-#######  Cherry Cranberry
-####### 
-
-
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG7_CheCran, sd_NA = mean_sd_G7)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- mean(sim$correlation.cor, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$correlation.cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$correlation.cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- mean(sim$intercept, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- mean(sim$slope, na.rm = TRUE)
-
-## Add other correlations
-Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$estimate
-
-Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$ci[1]
-
-Estimates_pairwise$EstimatesWeighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)$ci[2]
-
-Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$estimate
-
-Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$conf.int[1]
-
-Estimates_pairwise$EstimatesUnweighed[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- cor.test(x=TEMP_dataG7_CheCran$logchange_symp, y=TEMP_dataG7_CheCran$logchange_allop)$conf.int[2]
-
-
-
-#Save sim G7 to calculate proportion later: 
-sim_CheCranG7<-sim
-
-####### 
-#######  Cranberry Strawberry
-####### 
-
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG7_CranStraw, sd_NA = mean_sd_G7)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-
-
-## Save sim G7 to calculate correlation difference later: 
-sim_CranStrawG7<-sim
-
-
-
-####### 
-#######  Strawberry  Cherry
-####### 
-
-
-
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG7_StrawChe, sd_NA = mean_sd_G7)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-
-
-## Save sim G7 to calculate correlation difference later: 
-sim_StrawCheG7<-sim
-
-
-
-#########################
-######################### G29
-######################### 
-
-
-####### 
-#######  Cherry Cranberry
-####### 
-
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG29_CheCran, sd_NA = mean_sd_G29)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope, probs = 0.5, na.rm = TRUE)
-
-
-## Save sim G29 to calculate correlation difference later: 
-sim_CheCranG29<-sim
-
-####### 
-#######  Cranberry Strawberry
-####### 
-
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG29_CranStraw, sd_NA = mean_sd_G29)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-
-## Save sim G29 to calculate correlation difference later: 
-sim_CranStrawG29<-sim
-
-####### 
-#######  Strawberry  Cherry
-####### 
-rm(sim)
-# MA axis regression with bootstrap to estimate slope, intercept and 
-sim <- data.frame(t(sapply(1:nb_sim, bootstrap_lmodel2, data_pairwise = TEMP_dataG29_StrawChe, sd_NA = mean_sd_G29)))
-
-# Fill out data with quantile of simulations
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="correlation"] <- quantile(sim$cor, probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- quantile(sim$cor, probs = 0.025, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- quantile(sim$cor, probs = 0.975, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- quantile(sim$intercept,probs = 0.5, na.rm = TRUE)
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- quantile(sim$slope,probs = 0.5, na.rm = TRUE)
-
-
-
-Estimates_pairwise
-
-## Save sim G29 to calculate correlation difference later: 
-sim_StrawCheG29<-sim
-
-## Compute the confidence interval of the difference between correlations in G7 and G29
-difcorCheCran <- sim_CheCranG29$correlation.cor-sim_CheCranG7$correlation.cor
-quantile(difcorCheCran, probs = c(0.025, 0.975), na.rm=TRUE)
-
-difcorCranStraw <- sim_CranStrawG29$correlation.cor-sim_CranStrawG7$correlation.cor
-quantile(difcorCranStraw, probs = c(0.025, 0.975), na.rm=TRUE)
-
-difcorStrawChe <- sim_StrawCheG29$correlation.cor-sim_StrawCheG7$correlation.cor
-quantile(difcorStrawChe, probs = c(0.025, 0.975), na.rm=TRUE)
-
-#Cherry Cranbery 
-#Compute proportion of simulations correlations G7 are lower than correlation estimated on G29 
-cor_G29_CheCran<-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"]
-#Estimates of correlation during final phenotyping for Cherry Cranberry 
-p_val_decreaseCheCran<-length(sim_CheCranG7$correlation.cor[sim_CheCranG7$correlation.cor<cor_G29_CheCran])/nb_sim
-
-
-p_val_decreaseCheCran
-```
-
 
 ## Plot 
 ```{r } 
