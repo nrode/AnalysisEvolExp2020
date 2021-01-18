@@ -88,7 +88,7 @@ TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry",
 ### Fitness
 ```{r }
 
-mfitness <- MASS::glm.nb(Nb_adults ~ -1+Treatment+Line:Treatment, data=data)
+mfitness <- MASS::glm.nb(Nb_adults ~ -1 + Treatment + Line:Treatment, data=data)
 summary(mfitness)
 
 CIfitness <- confint(mfitness)
@@ -103,6 +103,7 @@ summary(mfecundity)
 CIfecundity <- confint(mfecundity)
 
 ```
+
 ### Egg-to-adult viability
 ```{r }
 ## 4 tubes with more adults than eggs
@@ -118,6 +119,7 @@ summary(megg_to_ad)
 CImegg_to_ad <- confint(megg_to_ad)
 
 ```
+
 ## Build data_logchange dataset
 ```{r }
 ## Extract all CIs
@@ -433,9 +435,6 @@ cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_
 
 
 ```
-
-
-
 
 # HETEROGENEITY
 ## Plot fitness
@@ -899,6 +898,7 @@ legend(0, 70, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), p
 ```
 ### Compare average fitess changes
 ```{r }
+
 
 m0 <- MASS::glm.nb(Nb_adults ~ Generation*Fruit_s, data=data)
 summary(m0)
