@@ -85,6 +85,18 @@ TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry",
 ```
 
 ## Compute fitess change per population
+### Small example with a plot of the likelihod difference as a function of each parameter value
+```{r }
+
+mfitness <- MASS::glm.nb(Nb_adults ~ Treatment, data=data)
+summary(mfitness)
+
+pr1 <- profile(mfitness, alpha = 0.1)
+
+MASS:::plot.profile(pr1)
+
+```
+
 ### Fitness
 ```{r }
 
@@ -92,6 +104,12 @@ mfitness <- MASS::glm.nb(Nb_adults ~ -1 + Treatment + Line:Treatment, data=data)
 summary(mfitness)
 
 CIfitness <- confint(mfitness)
+
+pr1 <- profile(mfitness, alpha = 0.1)
+
+pdf(file="figures/Profile.pdf")
+MASS:::plot.profile(pr1)
+dev.off()
 ```
 
 ### Fecundity
