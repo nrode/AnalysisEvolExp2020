@@ -436,8 +436,13 @@ diag(tapply(data_G7$Emergence_rate, list(data_G7$Treatment,data_G7$Fruit_s), mea
 diag(tapply(data_G29$Emergence_rate, list(data_G29$Treatment,data_G29$Fruit_s), mean))
 
 ## Compute correlation by generation and selective fruit
-plyr::ddply(data_logchangeNb_eggsEmergence_rate, .(Generation, Fruit_s), computecorrelation)
-
+data_logchangeNb_eggsEmergence_rate<-data.frame(data_logchange[,c(1:6)],
+                                                Nb_eggslogchange=data_logchange[,"logfecundchange"],
+                                                Emergence_ratelogchange=data_logchange[,"logeggtoadchange"])
+                                                
+# plyr::ddply(data_logchangeNb_eggsEmergence_rate, .(Generation, Fruit_s), computecorrelation)
+## WARNINGS: What is data_logchangeNb_eggsEmergence_rate?
+#?????????
 ```
 
 
@@ -1794,7 +1799,7 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Correlation_Eggtoadultvia
 
 # SUP: Pooling effect
 ## Data
-```{r }
+```{r eval=FALSE}
 
 ########### Hypothesis 1 
 #Hypothesis 1: effect of pool 
@@ -1817,7 +1822,7 @@ CheCran_hypo2<-TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Line==fittest_lines,]
 ```
 
 ## Plot
-```{r }
+```{r eval=FALSE}
 #Initial plot from main text
 ymin = -50
 ymax = 50
@@ -2012,8 +2017,8 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Pooleffect_Hypothesis2.pd
 
 
 
-## Extra plot
-```{r } 
+## A SUPR
+```{r eval=FALSE} 
 PAIR_StrawChe_G29
 PAIR_CranStraw_G29
 PAIR_CheCran_G29
