@@ -22,9 +22,11 @@ devtools::load_all()
 ```
 
 # DATA
+## Load data
 ```{r }
 ## Longitudinal data
 data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
+
 
 ## Phenotyping steps
 data_G0 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1")
@@ -32,14 +34,125 @@ data_G7 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", gener
 data_G29 <- loadfitnessdata(dataset = 
                             "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv",
                             generation = "29")
+head(data_sum)
+head(data_G0)
+head(data_G7)
+head(data_G29)
+dim(data_G29)
+
+## Add line variable
+levels(data_G0$Line) <- rep("Anc", nlevels(data_G0$Line))
+
+## Combine datsets
+data <- rbind(data_G0, data_G7, data_G29) 
+data <- data.frame(Generation = c(rep("0", nrow(data_G0)), rep("7", nrow(data_G7)), rep("29", nrow(data_G29))), data, Obs= as.factor(1:nrow(data)))
+head(data)
+
+## New variable for analyses
+data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit_s, data$Treatment, sep="_"))
+data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
+data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
+```
 
 
-#Compute log change
-data_logchange<-computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
-#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
-data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
+## Compute fitess change per population
+```{r }
+
+mfitness <- MASS::glm.nb(Nb_adults ~ Treatment, data=data)
+summary(mfitness)
+
+pr1 <- profile(mfitness, alpha = 0.1)
+
+MASS:::plot.profile(pr1)
 
 
+
+### Fitness
+mfitness <- MASS::glm.nb(Nb_adults ~ -1 + Treatment + Line:Treatment, data=data)
+summary(mfitness)
+
+CIfitness <- confint(mfitness)
+
+pr1 <- profile(mfitness, alpha = 0.1)
+
+pdf(file="figures/Profile.pdf")
+MASS:::plot.profile(pr1)
+dev.off()
+
+### Fecundity
+mfecundity <- MASS::glm.nb(Nb_eggs ~ -1+Treatment+Line:Treatment, data=data)
+summary(mfecundity)
+
+CIfecundity <- confint(mfecundity)
+
+
+### Egg-to-adult viability
+## 4 tubes with more adults than eggs
+sum(data$Nb_adults>data$Nb_eggs)
+
+## Number of adults=number of eggs
+data$Nb_eggs[data$Nb_adults>data$Nb_eggs] <- data$Nb_adults[data$Nb_adults>data$Nb_eggs]
+
+## Fit model
+megg_to_ad <- glm(cbind(Nb_adults, Nb_eggs) ~ -1+Treatment+Line:Treatment, data=data, family="binomial")
+summary(megg_to_ad)
+
+CImegg_to_ad <- confint(megg_to_ad)
+
+
+####### Build data_logchange dataset
+## Extract all CIs
+## Check that the coef are in the same order
+identical(names(coef(mfitness)), names(coef(mfecundity)))
+identical(names(coef(mfitness)), names(coef(megg_to_ad)))
+
+data_logchange <- data.frame(logchange=coef(mfitness),
+                             lowCIlogfitnesschange=CIfitness[, 1],
+                             upCIlogfitnesschange=CIfitness[, 2],
+                             logfecundchange=coef(mfecundity),
+                             lowCIlogfecundchange=CIfecundity[, 1],
+                             upCIlogfecundchange=CIfecundity[, 2],
+                             logeggtoadchange=coef(megg_to_ad),
+                             lowCIlogeggtoadchange=CImegg_to_ad[, 1],
+                             upCIlogeggtoadchange=CImegg_to_ad[, 2])
+head(data_logchange)
+
+## Remove estimates from ancestral population
+data_logchange <- data_logchange[4:nrow(data_logchange), ]
+  
+## Extract information regarding line, selective and test media
+rowname <- strsplit(rownames(data_logchange), split=":")
+Treatment <- as.factor(gsub("Treatment", "", lapply(rowname, `[[`, 1)))
+Generation <- Line <- as.factor(gsub("Line", "", lapply(rowname, `[[`, 2)))
+## Change Fruit_s levels
+Fruit_s <- as.factor(substr(Line, 1, 2))
+levels(Fruit_s) <- levels(Treatment)
+## Change levels
+levels(Generation) <- ifelse(is.na(as.numeric(substr(levels(Generation), 3, 3))), "29", "7")
+
+## Combine data
+data_info <- data.frame(Treatment, Line, Fruit_s, Generation)
+data_info$Line_Treatement <- paste(data_info$Line, data_info$Treatment, sep="_")
+# Add symp and allop
+data_info$SA <- as.factor(ifelse(data_info$Treatment == data_info$Fruit_s , 1, 0))
+data.frame(names(coef(mfitness))[4:length(coef(mfitness))], data_info)
+
+## Compute sample size per line and test medium
+sample_size <- aggregate(Nb_eggs~Line:Treatment, length, data=data[data$Generation!="0",])
+sample_size$Line_Treatement <- paste(sample_size$Line, sample_size$Treatment, sep="_")
+names(sample_size)[3] <- "N"
+
+## Merge the three datasets
+data_info <- merge(x=data_info, y=sample_size[, 3:4], by="Line_Treatement")
+data_info$Line_Treatment <- paste0("Treatment", data_info$Treatment, ":Line", data_info$Line)
+data_logchange$Line_Treatment <- rownames(data_logchange)
+data_logchange <- merge(x=data_info, y=data_logchange, by = "Line_Treatment")[, -c(1, 2)]
+
+head(data_logchange)
+```
+
+## Formatting dataset 
+```{r }
 #Formatting for plotting pairwise of fitness change
 EC_Cran_Cher_G7<-formattingplotpair(data_logchange, "7", "Cherry", "Cranberry")
 EC_Straw_Cran_G7<-formattingplotpair(data_logchange, "7", "Cranberry", "Strawberry")
@@ -50,11 +163,9 @@ EC_Straw_Cher_G29<-formattingplotpair(data_logchange, "29", "Strawberry", "Cherr
 
 
 #Formatting for plot pool
-TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", "Cherry", "Cranberry")
-TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", "Cranberry", "Strawberry")
-TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry", "Cherry")
-
-
+TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", fruitcomb=c("Cherry", "Cranberry"),trait="fitness")
+TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", fruitcomb=c("Cranberry", "Strawberry"), trait="fitness")
+TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", fruitcomb=c("Strawberry", "Cherry"),trait="fitness")
 
 
 ## Data longitudinal 
@@ -70,24 +181,20 @@ data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 ## Plot 
 ```{r } 
 #Limit axis 
-lim_G7<-max(abs(min(data_logchange[data_logchange$Generation=="7",]$logchange-
-                      1.96*data_logchange[data_logchange$Generation=="7",]$sd_logchange, na.rm = T)),
-            max(data_logchange[data_logchange$Generation=="7",]$logchange+
-                  1.96*data_logchange[data_logchange$Generation=="7",]$sd_logchange, na.rm = T))
+lim_G7<-max(abs(min(data_logchange[data_logchange$Generation=="7",]$lowCIlogfitnesschange, na.rm = T)),
+            max(data_logchange[data_logchange$Generation=="7",]$upCIlogfitnesschange, na.rm = T))
 
-lim_G29<-max(abs(min(data_logchange[data_logchange$Generation=="29",]$logchange-
-                       1.96*data_logchange[data_logchange$Generation=="29",]$sd_logchange, na.rm = T)),
-            max(data_logchange[data_logchange$Generation=="29",]$logchange+
-                  1.96*data_logchange[data_logchange$Generation=="29",]$sd_logchange, na.rm = T))
+lim_G29<-max(abs(min(data_logchange[data_logchange$Generation=="29",]$upCIlogfitnesschange, na.rm = T)),
+            max(data_logchange[data_logchange$Generation=="29",]$upCIlogfitnesschange, na.rm = T))
 
 #Plot
 PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
                           aes(x = logchange_Strawberry,y = logchange_Cranberry, color=Fruit_s)) +
-  geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                    ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Cranberry,
+                    ymax = upCIlogfitnesschange_Cranberry),
                 width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
-                     xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Strawberry,
+                     xmax = upCIlogfitnesschange_Cranberry),
                  height=0.02,size=0.2,alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
   xlab("Fitness change\nin strawberry")  +     
@@ -104,11 +211,11 @@ PAIR_StrawCran_G7<-ggplot(data = EC_Straw_Cran_G7,
  
 PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
                          aes(x = logchange_Cherry,y = logchange_Strawberry, color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
-                    ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Strawberry,
+                    ymax = upCIlogfitnesschange_Strawberry),
                   width=0.02, size=0.2, alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                     xmax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Cherry,
+                     xmax = upCIlogfitnesschange_Cherry),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
   ylab("Fitness change\nin strawberry")  + 
@@ -126,11 +233,11 @@ PAIR_StrawChe_G7<-ggplot(data = EC_Straw_Cher_G7,
  
 PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = logchange_Cherry, 
                                           color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Cherry,
+                      ymax = upCIlogfitnesschange_Cherry),
                   width=0.02, size=0.2, alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Cranberry,
+                       xmax = upCIlogfitnesschange_Cranberry),
                   height=0.02, size=0.2, alpha=1) + 
   geom_point(shape=21, size=3,  fill = "#ffffff", stroke=1.3) + 
   ylab("Fitness change\nin cherry")  + 
@@ -149,11 +256,11 @@ PAIR_CheCran_G7<-ggplot(data = EC_Cran_Cher_G7,aes(x = logchange_Cranberry,y = l
 #Plot
 PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
                           aes(x = logchange_Strawberry, y = logchange_Cranberry,  color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                      ymax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Cranberry,
+                      ymax = upCIlogfitnesschange_Cranberry),
                   width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
-                       xmax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Strawberry,
+                       xmax = upCIlogfitnesschange_Strawberry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
   xlab("Fitness change\nin strawberry")  +     
@@ -171,11 +278,11 @@ PAIR_CranStraw_G29<-ggplot(data = EC_Straw_Cran_G29,
  
 PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
                          aes(x = logchange_Cherry,y = logchange_Strawberry,  color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Strawberry-1.96*sd_logchange_Strawberry,
-                      ymax = logchange_Strawberry+1.96*sd_logchange_Strawberry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Strawberry,
+                      ymax = upCIlogfitnesschange_Strawberry),
                   width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                       xmax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Cherry,
+                       xmax = upCIlogfitnesschange_Cherry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s),shape=21, size=3) + 
   ylab("Fitness change\nin strawberry")  + 
@@ -193,11 +300,11 @@ PAIR_StrawChe_G29<-ggplot(data = EC_Straw_Cher_G29,
  
 PAIR_CheCran_G29<-ggplot(data = EC_Cran_Cher_G29,
                          aes(x = logchange_Cranberry,y = logchange_Cherry, color=Fruit_s)) + 
-  geom_errorbar(aes(ymin = logchange_Cherry-1.96*sd_logchange_Cherry,
-                      ymax = logchange_Cherry+1.96*sd_logchange_Cherry, linetype=Line_type),
+  geom_errorbar(aes(ymin = lowCIlogfitnesschange_Cherry,
+                      ymax = upCIlogfitnesschange_Cherry),
                   width=0.02,size=0.2,alpha=1) + 
-  geom_errorbarh(aes(xmin = logchange_Cranberry-1.96*sd_logchange_Cranberry,
-                       xmax = logchange_Cranberry+1.96*sd_logchange_Cranberry, linetype=Line_type),
+  geom_errorbarh(aes(xmin = lowCIlogfitnesschange_Cranberry,
+                       xmax = upCIlogfitnesschange_Cranberry),
                   height=0.02,size=0.2,alpha=1) + 
   geom_point(aes(fill = Fruit_s), shape=21, size=3) + 
   ylab("Fitness change\nin cherry")  + 
@@ -220,7 +327,7 @@ TEMP_data_logchange_sum_Straw_Cher_G7$Pheno<-sample(c("Intermediate", "Final"),
 
 PAIR_plot_legend<- ggplot(data=TEMP_data_logchange_sum_Straw_Cher_G7, 
                           aes(x=Treatment, y=logchange, group=Fruit_s, colour=Fruit_s,shape=Pheno)) +
-  geom_errorbar(aes(ymin=logchange-1.96*sd_logchange, ymax=logchange+1.96*sd_logchange),
+  geom_errorbar(aes(ymin=lowCIlogfitnesschange, ymax=upCIlogfitnesschange),
                   width=0.01,size=1) +
   geom_point(size=3, stroke=1.3) + 
   scale_shape_manual(name = "Phenotyping step", 
@@ -266,8 +373,8 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), 
 
 ```
 
-# Traits
-## Correlation between Nb_eggs and emergence_rate
+# SUP: Correlation between Nb_eggs and emergence_rate
+## Correlation
 ```{r }
 tapply(data_G0$Nb_eggs, data_G0$Treatment, mean)
 diag(tapply(data_G7$Nb_eggs, list(data_G7$Treatment,data_G7$Fruit_s), mean))
@@ -281,74 +388,284 @@ diag(tapply(data_G29$Emergence_rate, list(data_G29$Treatment,data_G29$Fruit_s), 
 ## Compute correlation by generation and selective fruit
 ddply(data_logchangeNb_eggsEmergence_rate, .(Generation, Fruit_s), computecorrelation)
 
-
-#Plot
-
-Nb_eggsEmergence_rateG7 <- ggplot(data = data_logchangeNb_eggsEmergence_rate[data_logchangeNb_eggsEmergence_rate$Generation==7,],
-                          aes(x = Nb_eggslogchange,y = Emergence_ratelogchange, group = Treatment, shape = Treatment)) +
-  geom_errorbarh(aes(xmin = Nb_eggslogchange-1.96*sdNb_eggslogchange,
-                     xmax = Nb_eggslogchange+1.96*sdNb_eggslogchange),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_errorbar(aes(ymin = Emergence_ratelogchange-1.96*sdEmergence_ratelogchange,
-                    ymax = Emergence_ratelogchange+1.96*sdEmergence_ratelogchange),
-                width=0.02,size=0.2,alpha=1) + 
-  geom_point(aes(shape=Treatment, color=Treatment)) +
-  
-  xlab("Change in number of eggs between\nintermediate and initial phenotyping steps")  + 
-  ylab("Change in egg-to-adult between\nintermediate and initial phenotyping steps")  +
-  xlim(-0.75, 1) + 
-  ylim(-1.75, 1.5) +   
-  labs(shape = "Test fruit") + 
-  scale_shape_manual(values = c(21, 22, 24)) + 
-  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  theme_LO_sober
- Nb_eggsEmergence_rateG7 <- Nb_eggsEmergence_rateG7 + facet_wrap(~ Fruit_s)
-
- 
- 
- Nb_eggsEmergence_rateG29 <- ggplot(data = data_logchangeNb_eggsEmergence_rate[data_logchangeNb_eggsEmergence_rate$Generation==29,],
-                          aes(x = Nb_eggslogchange,y = Emergence_ratelogchange, group = Treatment, shape = Treatment)) +
-  geom_errorbarh(aes(xmin = Nb_eggslogchange-1.96*sdNb_eggslogchange,
-                     xmax = Nb_eggslogchange+1.96*sdNb_eggslogchange),
-                 height=0.02,size=0.2,alpha=1) +
-  geom_errorbar(aes(ymin = Emergence_ratelogchange-1.96*sdEmergence_ratelogchange,
-                    ymax = Emergence_ratelogchange+1.96*sdEmergence_ratelogchange),
-                width=0.02,size=0.2,alpha=1) + 
-  geom_point(aes(shape=Treatment, color=Treatment)) +
-  
-  xlab("Change in number of eggs between\nfinal and initial phenotyping steps")  + 
-  ylab("Change in egg-to-adult viability between\nfinal and initial phenotyping steps")  +
-  xlim(-0.75, 1) + 
-  ylim(-1.75, 1.5) +   
-  labs(shape = "Test fruit", color = "Test fruit") + 
-  scale_shape_manual(values = c(21, 22, 24)) + 
-  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  theme_LO_sober
-Nb_eggsEmergence_rateG29 <- Nb_eggsEmergence_rateG29 + facet_wrap(~ Fruit_s)
- 
-legend_trade <- lemon::g_legend(Nb_eggsEmergence_rateG29)
-
-Nb_eggsEmergence_rate <- cowplot::ggdraw() + 
-  cowplot::draw_plot(Nb_eggsEmergence_rateG7 + theme(legend.position = 'none', 
-                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")),
-            x = 0, y = 0.5, width = 1, height = 0.5) + 
-  cowplot::draw_plot(Nb_eggsEmergence_rateG29 + theme(legend.position = 'none', 
-                             plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm")), 
-            x = 0, y = 0, width = 1, height = 0.5) + 
-  cowplot::draw_plot_label(c("A", "B"),  
-                  x = c(0, 0), y = c(1, 0.5), 
-                  size = 14) + 
-  cowplot::draw_plot(legend_trade, x = 0.93, y = 0.5, width = 0.001, height = 0.001) 
-
-cowplot::save_plot(file =here::here("figures", "FIG_SX_Nb_eggsEmergence_rate.pdf"),  
-                   Nb_eggsEmergence_rate, base_height = 20/cm(1), base_width = 20/cm(1), dpi = 1200)
 ```
 
-# SUP: Long vs Fitness
+
+
+
+
+
+## Plot  
+```{r } 
+#Formating data
+ymin = -50
+ymax = 50
+
+##################################################
+##################   G7
+# Limits
+
+vec_minmax <- function (data_set = data_logchange, gen = "7", fruit ="Cherry") {
+ymin_PAIR_Che_G7=min(min(data_logchange[data_logchange$Generation==gen&
+                                             data_logchange$Fruit_s==fruit,]$lowCIlogfecundchange, na.rm= TRUE),
+                min(data_logchange[data_logchange$Generation==gen&
+                                             data_logchange$Fruit_s==fruit,]$lowCIlogeggtoadchange, na.rm= TRUE)) 
+ymax_PAIR_Che_G7=max(max(data_logchange[data_logchange$Generation==gen&
+                                             data_logchange$Fruit_s==fruit,]$upCIlogfecundchange, na.rm= TRUE),
+                max(data_logchange[data_logchange$Generation==gen&
+                                             data_logchange$Fruit_s==fruit,]$upCIlogeggtoadchange, na.rm= TRUE))
+vec_min_max<-c(ymin_PAIR_Che_G7,ymax_PAIR_Che_G7)
+return(vec_min_max)
+}
+
+
+# Plot
+PAIR_Che_G7 <- ggplot(data = data_logchange[data_logchange$Generation=="7"&
+                                             data_logchange$Fruit_s=="Cherry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change between\nintermediate and initial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability\nchange between intermediate\nand initial phenotyping steps")  + 
+  ggtitle("Evolved on Cherry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#BC3C6D")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22, 24)) + 
+  scale_color_manual(values = c("#BC3C6D"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"7","Cherry"), 
+                  xlim = vec_minmax(data_logchange,"7","Cherry")) 
+  
+ PAIR_Che_G7
+
+
+# Limits
+PAIR_Cran_G7 <- ggplot(data = data_logchange[data_logchange$Generation=="7"&
+                                             data_logchange$Fruit_s=="Cranberry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change between\nintermediate and initial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability change between\nintermediate and initial phenotyping steps")  + 
+  ggtitle("Evolved on Cranberry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#FDB424")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22, 24)) + 
+  scale_color_manual(values = c("#FDB424"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"7","Cranberry"), 
+                  xlim = vec_minmax(data_logchange,"7","Cranberry")) 
+  
+ PAIR_Cran_G7
+
+ 
+# Limits
+# Limits
+PAIR_Straw_G7 <- ggplot(data = data_logchange[data_logchange$Generation=="7"&
+                                             data_logchange$Fruit_s=="Strawberry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change between\nintermediate and initial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability change between\nintermediate and initial phenotyping steps")  + 
+  ggtitle("Evolved on Strawberry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#3FAA96")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22, 24)) + 
+  scale_color_manual(values = c("#3FAA96"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"7","Strawberry"), 
+                  xlim = vec_minmax(data_logchange,"7","Strawberry")) 
+  
+ PAIR_Straw_G7
+
+  
+#####################################################################################
+##################################      G29        ##################################
+#####################################################################################
+# Plot
+PAIR_Che_G29 <- ggplot(data = data_logchange[data_logchange$Generation=="29"&
+                                             data_logchange$Fruit_s=="Cherry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change\nbetween final and\ninitial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability\nchange between final and\ninitial phenotyping steps")  + 
+  ggtitle("Evolved on Cherry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#BC3C6D")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#BC3C6D"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"29","Cherry"), 
+                  xlim = vec_minmax(data_logchange,"29","Cherry")) 
+  
+ PAIR_Che_G29
+
+
+# Limits
+PAIR_Cran_G29 <- ggplot(data = data_logchange[data_logchange$Generation=="29"&
+                                             data_logchange$Fruit_s=="Cranberry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change between\nfinal and initial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability change between\nfinal and initial phenotyping steps")  + 
+  ggtitle("Evolved on Cranberry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#FDB424")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#FDB424"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"29","Cranberry"), 
+                  xlim = vec_minmax(data_logchange,"29","Cranberry")) 
+  
+ PAIR_Cran_G29
+
+ 
+# Limits
+# Limits
+PAIR_Straw_G29 <- ggplot(data = data_logchange[data_logchange$Generation=="29"&
+                                             data_logchange$Fruit_s=="Strawberry",]) + 
+  geom_errorbar(aes(x = logfecundchange, 
+                    ymin = lowCIlogeggtoadchange,
+                    ymax = upCIlogeggtoadchange,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange, 
+                     xmin = lowCIlogfecundchange, 
+                     xmax = upCIlogfecundchange, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange, y = logeggtoadchange,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change between\nfinal and initial phenotyping steps")  + 
+  ylab("Logit egg-to-adult viability change between\nfinal and initial phenotyping steps")  + 
+  ggtitle("Evolved on Strawberry") + 
+  theme_LO_sober + theme(plot.title = element_text(color = "#3FAA96")) +
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#3FAA96"))  + 
+  coord_cartesian(ylim = vec_minmax(data_logchange,"29","Strawberry"), 
+                  xlim = vec_minmax(data_logchange,"29","Strawberry")) 
+  
+ PAIR_Straw_G29
+
+
+ 
+legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
+                          aes(x =logchange, y = logchange, fill = Fruit_s, 
+                              shape = Treatment)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  theme_LO_sober
+
+legend_trade <- lemon::g_legend(legend_tradevide)
+
+ 
+ 
+
+CORRELATION_BETWEEN_TRAITS <- cowplot::ggdraw() + 
+  cowplot::draw_plot(PAIR_Che_G7 + theme(legend.position = "none",
+                                         axis.title.y = element_text(size=12),
+                                         axis.title.x = element_blank()), 
+            x = 0.01, y = 0.53, width = 0.3, height = 0.41) + 
+  cowplot::draw_plot(PAIR_Cran_G7 + theme(legend.position = "none",   
+                                         axis.title.x = element_blank(),
+                                         axis.title.y = element_blank()), 
+            x = 0.34, y = 0.53, width = 0.26, height = 0.41) + 
+  cowplot::draw_plot(PAIR_Straw_G7+ theme(legend.position = "none", 
+                                         axis.title.x = element_blank(), 
+                                         axis.title.y = element_blank()), 
+            x = 0.61, y = 0.53, width = 0.26, height = 0.41) + 
+  cowplot::draw_plot(legend_trade, x = 0.89, y = 0.5, width = 0.1, height = 0.1) + 
+  cowplot::draw_plot(PAIR_Che_G29 + theme(legend.position = "none",
+                                         axis.title.y = element_text(size=12), 
+                                         axis.title.x = element_blank()), 
+            x = 0.01, y = 0.03, width = 0.3, height = 0.41) + 
+  cowplot::draw_plot(PAIR_Cran_G29 + theme(legend.position = "none", 
+                                         axis.title.x = element_blank(),
+                                         axis.title.y = element_blank()), 
+            x = 0.34, y = 00.03, width = 0.26, height = 0.41) + 
+  cowplot::draw_plot(PAIR_Straw_G29 + theme(legend.position = "none", 
+                                         axis.title.x = element_blank(), 
+                                         axis.title.y = element_blank()), 
+            x = 0.61, y = 00.03, width = 0.26, height = 0.41) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", " ", " ", " ",
+                    "Final phenotyping step", "B", " ", " ", " ", 
+                    "Log fecundity change between final and initial phenotyping steps", 
+                    "Log fecundity change between intermediate and initial phenotyping steps"),  
+                  x = c(0.28, 0.01, 0.34, 0.61, 0.92, 0.230, 0.01, 0.30, 0.61, 0.92,0.15,0.1), 
+                  y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45, 0.05, 0.55), 
+                  hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75, -0.25,  -0.25), 
+                  vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+                  size = c(rep(16,10),12.5,12.5), 
+                  fontface = c(rep("bold",10),"plain","plain")) 
+ CORRELATION_BETWEEN_TRAITS
+#  
+# #  
+# 
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Correlation_between_Traits.pdf"),
+                   CORRELATION_BETWEEN_TRAITS,
+                   base_height = 16/cm(1), base_width = 26/cm(1), dpi = 610)
+
+
+
+
+```
+
+
+
+# A SUPR: Long vs Fitness
 ## Data
-```{r }
+```{r eval=FALSE}
 #To consider fruit maternal effect and GF maternal effect: new plot 
 ## Y-axis = log change = log(Fitness pheno)-log(fitness initial)
 ## X-axis = fitness temp / fitness initial
@@ -359,12 +676,9 @@ cowplot::save_plot(file =here::here("figures", "FIG_SX_Nb_eggsEmergence_rate.pdf
 
 
 ####### Phenotyping steps 
-#Compute log change
-data_logchange <- computelogchange(fitness_dataset_intermediate = data_G7, fitness_dataset_final = data_G29)
-
 #Remove allopatric data
 data_fitness_pheno <- data_logchange[data_logchange$SA==1,]
-data_fitness_pheno <- data_fitness_pheno[, c("Line", "Fruit_s", "logchange", "sd_logchange")]
+data_fitness_pheno <- data_fitness_pheno[, c("Line", "Fruit_s", "logchange", "lowCIlogfitnesschange", "upCIlogfitnesschange")]
 
 
 ####### Longitudinal data 
@@ -391,7 +705,7 @@ data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_p
 
 
 ## Plot long vs fitness
-```{r }
+```{r eval=FALSE}
 PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s, linetype=Line_type)) +
   geom_errorbar(aes(x = logchange_long, 
@@ -473,7 +787,7 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno_Longitudin
 
 
 ## Extra plot Maternal effects
-```{r }
+```{r eval=FALSE}
 
 m <- lm(logchange ~ logchange_long + offset(logchange_long),
         data = data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="second_postpool",]) 
@@ -568,7 +882,7 @@ summary(mod_all_interaction)
 
 
 #Posthoc
-mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod_all_interaction <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum_allfruits_AN)
 summary(mod_all_interaction)
 
