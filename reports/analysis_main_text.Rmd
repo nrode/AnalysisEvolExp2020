@@ -955,6 +955,7 @@ DIF_SYMP_ALLOP_TOTAL_SUPPLEMENTS <- cowplot::ggdraw() +
   cowplot::draw_plot(legend_trade, x = 0.94, y = 0.5, width = 0.001, height = 0.001) 
 DIF_SYMP_ALLOP_TOTAL_SUPPLEMENTS
 
+
 cowplot::save_plot(file =here::here("figures", "FIG_SX_Heterogeneity_Fecundity_Viability.pdf"),  
                    DIF_SYMP_ALLOP_TOTAL_SUPPLEMENTS, 
                    base_height = 20/cm(1), base_width = 30/cm(1), dpi = 1200)
