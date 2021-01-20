@@ -272,21 +272,21 @@ tapply(data_sum$Nb_adults[data_sum$Generation=="27"],data_sum$Fruit_s[data_sum$G
 ## Analysis
 ```{r }
 ######## Models
-mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation) + (1|Generation:Fruit_s), 
+mod1 <- lme4::lmer(fitness ~ 1 + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod2 <- lme4::lmer(fitness~ Phase + (1|Generation) + (1|Generation:Fruit_s), 
+mod2 <- lme4::lmer(fitness~ Phase +  (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE)
-mod3 <- lme4::lmer(fitness ~ Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod3 <- lme4::lmer(fitness ~ Generation +(1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod4 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation) + (1|Generation:Fruit_s), 
+mod4 <- lme4::lmer(fitness ~ Fruit_s + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod5 <- lme4::lmer(fitness ~ Fruit_s*Phase + (1|Generation) + (1|Generation:Fruit_s), 
+mod5 <- lme4::lmer(fitness ~ Fruit_s*Phase +  (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod6 <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod6 <- lme4::lmer(fitness ~ Fruit_s*Generation + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod7 <- lme4::lmer(fitness ~ Fruit_s + Phase + (1|Generation) + (1|Generation:Fruit_s), 
+mod7 <- lme4::lmer(fitness ~ Fruit_s + Phase + (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
-mod8 <- lme4::lmer(fitness ~ Fruit_s + Generation + (1|Generation) + (1|Generation:Fruit_s), 
+mod8 <- lme4::lmer(fitness ~ Fruit_s + Generation +  (1|Generation:Fruit_s), 
             weights = N, data = data_sum, REML = FALSE) 
 
 MuMIn::model.sel(mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8)
@@ -294,7 +294,7 @@ MuMIn::model.sel(mod1, mod2, mod3, mod4, mod5, mod6, mod7, mod8)
 summary(mod7)
 
 
-mod_Phase <- lme4::lmer(fitness ~ Fruit_s + Phase + (1|Generation) + (1|Generation:Fruit_s), 
+mod_Phase <- lme4::lmer(fitness ~ Fruit_s + Phase + (1|Generation:Fruit_s), 
             weights = N, data = data_sum) 
 
 
@@ -897,13 +897,11 @@ legend(0, 70, legend=c("Neg. Bin.", "Pois. Lognormal"), col=c("black", "red"), p
 
 ## Negative binomial distribution provides a better fit to the data
 ```
+
 ### Compare average fitess changes
 ```{r }
-
-
 m0 <- MASS::glm.nb(Nb_adults ~ Generation*Fruit_s, data=data)
 summary(m0)
-
 ## G7: fitness increase for strawberry populations, fitness increased for cherry and cranberry populations
 ## G29: fitness increase for strawberry populations, no fitness change for cherry and cranberry populations
 
@@ -916,8 +914,8 @@ summary(m1)
 ## G29: fitness increase for cherry populations on cherry medium, but not on strawberry or cranberry medium
 ## G29: fitness increase for strawberry populations on strawberry medium, but no change on cranberry medium and fitness decrease on cherry medium
 ## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
-
-m2 <- lme4::glmer.nb(Nb_adults ~ -1+ Generation_Fruit_s_Treatment + (1|Line), data = data, verbose=TRUE)
+library(lme4)
+m2 <- lme4::glmer.nb(Nb_adults ~ -1 + Generation_Fruit_s_Treatment + (1|Line), data = data, verbose=TRUE)
 summary(m2)
 MuMIn::model.sel(m0, m1, m2)
 
@@ -928,7 +926,9 @@ getME(m2, "glmer.nb.theta")
 plot(m2, resid(.) ~ as.numeric(Line))
 
 ## Check random effect
-sjPlot::plot_model(m2, type="re", dot.size=1.5, group.terms = c(1, rep(2, nlevels(data_G7$Line)), rep(3, nlevels(data_G29$Line))))
+sjPlot::plot_model(m2, type="re", dot.size=1.5, 
+                   group.terms = c(1, rep(2, nlevels(data_G7$Line)), 
+                                   rep(3, nlevels(data_G29$Line))))
 
 mySumm <- function(.) {
     c(beta=c(fixef(.)[1:3], fixef(.)[13:21] - rep(fixef(.)[1:3], 3), fixef(.)[4:12] - rep(fixef(.)[1:3], 3)), sigma=sqrt(unlist(VarCorr(.))))
@@ -940,10 +940,8 @@ head(data.frame(boo01))
 
 ## Extract all CIs
 bCI_tab(boo01)
-
 ## G0: no difference among different fruit media (beta.TreatmentrelCherry / beta.TreatmentrelCranberry include zero)
 ## G7: no fitness change for strawberry, cherry or cranberry populations
-
 ## G29: fitness increase for cherry populations on cherry medium, but not on strawberry or cranberry medium
 
 ## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
@@ -1078,6 +1076,28 @@ Estimates_pairwise <- data.frame(Variables = rep(rep(c("correlation","cor_CI_inf
                                                      "Strawberry_Cherry"), each=10),
                                 Estimates = NA)
 
+
+
+fillout_estimate_correlation <- function(emptydata = Estimates_pairwise, gen = 7, pair = "Cherry_Cranberry") {
+emptydata$Estimates[emptydata$Generation == gen & 
+                            emptydata$Pairwise == pair &
+                              emptydata$Variables=="correlation"] <- weightedcor$estimate
+emptydata$Estimates[emptydata$Generation == gen & 
+                            emptydata$Pairwise == pair &
+                              emptydata$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
+emptydata$Estimates[emptydata$Generation == gen & 
+                            emptydata$Pairwise == pair &
+                              emptydata$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
+emptydata$Estimates[emptydata$Generation == gen & 
+                            emptydata$Pairwise == pair &
+                              emptydata$Variables=="intercept"] <- model$regression.results[2, 2]
+emptydata$Estimates[emptydata$Generation == gen & 
+                            emptydata$Pairwise == pair &
+                              emptydata$Variables=="slope"] <- model$regression.results[2, 3]
+
+return (emptydata)
+}
+
 #########################
 ######################### G7
 #########################
@@ -1097,22 +1117,11 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
 ## The estimation of the confidence interval with cor.test is wrong
 cor.test(x=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_symp"], y=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_allop"])
 
+
+
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 7, "Cherry_Cranberry")
+
 
 ####### 
 #######  Cranberry Strawberry
@@ -1126,22 +1135,10 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             range.y = "interval",range.x = "interval",
                             data = TEMP_dataG7_CranStraw[rep(1:nrow(TEMP_dataG7_CranStraw), TEMP_dataG7_CranStraw$N_sumsympallop),], nperm=0)
 
+
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 7, "Cranberry_Strawberry")
+
 
 ####### 
 #######  Strawberry  Cherry
@@ -1156,21 +1153,8 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             data = TEMP_dataG7_StrawChe[rep(1:nrow(TEMP_dataG7_StrawChe), TEMP_dataG7_StrawChe$N_sumsympallop),], nperm=0)
 
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="correlation"] <- weightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- weightedcor$ci[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- weightedcor$ci[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==7&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 7, "Strawberry_Cherry")
+
 
 #########################
 ######################### G29
@@ -1194,21 +1178,8 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             data = TEMP_dataG29_CheCran[rep(1:nrow(TEMP_dataG29_CheCran), TEMP_dataG29_CheCran$N_sumsympallop),], nperm=0)
 
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cherry_Cranberry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 29, "Cherry_Cranberry")
+
 
 ####### 
 #######  Cranberry Strawberry
@@ -1225,22 +1196,10 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             range.y = "interval",range.x = "interval",
                             data = TEMP_dataG29_CranStraw[rep(1:nrow(TEMP_dataG29_CranStraw), TEMP_dataG29_CranStraw$N_sumsympallop),], nperm=0)
 
+
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Cranberry_Strawberry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 29, "Cranberry_Strawberry")
+
 
 ####### 
 #######  Strawberry  Cherry
@@ -1258,21 +1217,7 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             data = TEMP_dataG29_StrawChe[rep(1:nrow(TEMP_dataG29_StrawChe), TEMP_dataG29_StrawChe$N_sumsympallop),], nperm=0)
 
 # Fill in data
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="correlation"] <- unweightedcor$estimate
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_inf"] <- unweightedcor$conf.int[1]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="cor_CI_sup"] <- unweightedcor$conf.int[2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="intercept"] <- model$regression.results[2, 2]
-Estimates_pairwise$Estimates[Estimates_pairwise$Generation==29&
-                              Estimates_pairwise$Pairwise=="Strawberry_Cherry"&
-                              Estimates_pairwise$Variables=="slope"] <- model$regression.results[2, 3]
+Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 29, "Strawberry_Cherry")
 
 
 
@@ -1299,7 +1244,7 @@ eq_r <- function(gen = 7, pair = "Cherry_Cranberry") {
   if(gen == 7 &pair == "Cherry_Cranberry"){
             as.character(
       as.expression(
-        substitute(~~italic(r)^2~"="~r2~"["~inf~","~sup~"]",
+        substitute(~~italic(rho)~"="~r2~"["~inf~","~sup~"]",
                   list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
   Estimates_pairwise$Pairwise == pair &
   Estimates_pairwise$Variables == "correlation"], digits = 2), 
@@ -1316,7 +1261,7 @@ eq_r <- function(gen = 7, pair = "Cherry_Cranberry") {
   }else{
       as.character(
     as.expression(
-      substitute(~~italic(r)^2~"="~r2~"["~inf~","~sup~"]",
+      substitute(~~italic(rho)~"="~r2~"["~inf~","~sup~"]",
                 list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
 Estimates_pairwise$Pairwise == pair &
 Estimates_pairwise$Variables == "correlation"], digits = 2), 
@@ -1634,26 +1579,11 @@ cowplot::save_plot(file =here::here("figures", "FIG_Correlation.pdf"),
 # SA AND LOCAL ADAPTATION
 ## Analysis fitness change
 ```{r }
-# Add vector of weight 
-data_logchange$Inv_sum<-NA
-data_logchange$Vector_sample<-NA
-data_logchange[data_logchange$Generation=="7",]$Inv_sum <- 1 / (data_logchange[data_logchange$Generation=="7",]$sd_logchange^2)
-data_logchange[data_logchange$Generation=="7",]$Vector_sample <- data_logchange[data_logchange$Generation=="7",]$Inv_sum /
-  sum(data_logchange[data_logchange$Generation=="7",]$Inv_sum,na.rm = TRUE)
-
-data_logchange[data_logchange$Generation=="29",]$Inv_sum <- 1 / (data_logchange[data_logchange$Generation=="29",]$sd_logchange^2)
-data_logchange[data_logchange$Generation=="29",]$Vector_sample <- data_logchange[data_logchange$Generation=="29",]$Inv_sum /
-  sum(data_logchange[data_logchange$Generation=="29",]$Inv_sum,na.rm = TRUE)
-
-# Problem with NA (if one sd missing): replace by 0 (max value)
-data_logchange$Vector_sample[is.na(data_logchange$Vector_sample)] <- 0
-
-
 ##### 
 #####  G7
 ##### 
 lm_val_G7 = lm(logchange ~ Treatment + Line + SA + Treatment:Fruit_s, 
-               weights = Vector_sample, data = data_logchange[data_logchange$Generation=="7",])
+               weights = N, data = data_logchange[data_logchange$Generation=="7",])
 
 Fratio = anova(lm_val_G7)[3, 3]/anova(lm_val_G7)[4, 3]
 pvalue = 1 - pf(Fratio, anova(lm_val_G7)[3, 1], anova(lm_val_G7)[4, 1]) 
@@ -1667,7 +1597,7 @@ anova(lm_val_G7)[4, 1]
 #####  G29
 ##### 
 lm_val_G29 = lm(logchange ~ Treatment + Line + SA + Treatment:Fruit_s, 
-               weights = Vector_sample, data = data_logchange[data_logchange$Generation=="29",])
+               weights = N, data = data_logchange[data_logchange$Generation=="29",])
 
 Fratio = anova(lm_val_G29)[3, 3]/anova(lm_val_G29)[4, 3]
 pvalue = 1 - pf(Fratio, anova(lm_val_G29)[3, 1], anova(lm_val_G29)[4, 1]) 
