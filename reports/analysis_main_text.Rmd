@@ -1109,15 +1109,13 @@ return (emptydata)
 ## Compute weighted correlation
 weightedcor <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran, x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
 
+## With cor.tes, the estimation of correlation coefficient is right, but the confidence interval is wrong
+cor.test(x=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_symp"], y=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_allop"])
+
 ## Compute Major Axis regression
 model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
                             range.y = "interval",range.x = "interval",
                             data = TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop),], nperm=0)
-
-## The estimation of the confidence interval with cor.test is wrong
-cor.test(x=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_symp"], y=TEMP_dataG7_CheCran[rep(1:nrow(TEMP_dataG7_CheCran), TEMP_dataG7_CheCran$N_sumsympallop), "logchange_allop"])
-
-
 
 # Fill in data
 Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 7, "Cherry_Cranberry")
@@ -1220,16 +1218,23 @@ model <- lmodel2::lmodel2(logchange_allop ~ logchange_symp,
 Estimates_pairwise <- fillout_estimate_correlation (Estimates_pairwise, 29, "Strawberry_Cherry")
 
 
+## Some estimates are outside [-1, 1]
+Estimates_pairwise[Estimates_pairwise$Variables=="cor_CI_inf",]
+Estimates_pairwise[Estimates_pairwise$Variables=="cor_CI_sup",]
 
-Estimates_pairwise
+## Change the estimate to the boundary
+Estimates_pairwise$Estimates[Estimates_pairwise$Variables=="cor_CI_inf"&Estimates_pairwise$Estimates<(-1)] <- rep(-1, sum(Estimates_pairwise$Variables=="cor_CI_inf"&Estimates_pairwise$Estimates<(-1)))
+
+Estimates_pairwise$Estimates[Estimates_pairwise$Variables=="cor_CI_sup"&Estimates_pairwise$Estimates > 1] <- rep(1, sum(Estimates_pairwise$Variables=="cor_CI_sup"&Estimates_pairwise$Estimates > 1))
+
 ```
 
 ## Compute confidence interval of the difference
 ```{r}
 
-computeCIcordifG29G7(pair="Cherry_Cranberry")
-computeCIcordifG29G7(pair="Cranberry_Strawberry")
-computeCIcordifG29G7(pair="Strawberry_Cherry")
+computeCIcordifG7G29(pair="Cherry_Cranberry")
+computeCIcordifG7G29(pair="Cranberry_Strawberry")
+computeCIcordifG7G29(pair="Strawberry_Cherry")
 
 ```
 
