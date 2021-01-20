@@ -1286,7 +1286,7 @@ ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_allop, na.rm= T
                 min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_symp, na.rm= TRUE)) 
 ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG7_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
-lim_text<-ymin_CheCranG7+0.99*(ymax_CheCranG7-ymin_CheCranG7)
+lim_text<-2
 
 
 
