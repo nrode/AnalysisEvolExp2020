@@ -75,21 +75,25 @@ CIfitness <- confint(mfitness)
 
 pr1 <- profile(mfitness, alpha = 0.1)
 
-pdf(file="figures/Profile.pdf")
-MASS:::plot.profile(pr1)
-dev.off()
+# pdf(file="figures/Profile.pdf")
+# MASS:::plot.profile(pr1)
+# dev.off()
 
+
+
+### 
 ### Fecundity
+### 
 mfecundity <- MASS::glm.nb(Nb_eggs ~ -1+Treatment+Line:Treatment, data=data)
 summary(mfecundity)
 
 CIfecundity <- confint(mfecundity)
 
-
+### 
 ### Egg-to-adult viability
+### 
 ## 4 tubes with more adults than eggs
 sum(data$Nb_adults>data$Nb_eggs)
-
 ## Number of adults=number of eggs
 data$Nb_eggs[data$Nb_adults>data$Nb_eggs] <- data$Nb_adults[data$Nb_adults>data$Nb_eggs]
 
@@ -99,8 +103,9 @@ summary(megg_to_ad)
 
 CImegg_to_ad <- confint(megg_to_ad)
 
-
+####### 
 ####### Build data_logchange dataset
+####### 
 ## Extract all CIs
 ## Check that the coef are in the same order
 identical(names(coef(mfitness)), names(coef(mfecundity)))
@@ -162,10 +167,55 @@ EC_Straw_Cran_G29<-formattingplotpair(data_logchange, "29", "Cranberry", "Strawb
 EC_Straw_Cher_G29<-formattingplotpair(data_logchange, "29", "Strawberry", "Cherry")
 
 
+formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", 
+                                          fruitcomb=c("Cherry", "Cranberry"), trait="fecundity"){
+## Extract sympatric combinations
+TEMP_symp <- logchange_dataset[logchange_dataset$Generation==generation&
+                                 logchange_dataset$Treatment%in%fruitcomb&
+                                 logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==1,]
+names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
+## Sort dataset
+TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
+
+## Extract allopatric combinations
+TEMP_allop <- logchange_dataset[logchange_dataset$Generation==generation&
+                                  logchange_dataset$Treatment%in%fruitcomb&
+                                  logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==0,]
+names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
+## Sort dataset
+TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
+
+  ## Combine datasets
+if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+  if(trait == "fitness"){
+    TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
+    TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+  }else{
+    if (trait == "fecundity") {
+    TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 10:12)], TEMP_allop[, c(6, 10:12)])
+    TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+    }else{
+      if (trait == "eggtoad") {
+      TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 13:15)], TEMP_allop[, c(6, 13:15)])
+      TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+      }else{
+      print("Error: trait unknown")
+      }
+    }
+  }
+
+  }else{
+    print("Error: sympatric and allopatric datasets are not in the same order")
+ }
+    
+ return(TEMP)
+}
+
+
 #Formatting for plot pool
-TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", fruitcomb=c("Cherry", "Cranberry"),trait="fitness")
+TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", fruitcomb=c("Cherry", "Cranberry"), trait="fitness")
 TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", fruitcomb=c("Cranberry", "Strawberry"), trait="fitness")
-TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", fruitcomb=c("Strawberry", "Cherry"),trait="fitness")
+TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", fruitcomb=c("Strawberry", "Cherry"), trait="fitness")
 
 
 ## Data longitudinal 
@@ -386,7 +436,7 @@ diag(tapply(data_G7$Emergence_rate, list(data_G7$Treatment,data_G7$Fruit_s), mea
 diag(tapply(data_G29$Emergence_rate, list(data_G29$Treatment,data_G29$Fruit_s), mean))
 
 ## Compute correlation by generation and selective fruit
-ddply(data_logchangeNb_eggsEmergence_rate, .(Generation, Fruit_s), computecorrelation)
+plyr::ddply(data_logchangeNb_eggsEmergence_rate, .(Generation, Fruit_s), computecorrelation)
 
 ```
 
@@ -664,7 +714,7 @@ cowplot::save_plot(file =here::here("figures", "SUPMAT_Correlation_between_Trait
 
 
 # A SUPR: Long vs Fitness
-## Data
+## A SUPR
 ```{r eval=FALSE}
 #To consider fruit maternal effect and GF maternal effect: new plot 
 ## Y-axis = log change = log(Fitness pheno)-log(fitness initial)
@@ -704,7 +754,7 @@ data_compare_longitudinal_pheno$Line_type  <- ifelse(data_compare_longitudinal_p
 ```
 
 
-## Plot long vs fitness
+## A SUPR Plot long vs fitness
 ```{r eval=FALSE}
 PLOT_IntermediatePheno_LOGCHANGE<-ggplot(data=data_compare_longitudinal_pheno[data_compare_longitudinal_pheno$Phase=="first_prepool",], 
        aes(y=logchange,x=logchange_long, color=Fruit_s,shape=Fruit_s, linetype=Line_type)) +
@@ -786,7 +836,7 @@ cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pheno_Longitudin
 
 
 
-## Extra plot Maternal effects
+## A SUPR Extra plot Maternal effects
 ```{r eval=FALSE}
 
 m <- lm(logchange ~ logchange_long + offset(logchange_long),
@@ -1163,6 +1213,583 @@ summary(mod3)
 ```
 
 
+# SUP: Correlated responses for other traits 
+## Formating data
+```{r }
+#Formatting for fecundity
+TEMP_dataG7_CheCran_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                           fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
+TEMP_dataG7_CranStraw_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                             fruitcomb=c("Strawberry", "Cranberry"), trait="fecundity")
+TEMP_dataG7_StrawChe_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                            fruitcomb=c("Cherry", "Strawberry"), trait="fecundity")
+
+TEMP_dataG29_CheCran_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                            fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
+TEMP_dataG29_CranStraw_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                              fruitcomb=c("Strawberry", "Cranberry"), trait="fecundity")
+TEMP_dataG29_StrawChe_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                             fruitcomb=c("Cherry", "Strawberry"), trait="fecundity")
+
+
+
+#Formatting for egg to adult viability
+TEMP_dataG7_CheCran_Viability <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                           fruitcomb=c("Cherry", "Cranberry"), trait="eggtoad")
+TEMP_dataG7_CranStraw_Viability  <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                             fruitcomb=c("Strawberry", "Cranberry"), trait="eggtoad")
+TEMP_dataG7_StrawChe_Viability  <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                            fruitcomb=c("Cherry", "Strawberry"), trait="eggtoad")
+
+TEMP_dataG29_CheCran_Viability  <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                            fruitcomb=c("Cherry", "Cranberry"), trait="eggtoad")
+TEMP_dataG29_CranStraw_Viability  <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                              fruitcomb=c("Strawberry", "Cranberry"), trait="eggtoad")
+TEMP_dataG29_StrawChe_Viability  <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                             fruitcomb=c("Cherry", "Strawberry"), trait="eggtoad")
+```
+
+
+
+## Plot Fecundity 
+```{r } 
+#Formating data
+ymin = -50
+ymax = 50
+
+##################################################
+##################   G7
+# Limits
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE)) 
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran_Fecundity$upCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-2
+
+
+
+# Plot
+CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran_Fecundity) + 
+  geom_errorbar(aes(x = logfecundchange_symp, ymin = lowCIlogfecundchange_allop,
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logfecundchange_allop, xmin = lowCIlogfecundchange_symp, 
+                     xmax = upCIlogfecundchange_symp, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange_symp, y = logfecundchange_allop,  
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change in\nselective environment")  + 
+  ylab("Log fecundity change in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  theme_LO_sober + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
+                  xlim = c(ymin_CheCranG7, ymax_CheCranG7)) 
+  
+ CheCran_G7
+
+
+# Limits
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw_Fecundity$upCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG7+0.99*(ymax_CranStrawG7-ymin_CranStrawG7)
+
+
+CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw_Fecundity) + 
+  geom_errorbar(aes(x = logfecundchange_symp, ymin = lowCIlogfecundchange_allop, 
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logfecundchange_allop, xmin = lowCIlogfecundchange_symp, 
+                     xmax = upCIlogfecundchange_allop, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s,
+                 fill = Fruit_s, shape = Treatment),
+                   size =3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change in\nselective environment")  + 
+  ylab("Log fecundity change in\nalternative environment")  + 
+     ggtitle("Cranberry vs. Strawberry") + 
+  coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
+                  xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(22, 24)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+ CranStraw_G7
+
+ 
+# Limits
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG7+0.99*(ymax_StrawCheG7-ymin_StrawCheG7)
+
+
+StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe_Fecundity) + 
+  geom_errorbar(aes(x =logfecundchange_symp, 
+                    ymin = lowCIlogfecundchange_allop, 
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logfecundchange_allop, 
+                     xmin = lowCIlogfecundchange_symp, 
+                     xmax = upCIlogfecundchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change in\nselective environment")  + 
+  ylab("Log fecundity change in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(21, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
+                  xlim = c(ymin_StrawCheG7, ymax_StrawCheG7)) + 
+  theme_LO_sober
+ StrawChe_G7
+ 
+ 
+  
+#####################################################################################
+##################################      G29        ##################################
+#####################################################################################
+TEMP_dataG29_CheCran
+TEMP_dataG29_CranStraw
+TEMP_dataG29_StrawChe
+
+
+# Limits
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran_Fecundity$upCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-ymin_CheCranG29+0.99*(ymax_CheCranG29-ymin_CheCranG29)
+
+
+CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran_Fecundity) + 
+  geom_errorbar(aes(x =logfecundchange_symp, ymin = lowCIlogfecundchange_allop, 
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logfecundchange_allop, xmin = lowCIlogfecundchange_symp, 
+                     xmax = upCIlogfecundchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  xlab("Log fecundity change in\nselective environment")  + 
+  ylab("Log fecundity change in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
+                  xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
+  theme_LO_sober
+ CheCran_G29
+
+
+
+# Limits
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw_Fecundity$upCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
+
+#Plot
+ CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw_Fecundity) + 
+   geom_errorbar(aes(x =logfecundchange_symp, ymin = lowCIlogfecundchange_allop, 
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+   geom_errorbarh(aes(y = logfecundchange_allop, xmin = lowCIlogfecundchange_symp,
+                      xmax = upCIlogfecundchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+   geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+   xlab("Log fecundity change in\nselective environment")  + 
+   ylab("Log fecundity change in\nalternative environment")  + 
+   ggtitle("Cranberry vs. Strawberry") + 
+   coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
+                  xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(15, 17)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+   theme_LO_sober
+ CranStraw_G29
+
+ 
+ 
+ 
+# Limits
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe_Fecundity$lowCIlogfecundchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe_Fecundity$lowCIlogfecundchange_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe_Fecundity$upCIlogfecundchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe_Fecundity$upCIlogfecundchange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG29+0.99*(ymax_StrawCheG29-ymin_StrawCheG29)
+
+
+StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe_Fecundity) + 
+  geom_errorbar(aes(x =logfecundchange_symp, ymin = lowCIlogfecundchange_allop, 
+                    ymax = upCIlogfecundchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.2, alpha =1) + 
+  geom_errorbarh(aes(y = logfecundchange_allop, xmin = lowCIlogfecundchange_symp, 
+                     xmax = upCIlogfecundchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.2, alpha =1) + 
+  geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
+                  xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
+    xlab("Log fecundity change in\nselective environment")  + 
+    ylab("Log fecundity change in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  theme_LO_sober
+ StrawChe_G29
+
+
+
+
+
+ 
+ 
+legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
+                          aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
+                              shape = Treatment)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+
+legend_trade <- lemon::g_legend(legend_tradevide)
+
+ 
+ 
+
+Slopeestimates_logchange_pairwise_errorbar_FECUNDITY <- cowplot::ggdraw() + 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
+            x = 0.01, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
+            x = 0.31, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
+            x = 0.61, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(legend_trade, x = 0.85, y = 0.5, width = 0.1, height = 0.1) + 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
+            x = 0.01, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
+            x = 0.31, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
+            x = 0.61, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
+                    "Final phenotyping step", "D", "E", "F", " "),  
+                  x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.250, 0.01, 0.30, 0.61, 0.92), 
+                  y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45), 
+                  hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
+                  vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+                  size = 16) 
+ Slopeestimates_logchange_pairwise_errorbar_FECUNDITY
+#  
+# #  
+# 
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Correlation_Fecundity.pdf"),
+                   Slopeestimates_logchange_pairwise_errorbar_FECUNDITY,
+                   base_height = 18/cm(1), base_width = 34/cm(1), dpi = 610)
+
+
+
+
+```
+
+
+
+
+## Plot Egg to adult viability 
+```{r } 
+#Formating data
+ymin = -50
+ymax = 50
+
+##################################################
+##################   G7
+# Limits
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE)) 
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran_Viability$upCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-2
+
+
+
+# Plot
+CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran_Viability) + 
+  geom_errorbar(aes(x = logeggtoadchange_symp, ymin = lowCIlogeggtoadchange_allop,
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange_allop, xmin = lowCIlogeggtoadchange_symp, 
+                     xmax = upCIlogeggtoadchange_symp, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logeggtoadchange_symp, y = logeggtoadchange_allop,  
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  theme_LO_sober + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
+                  xlim = c(ymin_CheCranG7, ymax_CheCranG7)) 
+  
+ CheCran_G7
+
+
+# Limits
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw_Viability$upCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG7+0.99*(ymax_CranStrawG7-ymin_CranStrawG7)
+
+
+CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw_Viability) + 
+  geom_errorbar(aes(x = logeggtoadchange_symp, ymin = lowCIlogeggtoadchange_allop, 
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange_allop, xmin = lowCIlogeggtoadchange_symp, 
+                     xmax = upCIlogeggtoadchange_allop, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  color = Fruit_s,
+                 fill = Fruit_s, shape = Treatment),
+                   size =3, fill = "white", stroke =1.2) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  +  
+     ggtitle("Cranberry vs. Strawberry") + 
+  coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
+                  xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(22, 24)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+ CranStraw_G7
+
+ 
+# Limits
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG7+0.99*(ymax_StrawCheG7-ymin_StrawCheG7)
+
+
+StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe_Viability) + 
+  geom_errorbar(aes(x =logeggtoadchange_symp, 
+                    ymin = lowCIlogeggtoadchange_allop, 
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange_allop, 
+                     xmin = lowCIlogeggtoadchange_symp, 
+                     xmax = upCIlogeggtoadchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logeggtoadchange_symp, y = logeggtoadchange_allop,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(21, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
+                  xlim = c(ymin_StrawCheG7, ymax_StrawCheG7)) + 
+  theme_LO_sober
+ StrawChe_G7
+ 
+ 
+  
+#####################################################################################
+##################################      G29        ##################################
+#####################################################################################
+TEMP_dataG29_CheCran
+TEMP_dataG29_CranStraw
+TEMP_dataG29_StrawChe
+
+
+# Limits
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran_Viability$upCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-ymin_CheCranG29+0.99*(ymax_CheCranG29-ymin_CheCranG29)
+
+
+CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran_Viability) + 
+  geom_errorbar(aes(x =logeggtoadchange_symp, ymin = lowCIlogeggtoadchange_allop, 
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logeggtoadchange_allop, xmin = lowCIlogeggtoadchange_symp, 
+                     xmax = upCIlogeggtoadchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
+                  xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
+  theme_LO_sober
+ CheCran_G29
+
+
+
+# Limits
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw_Viability$upCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
+
+#Plot
+ CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw_Viability) + 
+   geom_errorbar(aes(x =logeggtoadchange_symp, ymin = lowCIlogeggtoadchange_allop, 
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+   geom_errorbarh(aes(y = logeggtoadchange_allop, xmin = lowCIlogeggtoadchange_symp,
+                      xmax = upCIlogeggtoadchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+   geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
+   ggtitle("Cranberry vs. Strawberry") + 
+   coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
+                  xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(15, 17)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+   theme_LO_sober
+ CranStraw_G29
+
+ 
+ 
+ 
+# Limits
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe_Viability$lowCIlogeggtoadchange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe_Viability$lowCIlogeggtoadchange_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe_Viability$upCIlogeggtoadchange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe_Viability$upCIlogeggtoadchange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG29+0.99*(ymax_StrawCheG29-ymin_StrawCheG29)
+
+
+StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe_Viability) + 
+  geom_errorbar(aes(x =logeggtoadchange_symp, ymin = lowCIlogeggtoadchange_allop, 
+                    ymax = upCIlogeggtoadchange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.2, alpha =1) + 
+  geom_errorbarh(aes(y = logeggtoadchange_allop, xmin = lowCIlogeggtoadchange_symp, 
+                     xmax = upCIlogeggtoadchange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.2, alpha =1) + 
+  geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
+                  xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
+  xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
+  ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  theme_LO_sober
+ StrawChe_G29
+
+
+
+
+
+ 
+ 
+legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
+                          aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
+                              shape = Treatment)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+
+legend_trade <- lemon::g_legend(legend_tradevide)
+
+ 
+ 
+
+Slopeestimates_logchange_pairwise_errorbar_VIABILITY <- cowplot::ggdraw() + 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
+            x = 0.01, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
+            x = 0.31, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
+            x = 0.61, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(legend_trade, x = 0.85, y = 0.5, width = 0.1, height = 0.1) + 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
+            x = 0.01, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
+            x = 0.31, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
+            x = 0.61, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
+                    "Final phenotyping step", "D", "E", "F", " "),  
+                  x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.250, 0.01, 0.30, 0.61, 0.92), 
+                  y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45), 
+                  hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
+                  vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+                  size = 16) 
+ Slopeestimates_logchange_pairwise_errorbar_VIABILITY
+#  
+# #  
+# 
+cowplot::save_plot(file =here::here("figures", "SUPMAT_Correlation_Eggtoadultviability.pdf"),
+                   Slopeestimates_logchange_pairwise_errorbar_VIABILITY,
+                   base_height = 18/cm(1), base_width = 34/cm(1), dpi = 610)
+
+
+
+
+```
 
 
 # SUP: Pooling effect
