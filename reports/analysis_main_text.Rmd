@@ -1310,7 +1310,9 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                                Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_text(x = -0.825, y = lim_text, label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = 0.05, y = 2, 
+            label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, 
+            color="black", size = 3.5) +
   geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop,
                     ymax = upCIlogfitnesschange_allop,
                     color = Fruit_s),
@@ -1362,7 +1364,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s,
                  fill = Fruit_s, shape = Treatment),
                    size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.45, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = -0.15, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
      ggtitle("Cranberry vs. Strawberry") + 
@@ -1402,7 +1404,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.83, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = -0.13, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
