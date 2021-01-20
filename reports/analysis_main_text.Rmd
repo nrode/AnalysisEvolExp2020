@@ -1283,7 +1283,7 @@ Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
 ##################   G7
 # Limits
 ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
+                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE)) 
 ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
                 max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
 lim_text<-ymin_CheCranG7+0.99*(ymax_CheCranG7-ymin_CheCranG7)
