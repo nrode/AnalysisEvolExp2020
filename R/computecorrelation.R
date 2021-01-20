@@ -12,6 +12,7 @@
 computecorrelation <- function(data)
 {
 
-  return(data.frame(correl = cor.test(data$Nb_eggslogchange, data$Emergence_ratelogchange)$estimate, pval = cor.test(data$Nb_eggslogchange, data$Emergence_ratelogchange)$p.value))
+  return(data.frame(correl = cor.test(data$Nb_eggslogchange, data$Emergence_ratelogchange)$estimate,
+                    pval = cor.test(data$Nb_eggslogchange, data$Emergence_ratelogchange)$p.value))
 }
 
