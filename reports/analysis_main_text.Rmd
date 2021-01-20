@@ -945,8 +945,14 @@ bCI_tab(boo01)
 ## G29: fitness increase for cherry populations on cherry medium, but not on strawberry or cranberry medium
 
 ## G29: fitness increase for cranberry populations on cranberry and cherry media, and fitness decrease on strawberry medium
-
 ## G29: strawberry population with no change on strawberry or cranberry medium and fitness decrease on cherry medium
+
+# BACKUP
+# mfitness_fruits <- lme4::glmer.nb(Nb_adults ~ -1 + Treatment + Fruit_s:Treatment:Generation 
+#                                   +  (1|Line), data=data)
+# summary(mfitness_fruits)
+# CIfitness <- confint(mfitness_fruits)
+
 ```
 
 ## Analysis fecundity
