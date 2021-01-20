@@ -1282,10 +1282,10 @@ Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
 ##################################################
 ##################   G7
 # Limits
-ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$logchange_allop-1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG7_CheCran$logchange_symp-1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE)) 
-ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$logchange_allop + 1.96*TEMP_dataG7_CheCran$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG7_CheCran$logchange_symp + 1.96*TEMP_dataG7_CheCran$sd_symp, na.rm= TRUE))
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_symp, na.rm= TRUE)) 
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CheCranG7+0.99*(ymax_CheCranG7-ymin_CheCranG7)
 
 
@@ -1300,14 +1300,16 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
   geom_text(x = -0.825, y = lim_text, label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, color="black", size = 3.5) +
-  geom_errorbar(aes(x = logchange_symp, ymin = logchange_allop-(1.96*sd_allop),
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp, linetype = Line_type),
+  geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop,
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
                 width= 0.02, size = 0.3, alpha = 0.8) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                     color = Symp, linetype = Line_type),
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                     color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
              size = 3, fill = "white", stroke =1.2) + 
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
@@ -1323,10 +1325,10 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
 
 
 # Limits
-ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$logchange_allop-1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG7_CranStraw$logchange_symp-1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
-ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$logchange_allop + 1.96*TEMP_dataG7_CranStraw$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG7_CranStraw$logchange_symp + 1.96*TEMP_dataG7_CranStraw$sd_symp, na.rm= TRUE))
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CranStrawG7+0.99*(ymax_CranStrawG7-ymin_CranStrawG7)
 
 
@@ -1338,14 +1340,16 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
                                Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp, linetype = Line_type),
+  geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
                   width= 0.02, size = 0.3, alpha = 0.8) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp, linetype = Line_type),
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_allop, 
+                 color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s,
+                 fill = Fruit_s, shape = Treatment),
                    size =3, fill = "white", stroke =1.2) + 
   geom_text(x = -0.45, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
@@ -1361,10 +1365,10 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
 
  
 # Limits
-ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$logchange_allop-1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG7_StrawChe$logchange_symp-1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
-ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$logchange_allop + 1.96*TEMP_dataG7_StrawChe$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG7_StrawChe$logchange_symp + 1.96*TEMP_dataG7_StrawChe$sd_symp, na.rm= TRUE))
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_StrawCheG7+0.99*(ymax_StrawCheG7-ymin_StrawCheG7)
 
 
@@ -1376,13 +1380,16 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
                                Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp, linetype = Line_type),
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_symp,
+                    color = Fruit_s),
                   width= 0.02, size = 0.3, alpha = 0.8) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp, linetype = Line_type),
+  geom_errorbarh(aes(y = logchange_allop, 
+                     xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
   geom_text(x = -0.83, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
@@ -1407,10 +1414,10 @@ TEMP_dataG29_StrawChe
 
 
 # Limits
-ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$logchange_allop-1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG29_CheCran$logchange_symp-1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
-ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$logchange_allop + 1.96*TEMP_dataG29_CheCran$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG29_CheCran$logchange_symp + 1.96*TEMP_dataG29_CheCran$sd_symp, na.rm= TRUE))
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CheCranG29+0.99*(ymax_CheCranG29-ymin_CheCranG29)
 
 
@@ -1422,14 +1429,15 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
                                Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp),
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
                   width= 0.02, size = 0.3, alpha = 0.8) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp),
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
   geom_text(x = 0.33, y = lim_text, label = eq_r(gen = 29, pair = "Cherry_Cranberry"), parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
@@ -1446,10 +1454,10 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
 
 
 # Limits
-ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$logchange_allop-1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG29_CranStraw$logchange_symp-1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
-ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$logchange_allop + 1.96*TEMP_dataG29_CranStraw$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG29_CranStraw$logchange_symp + 1.96*TEMP_dataG29_CranStraw$sd_symp, na.rm= TRUE))
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
 
 #Plot
@@ -1461,14 +1469,16 @@ lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
                                Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-   geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp),
+   geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
                   width= 0.02, size = 0.3, alpha = 0.8) + 
-   geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp),
+   geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp,
+                      xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+   geom_point(aes(x =logchange_symp, y = logchange_allop,  
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
    geom_text(x = -0.45, y = lim_text, label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
    xlab("Fitness change in\nselective environment")  + 
@@ -1486,10 +1496,10 @@ lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
  
  
 # Limits
-ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$logchange_allop-1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
-                min(TEMP_dataG29_StrawChe$logchange_symp-1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
-ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$logchange_allop + 1.96*TEMP_dataG29_StrawChe$sd_allop, na.rm= TRUE),
-                max(TEMP_dataG29_StrawChe$logchange_symp + 1.96*TEMP_dataG29_StrawChe$sd_symp, na.rm= TRUE))
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_StrawCheG29+0.99*(ymax_StrawCheG29-ymin_StrawCheG29)
 
 
@@ -1501,16 +1511,20 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
                                Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_errorbar(aes(x =logchange_symp, ymin = logchange_allop-(1.96*sd_allop), 
-                    ymax = logchange_allop + (1.96*sd_allop),
-                    color = Symp),
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
                   width= 0.02, size = 0.2, alpha =1) + 
-  geom_errorbarh(aes(y = logchange_allop, xmin = logchange_symp-1.96*sd_symp, xmax = logchange_symp + 1.96*sd_symp, 
-                 color = Symp),
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
                  height = 0.02, size = 0.2, alpha =1) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Symp,fill = Symp, shape = Allop),
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.2, y = lim_text, label = eq_r(gen = 29, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = -0.2, y = lim_text, 
+            label = eq_r(gen = 29, pair = "Strawberry_Cherry"), 
+            parse = TRUE, color="black", size = 3.5) +
   coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
                   xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
     xlab("Fitness change in\nselective environment")  + 
@@ -1529,7 +1543,8 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
  
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
-                          aes(x =logchange, y = logchange,  color = Symp,fill = Symp, shape = Allop)) + 
+                          aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
+                              shape = Treatment)) + 
   geom_point(size =2.5, fill = "white") + 
   labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 15, 17)) + 
