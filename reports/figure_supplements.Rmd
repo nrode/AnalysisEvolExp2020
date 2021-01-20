@@ -366,8 +366,6 @@ PAIR_Fig_Sup <-  cowplot::ggdraw() +
                   size = 14) 
  PAIR_Fig_Sup
  
- 
-  
 
 cowplot::save_plot(file=here::here("figures", "SUPMAT_LogChange_Pairwise.pdf"), PAIR_Fig_Sup, 
                    base_height = 15/cm(1), base_width = 30/cm(1), dpi = 610)
