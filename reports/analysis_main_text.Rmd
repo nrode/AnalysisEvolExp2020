@@ -195,30 +195,78 @@ head(data_logchange)
 
 ## Build sympatric/allopatric datasets
 ```{r }
-## Proposition de fonction simplifiée
-formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry")){
+# ## Proposition de fonction simplifiée
+# formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry")){
+# ## Extract sympatric combinations
+# TEMP_symp <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==1,]
+# names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
+# ## Sort dataset
+# TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
+# 
+# ## Extract allopatric combinations
+# TEMP_allop <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==0,]
+# names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
+# ## Sort dataset
+# TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
+# 
+#   ## Combine datasets
+#   if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+#     TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
+#     TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+#     return(TEMP)
+#   }else{
+#     print("Error: sympatric and allopatric datasets are not in the same order")
+#   }
+# 
+# }
+# 
+
+
+
+formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", 
+                                          fruitcomb=c("Cherry", "Cranberry"), trait="fecundity"){
 ## Extract sympatric combinations
-TEMP_symp <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==1,]
+TEMP_symp <- logchange_dataset[logchange_dataset$Generation==generation&
+                                 logchange_dataset$Treatment%in%fruitcomb&
+                                 logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==1,]
 names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
 ## Sort dataset
 TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
 
 ## Extract allopatric combinations
-TEMP_allop <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==0,]
+TEMP_allop <- logchange_dataset[logchange_dataset$Generation==generation&
+                                  logchange_dataset$Treatment%in%fruitcomb&
+                                  logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==0,]
 names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
 ## Sort dataset
 TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
 
   ## Combine datasets
-  if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+  if(trait == "fitness"){
     TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
     TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
-    return(TEMP)
   }else{
-    print("Error: sympatric and allopatric datasets are not in the same order")
+    if (trait == "fecundity") {
+    TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 10:12)], TEMP_allop[, c(6, 10:12)])
+    TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+    }else{
+      if (trait == "eggtoad") {
+      TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 13:15)], TEMP_allop[, c(6, 13:15)])
+      TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+      }else{
+      print("Error: trait unknown")
+      }
+    }
   }
 
+  }else{
+    print("Error: sympatric and allopatric datasets are not in the same order")
+ }
+    
+ return(TEMP)
 }
+
 
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry"))
@@ -1244,7 +1292,7 @@ computeCIcordifG7G29(pair="Strawberry_Cherry")
 
 ```
 
-## Plot 
+## Plot Fitness
 ```{r } 
 ymin = -50
 ymax = 50
@@ -1287,6 +1335,350 @@ Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
   }
 
 }
+
+
+
+##################################################
+##################   G7
+# Limits
+ymin_CheCranG7=min(min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CheCran$lowCIlogfitnesschange_symp, na.rm= TRUE)) 
+ymax_CheCranG7=max(max(TEMP_dataG7_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-2
+
+
+
+# Plot
+CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_text(x = 0, y = 2, 
+            label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, 
+            color="black", size = 3.5) +
+  geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop,
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
+                width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                     color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+             size = 3, fill = "white", stroke =1.2) + 
+  xlab("Fitness change in\nselective environment")  + 
+  ylab("Fitness change in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  theme_LO_sober + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(21, 22)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
+                  xlim = c(ymin_CheCranG7, ymax_CheCranG7)) 
+  
+ CheCran_G7
+
+
+# Limits
+ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_CranStraw$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG7+0.99*(ymax_CranStrawG7-ymin_CranStrawG7)
+
+
+CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_allop, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s,
+                 fill = Fruit_s, shape = Treatment),
+                   size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = -0.25, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
+  xlab("Fitness change in\nselective environment")  + 
+  ylab("Fitness change in\nalternative environment")  + 
+     ggtitle("Cranberry vs. Strawberry") + 
+  coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
+                  xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(22, 24)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+ CranStraw_G7
+
+ 
+# Limits
+ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG7+0.99*(ymax_StrawCheG7-ymin_StrawCheG7)
+
+
+StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation == 7 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_symp,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, 
+                     xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = -0.13, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
+  xlab("Fitness change in\nselective environment")  + 
+  ylab("Fitness change in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(21, 24)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
+                  xlim = c(ymin_StrawCheG7, ymax_StrawCheG7)) + 
+  theme_LO_sober
+ StrawChe_G7
+ 
+ 
+  
+#####################################################################################
+##################################      G29        ##################################
+#####################################################################################
+TEMP_dataG29_CheCran
+TEMP_dataG29_CranStraw
+TEMP_dataG29_StrawChe
+
+
+# Limits
+ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CheCran$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-ymin_CheCranG29+0.99*(ymax_CheCranG29-ymin_CheCranG29)
+
+
+CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) + 
+    geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = 0.33, y = lim_text, label = eq_r(gen = 29, pair = "Cherry_Cranberry"), parse = TRUE, color="black", size = 3.5) +
+  xlab("Fitness change in\nselective environment")  + 
+  ylab("Fitness change in\nalternative environment")  + 
+  ggtitle("Cherry vs. Cranberry") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  scale_shape_manual(values = c(16, 15)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
+  coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
+                  xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
+  theme_LO_sober
+ CheCran_G29
+
+
+
+# Limits
+ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_CranStraw$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
+
+#Plot
+ CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw) + 
+  geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Cranberry_Strawberry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+   geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.3, alpha = 0.8) + 
+   geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp,
+                      xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.3, alpha = 0.8) + 
+   geom_point(aes(x =logchange_symp, y = logchange_allop,  
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+   geom_text(x = -0.45, y = lim_text, label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
+   xlab("Fitness change in\nselective environment")  + 
+   ylab("Fitness change in\nalternative environment")  + 
+   ggtitle("Cranberry vs. Strawberry") + 
+   coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
+                  xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
+   scale_shape_manual(values = c(15, 17)) + 
+   scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
+   theme_LO_sober
+ CranStraw_G29
+
+ 
+ 
+ 
+# Limits
+ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$lowCIlogfitnesschange_allop, na.rm= TRUE),
+                min(TEMP_dataG29_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
+ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
+                max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_symp, na.rm= TRUE))
+lim_text<-ymin_StrawCheG29+0.99*(ymax_StrawCheG29-ymin_StrawCheG29)
+
+
+StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) + 
+ geom_abline(intercept = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "intercept"],
+               slope = Estimates_pairwise$Estimates[Estimates_pairwise$Generation ==29 & 
+                               Estimates_pairwise$Pairwise == "Strawberry_Cherry" & 
+                               Estimates_pairwise$Variables == "slope"],
+              colour = "black", size = 0.75) + 
+  geom_errorbar(aes(x =logchange_symp, ymin = lowCIlogfitnesschange_allop, 
+                    ymax = upCIlogfitnesschange_allop,
+                    color = Fruit_s),
+                  width= 0.02, size = 0.2, alpha =1) + 
+  geom_errorbarh(aes(y = logchange_allop, xmin = lowCIlogfitnesschange_symp, 
+                     xmax = upCIlogfitnesschange_symp, 
+                 color = Fruit_s),
+                 height = 0.02, size = 0.2, alpha =1) + 
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 size =3, fill = "white", stroke =1.2) + 
+  geom_text(x = -0.2, y = lim_text, 
+            label = eq_r(gen = 29, pair = "Strawberry_Cherry"), 
+            parse = TRUE, color="black", size = 3.5) +
+  coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
+                  xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
+    xlab("Fitness change in\nselective environment")  + 
+    ylab("Fitness change in\nalternative environment")  + 
+  ggtitle("Strawberry vs. Cherry") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
+  theme_LO_sober
+ StrawChe_G29
+
+
+
+
+
+ 
+ 
+legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
+                          aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
+                              shape = Treatment)) + 
+  geom_point(size =2.5, fill = "white") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
+  scale_shape_manual(values = c(16, 15, 17)) + 
+  scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
+  theme_LO_sober
+
+legend_trade <- lemon::g_legend(legend_tradevide)
+
+ 
+ 
+
+Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() + 
+  cowplot::draw_plot(CheCran_G7 + theme(legend.position = "none"), 
+            x = 0.01, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G7 + theme(legend.position = "none"), 
+            x = 0.31, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G7 + theme(legend.position = "none"), 
+            x = 0.61, y = 0.5, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(legend_trade, x = 0.85, y = 0.5, width = 0.1, height = 0.1) + 
+  cowplot::draw_plot(CheCran_G29 + theme(legend.position = "none"), 
+            x = 0.01, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(CranStraw_G29 + theme(legend.position = "none"), 
+            x = 0.31, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot(StrawChe_G29 + theme(legend.position = "none"), 
+            x = 0.61, y = 0, width = 0.22, height = 0.45) + 
+  cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
+                    "Final phenotyping step", "D", "E", "F", " "),  
+                  x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.250, 0.01, 0.30, 0.61, 0.92), 
+                  y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45), 
+                  hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
+                  vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
+                  size = 16) 
+ Slopeestimates_logchange_pairwise_errorbar
+#  
+# #  
+# 
+cowplot::save_plot(file =here::here("figures", "FIG_Correlation.pdf"),
+                   Slopeestimates_logchange_pairwise_errorbar,
+                   base_height = 18/cm(1), base_width = 34/cm(1), dpi = 610)
+
+
+
+
+```
+
+
+
+
+## Plot SUP 
+```{r } 
+#Formating data
+
+
+#Formatting for testing correlation
+TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                           fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
+TEMP_dataG7_CranStraw_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                                       fruitcomb=c("Strawberry", "Cranberry"), trait="fecundity")
+TEMP_dataG7_StrawChe <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
+                                            fruitcomb=c("Cherry", "Strawberry"), trait="fecundity")
+
+TEMP_dataG29_CheCran_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                                      fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
+TEMP_dataG29_CranStraw_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                                        fruitcomb=c("Strawberry", "Cranberry"), trait="fecundity")
+TEMP_dataG29_StrawChe_Fecundity <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
+                                                       fruitcomb=c("Cherry", "Strawberry"), trait="fecundity")
+
+
+
+
+ymin = -50
+ymax = 50
 
 
 
