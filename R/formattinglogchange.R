@@ -1,50 +1,60 @@
 #' @title Formatting a logchange dataset to pairwise dataset for testing MA-regression
 #'
 #' @description  Formatting a logchange dataset
-#' From a logchange dataset created using computelogchange() to pairwise dataset for testing MA-regression
+#' From a logchange dataset to pairwise dataset for testing MA-regression
 #'
-#' @param logchange_data Intermediate phenotyping dataset created using loadfitnessdata()
+#' @param logchange_dataset Intermediate phenotyping dataset created using loadfitnessdata()
 #' @param generation Phenotyping step of interest
-#' @param fruit1 First fruit of the pairwise
-#' @param fruit2 Second fruit of the pairwise
+#' @param fruitcomb vector with first fruit of the pairwise and second fruit of the pairwise
+#' @param trait trait of interest: can be "fitness, "fecundity" or  "eggtoad"
 
 #' @return Dataset with logchange for two fruits during a specific phenotyping step
 #' @export
 #'
 #' @examples
-#'data_sum <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruit1 = "Cherry",fruit2 = "Cranberry")
-
-formattinglogchange <- function(logchange_dataset = data_logchange,
-                                generation = "7", fruit1 = "Cherry", fruit2 = "Cranberry"){
-
-  #Temporary dataset
-  TEMP_data_sum_G7G29_logchange<-logchange_dataset
-
-  #Select allopatric environments
-  TEMP_data_sum_G7G29_logchange$logchange_allop<-ifelse(TEMP_data_sum_G7G29_logchange$SA==1,NA,TEMP_data_sum_G7G29_logchange$logchange)
-  TEMP_data_sum_G7G29_logchange$sd_allop<-ifelse(TEMP_data_sum_G7G29_logchange$SA==1,NA,TEMP_data_sum_G7G29_logchange$sd_logchange)
-
-  #Select sympatric environments
-  #Create temporary data with logchange only in sympatric environments
-  temp_symp <- TEMP_data_sum_G7G29_logchange[TEMP_data_sum_G7G29_logchange$SA=="1", c("Line","logchange","sd_logchange", "N")]
-  colnames(temp_symp)<-c("Line", "logchange_symp", "sd_symp", "N_symp")
-  data_sum_G7G29_logchange_temp <- merge(TEMP_data_sum_G7G29_logchange, temp_symp, by="Line")
-  data_sum_G7G29_logchange <- data_sum_G7G29_logchange_temp[data_sum_G7G29_logchange_temp$SA=="0",]
-
-  names(data_sum_G7G29_logchange)[names(data_sum_G7G29_logchange)=="N"] <- "N_allop"
-
-  data_sum_G7G29_logchange$N_sumsympallop <- data_sum_G7G29_logchange$N_symp + data_sum_G7G29_logchange$N_allop
-
-  # Create pairwise dataset
-  data_pairwise_generation<-data_sum_G7G29_logchange[data_sum_G7G29_logchange$Generation==generation&
-                                                       data_sum_G7G29_logchange$Symp==fruit1|
-                                                       data_sum_G7G29_logchange$Generation==generation&
-                                                       data_sum_G7G29_logchange$Symp==fruit2,]
-  data_pairwise_generation<-data_pairwise_generation[data_pairwise_generation$Allop==fruit1|
-                                                       data_pairwise_generation$Allop==fruit2,]
+#'data_sum <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
 
 
-  return(data_pairwise_generation)
+formattinglogchange <- function(logchange_dataset = data_logchange, generation="7",
+                                fruitcomb=c("Cherry", "Cranberry"), trait="fecundity"){
+  ## Extract sympatric combinations
+  TEMP_symp <- logchange_dataset[logchange_dataset$Generation==generation&
+                                   logchange_dataset$Treatment%in%fruitcomb&
+                                   logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==1,]
+  names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
+  ## Sort dataset
+  TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
 
+  ## Extract allopatric combinations
+  TEMP_allop <- logchange_dataset[logchange_dataset$Generation==generation&
+                                    logchange_dataset$Treatment%in%fruitcomb&
+                                    logchange_dataset$Fruit_s%in%fruitcomb&logchange_dataset$SA==0,]
+  names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
+  ## Sort dataset
+  TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
 
+  ## Combine datasets
+  if(identical(TEMP_symp$Line, TEMP_allop$Line)){
+    if(trait == "fitness"){
+      TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
+      TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+    }else{
+      if (trait == "fecundity") {
+        TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 10:12)], TEMP_allop[, c(6, 10:12)])
+        TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+      }else{
+        if (trait == "eggtoad") {
+          TEMP <- data.frame(TEMP_symp[, c(1:4, 6, 13:15)], TEMP_allop[, c(6, 13:15)])
+          TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
+        }else{
+          print("Error: trait unknown")
+        }
+      }
+    }
+
+  }else{
+    print("Error: sympatric and allopatric datasets are not in the same order")
+  }
+
+  return(TEMP)
 }
