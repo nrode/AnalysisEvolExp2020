@@ -195,31 +195,6 @@ head(data_logchange)
 
 ## Build sympatric/allopatric datasets
 ```{r }
-## Proposition de fonction simplifiée
-formattinglogchange <- function(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry")){
-## Extract sympatric combinations
-TEMP_symp <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==1,]
-names(TEMP_symp)[6:ncol(TEMP_symp)] <- paste0(names(TEMP_symp)[6:ncol(TEMP_symp)], "_symp")
-## Sort dataset
-TEMP_symp <- TEMP_symp[order(TEMP_symp$Line),]
-
-## Extract allopatric combinations
-TEMP_allop <- data_logchange[data_logchange$Generation==generation&data_logchange$Treatment%in%fruitcomb&data_logchange$Fruit_s%in%fruitcomb&data_logchange$SA==0,]
-names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
-## Sort dataset
-TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
-
-  ## Combine datasets
-  if(identical(TEMP_symp$Line, TEMP_allop$Line)){
-    TEMP <- data.frame(TEMP_symp[, c(1:4, 6:9)], TEMP_allop[, 6:9])
-    TEMP$N_sumsympallop <- TEMP$N_symp + TEMP$N_allop
-    return(TEMP)
-  }else{
-    print("Error: sympatric and allopatric datasets are not in the same order")
-  }
-
-}
-
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Cherry", "Cranberry"))
 TEMP_dataG7_CranStraw <- formattinglogchange(logchange_dataset = data_logchange, generation="7", fruitcomb=c("Strawberry", "Cranberry"))
@@ -1237,8 +1212,29 @@ computeCIcordifG7G29(pair="Cranberry_Strawberry")
 computeCIcordifG7G29(pair="Strawberry_Cherry")
 
 ```
+## Check change in correlation when considering only a subset of populations
+```{r}
+## Compute weighted correlation for cranberry populations
+weightedcorG7 <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Fruit_s=="Cranberry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
 
-## Plot 
+weightedcorG29 <- sjstats:::weighted_correlation(TEMP_dataG29_CheCran[TEMP_dataG29_CheCran$Fruit_s=="Cranberry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+correlationdifference <- weightedcorG7$estimate-weightedcorG29$estimate
+lowerCI <- correlationdifference - sqrt((weightedcorG7$estimate-weightedcorG7$ci[1])^2+(weightedcorG29$estimate-weightedcorG29$ci[2])^2)
+higherCI <- correlationdifference + sqrt((weightedcorG7$estimate-1)^2+(weightedcorG29$estimate-(-1))^2)
+
+## Compute weighted correlation for cherry populations
+weightedcorG7 <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Fruit_s=="Cherry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+weightedcorG29 <- sjstats:::weighted_correlation(TEMP_dataG29_CheCran[TEMP_dataG29_CheCran$Fruit_s=="Cherry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+correlationdifference <- weightedcorG7$estimate-weightedcorG29$estimate
+lowerCI <- correlationdifference - sqrt((weightedcorG7$estimate-weightedcorG7$ci[1])^2+(weightedcorG29$estimate-1)^2)
+higherCI <- correlationdifference + sqrt((weightedcorG7$estimate-1)^2+(weightedcorG29$estimate-(-1))^2)
+
+```
+
+## Plot
 ```{r } 
 ymin = -50
 ymax = 50
