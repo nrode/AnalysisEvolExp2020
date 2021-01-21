@@ -1184,7 +1184,6 @@ mod0 <- lme4::lmer(fitness~ Generation*Line + (1|Generation:Fruit_s),
 mod1 <- lme4::lmer(fitness~ Generation*Line + (1|Generation) + (1|Generation:Fruit_s), 
             weights = N, data = data_sum[data_sum$Phase=="second_postpool",], REML = TRUE)
 MuMIn::model.sel(mod0, mod1)
-
 ## Cl: only a very slight increase in likelihood when adding the second random effect
 
 ## Test for fixed effects
