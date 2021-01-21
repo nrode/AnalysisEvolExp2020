@@ -413,22 +413,6 @@ ymax = 50
 
 ##################################################
 ##################   G7
-# Limits
-
-vec_minmax <- function (data_set = data_logchange, gen = "7", fruit ="Cherry") {
-ymin_PAIR_Che_G7=min(min(data_logchange[data_logchange$Generation==gen&
-                                             data_logchange$Fruit_s==fruit,]$lowCIlogfecundchange, na.rm= TRUE),
-                min(data_logchange[data_logchange$Generation==gen&
-                                             data_logchange$Fruit_s==fruit,]$lowCIlogeggtoadchange, na.rm= TRUE)) 
-ymax_PAIR_Che_G7=max(max(data_logchange[data_logchange$Generation==gen&
-                                             data_logchange$Fruit_s==fruit,]$upCIlogfecundchange, na.rm= TRUE),
-                max(data_logchange[data_logchange$Generation==gen&
-                                             data_logchange$Fruit_s==fruit,]$upCIlogeggtoadchange, na.rm= TRUE))
-vec_min_max<-c(ymin_PAIR_Che_G7,ymax_PAIR_Che_G7)
-return(vec_min_max)
-}
-
-
 # Plot
 PAIR_Che_G7 <- ggplot(data = data_logchange[data_logchange$Generation=="7"&
                                              data_logchange$Fruit_s=="Cherry",]) + 
