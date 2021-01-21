@@ -7,18 +7,15 @@
 formattinglogchange(
   logchange_dataset = data_logchange,
   generation = "7",
-  fruit1 = "Cherry",
-  fruit2 = "Cranberry"
+  fruitcomb = c("Cherry", "Cranberry")
 )
 }
 \arguments{
+\item{logchange_dataset}{dataset with log fitness change between two phenotyping steps}
+
 \item{generation}{Phenotyping step of interest}
 
-\item{fruit1}{First fruit of the pairwise}
-
-\item{fruit2}{Second fruit of the pairwise}
-
-\item{logchange_data}{Intermediate phenotyping dataset created using loadfitnessdata()}
+\item{fruitcomb}{Pair of fruit media considered}
 }
 \value{
 Dataset with logchange for two fruits during a specific phenotyping step
@@ -28,5 +25,5 @@ Formatting a logchange dataset
 From a logchange dataset created using computelogchange() to pairwise dataset for testing MA-regression
 }
 \examples{
-data_sum <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruit1 = "Cherry",fruit2 = "Cranberry")
+TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruitcomb=c("Cherry", "Cranberry"))
 }
