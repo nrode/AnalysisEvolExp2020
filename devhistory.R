@@ -31,6 +31,10 @@ usethis::use_r("formatting_POOL_hypo1")
 usethis::use_r("formatting_POOL_hypo2")
 usethis::use_r("computecorrelation")
 usethis::use_r("computeCIcordifG7G29.R")
+usethis::use_r("fillout_estimate_correlation")
+usethis::use_r("eq_r")
+usethis::use_r("vec_minmax")
+
 
 usethis::use_r("simfitnessdiff")
 usethis::use_r("estim_overdisp")
