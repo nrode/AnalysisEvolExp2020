@@ -56,7 +56,6 @@ data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
 
 ## Je pense qu'on peut suprimer le code de la ligne 56 à la ligne 83 et utiliser celui des sections suivantes
 
-
 #Compute log change
 ## !! sd_logchange are standard errors, not standard deviations
 data_logchange <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_adults", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_adults", gen=29))
