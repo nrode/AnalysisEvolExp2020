@@ -53,35 +53,6 @@ data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit
 data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
 data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
 
-
-## Je pense qu'on peut suprimer le code de la ligne 56 à la ligne 83 et utiliser celui des sections suivantes
-
-#Compute log change
-## !! sd_logchange are standard errors, not standard deviations
-data_logchange <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_adults", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_adults", gen=29))
-
-data_logchangeNb_eggs <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Nb_eggs", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Nb_eggs", gen=29))
-
-data_logchangeEmergence_rate <- rbind(computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G7, trait = "Emergence_rate", gen=7), computelogchange(fitness_dataset_ancestral = data_G0, fitness_dataset_evolved = data_G29, trait = "Emergence_rate", gen=29))
-
-## Combine datasets
-data_logchangeNb_eggsEmergence_rate <- data.frame(data_logchange, Nb_eggslogchange=data_logchangeNb_eggs$logchange, sdNb_eggslogchange=data_logchangeNb_eggs$sd_logchange, Emergence_ratelogchange=data_logchangeEmergence_rate$logchange, sdEmergence_ratelogchange=data_logchangeEmergence_rate$sd_logchange)
-
-#Lines: CE2 and CR2 do not pass Geary's test (the threshold of a standardized mean greater than 3)
-data_logchange$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
-data_logchangeNb_eggs$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
-data_logchangeEmergence_rate$Line_type  <- ifelse(data_logchange$Line == "CR2"| data_logchange$Line == "CE2", "solid","dashed")
-
-
-#Formatting for testing correlation
-TEMP_dataG7_CheCran <- formattinglogchange(data_logchange, "7", "Cherry", "Cranberry")
-TEMP_dataG7_CranStraw <- formattinglogchange(data_logchange, "7", "Cranberry", "Strawberry")
-TEMP_dataG7_StrawChe <- formattinglogchange(data_logchange, "7", "Strawberry", "Cherry")
-
-TEMP_dataG29_CheCran <- formattinglogchange(data_logchange, "29", "Cherry", "Cranberry")
-TEMP_dataG29_CranStraw <- formattinglogchange(data_logchange, "29", "Cranberry", "Strawberry")
-TEMP_dataG29_StrawChe <- formattinglogchange(data_logchange, "29", "Strawberry", "Cherry")
-
 ```
 
 ## Compute fitess change per population
