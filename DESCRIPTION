@@ -6,12 +6,12 @@ Authors@R:
            family = "RODE",
            role = c("aut", "cre"),
            email = "nicolas.rode@inrae.fr",
-           comment = c(ORCID = "YOUR-ORCID-ID")),
+           comment = c(ORCID = "0000-0002-1121-4202")),
       person(given = "Laure",
            family = "OLAZCUAGA",
            role = c("aut"),
            email = "olaz.laure@gmail.com",
-           comment = c(ORCID = "YOUR-ORCID-ID")))
+           comment = c(ORCID = "0000-0001-9100-1305")))
 Description: This research compendium describes how to analyze fitness data
     from an experimental evolution experiment conducted in D. suzukii from 2017 to 2019.
 URL: https://github.com/nrode/AnalysisEvolExp2020
