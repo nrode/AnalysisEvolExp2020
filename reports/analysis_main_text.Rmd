@@ -52,6 +52,10 @@ head(data)
 data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit_s, data$Treatment, sep="_"))
 data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
 data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b2c888975bb5777f3fc55c3848393dd2f40105e
 ```
 
 ## Compute fitess change per population
@@ -164,6 +168,10 @@ head(data_logchange)
 
 ## Build sympatric/allopatric datasets
 ```{r }
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9b2c888975bb5777f3fc55c3848393dd2f40105e
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
                                            fruitcomb=c("Cherry", "Cranberry"), trait="fitness")
@@ -1184,6 +1192,27 @@ Estimates_pairwise$Estimates[Estimates_pairwise$Variables=="cor_CI_sup"&Estimate
 computeCIcordifG7G29(pair="Cherry_Cranberry")
 computeCIcordifG7G29(pair="Cranberry_Strawberry")
 computeCIcordifG7G29(pair="Strawberry_Cherry")
+
+```
+## Check change in correlation when considering only a subset of populations
+```{r}
+## Compute weighted correlation for cranberry populations
+weightedcorG7 <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Fruit_s=="Cranberry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+weightedcorG29 <- sjstats:::weighted_correlation(TEMP_dataG29_CheCran[TEMP_dataG29_CheCran$Fruit_s=="Cranberry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+correlationdifference <- weightedcorG7$estimate-weightedcorG29$estimate
+lowerCI <- correlationdifference - sqrt((weightedcorG7$estimate-weightedcorG7$ci[1])^2+(weightedcorG29$estimate-weightedcorG29$ci[2])^2)
+higherCI <- correlationdifference + sqrt((weightedcorG7$estimate-1)^2+(weightedcorG29$estimate-(-1))^2)
+
+## Compute weighted correlation for cherry populations
+weightedcorG7 <- sjstats:::weighted_correlation(TEMP_dataG7_CheCran[TEMP_dataG7_CheCran$Fruit_s=="Cherry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+weightedcorG29 <- sjstats:::weighted_correlation(TEMP_dataG29_CheCran[TEMP_dataG29_CheCran$Fruit_s=="Cherry",], x=logchange_symp, y=logchange_allop, weights=N_sumsympallop, ci.lvl = 0.95)
+
+correlationdifference <- weightedcorG7$estimate-weightedcorG29$estimate
+lowerCI <- correlationdifference - sqrt((weightedcorG7$estimate-weightedcorG7$ci[1])^2+(weightedcorG29$estimate-1)^2)
+higherCI <- correlationdifference + sqrt((weightedcorG7$estimate-1)^2+(weightedcorG29$estimate-(-1))^2)
 
 ```
 

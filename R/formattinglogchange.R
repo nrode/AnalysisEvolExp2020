@@ -3,17 +3,15 @@
 #' @description  Formatting a logchange dataset
 #' From a logchange dataset to pairwise dataset for testing MA-regression
 #'
-#' @param logchange_dataset Intermediate phenotyping dataset created using loadfitnessdata()
+#' @param logchange_dataset dataset with log fitness change between two phenotyping steps
 #' @param generation Phenotyping step of interest
-#' @param fruitcomb vector with first fruit of the pairwise and second fruit of the pairwise
-#' @param trait trait of interest: can be "fitness, "fecundity" or  "eggtoad"
-
+#' @param fruitcomb Pair of fruit media considered
+#' @param trait Trait considered
 #' @return Dataset with logchange for two fruits during a specific phenotyping step
 #' @export
 #'
 #' @examples
 #'data_sum <- formattinglogchange(logchange_dataset = data_logchange, generation = "7", fruitcomb=c("Cherry", "Cranberry"), trait="fecundity")
-
 
 formattinglogchange <- function(logchange_dataset = data_logchange, generation="7",
                                 fruitcomb=c("Cherry", "Cranberry"), trait="fecundity"){
@@ -58,3 +56,4 @@ formattinglogchange <- function(logchange_dataset = data_logchange, generation="
 
   return(TEMP)
 }
+
