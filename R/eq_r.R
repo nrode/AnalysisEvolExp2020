@@ -18,33 +18,21 @@ eq_r <- function(gen = 7, pair = "Cherry_Cranberry") {
   if(gen == 7 &pair == "Cherry_Cranberry"){
     as.character(
       as.expression(
-        substitute(~~italic(rho)~"="~r2~"["~inf~","~sup~"]",
+        substitute(~~italic(rho)~"="~r2,
                    list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                   Estimates_pairwise$Variables == "correlation"], digits = 2),
-                        inf = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
-                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                    Estimates_pairwise$Variables == "cor_CI_inf"], digits = 1, nsmall=2),
-                        sup = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
-                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                    Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
-      )
-    )
+                                                                   Estimates_pairwise$Variables == "correlation"], digits = 2)))
+                        )
+                   )
 
 
   }else{
     as.character(
       as.expression(
-        substitute(~~italic(rho)~"="~r2~"["~inf~","~sup~"]",
+        substitute(~~italic(rho)~"="~r2,
                    list(r2 = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                   Estimates_pairwise$Variables == "correlation"], digits = 2),
-                        inf = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
-                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                    Estimates_pairwise$Variables == "cor_CI_inf"], digits = 2, nsmall=2),
-                        sup = format(Estimates_pairwise$Estimates[Estimates_pairwise$Generation == gen &
-                                                                    Estimates_pairwise$Pairwise == pair &
-                                                                    Estimates_pairwise$Variables == "cor_CI_sup"], digits = 2)))
+                                                                   Estimates_pairwise$Variables == "correlation"], digits = 2)))
       )
     )
   }
