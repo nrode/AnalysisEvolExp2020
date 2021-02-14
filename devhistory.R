@@ -33,6 +33,7 @@ usethis::use_r("computecorrelation")
 usethis::use_r("computeCIcordifG7G29.R")
 usethis::use_r("fillout_estimate_correlation")
 usethis::use_r("eq_r")
+usethis::use_r("eq_r_ci")
 usethis::use_r("vec_minmax")
 
 
