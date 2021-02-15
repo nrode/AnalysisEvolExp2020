@@ -52,10 +52,6 @@ head(data)
 data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit_s, data$Treatment, sep="_"))
 data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
 data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b2c888975bb5777f3fc55c3848393dd2f40105e
 ```
 
 ## Compute fitess change per population
@@ -168,10 +164,6 @@ head(data_logchange)
 
 ## Build sympatric/allopatric datasets
 ```{r }
-<<<<<<< HEAD
-=======
-
->>>>>>> 9b2c888975bb5777f3fc55c3848393dd2f40105e
 #Formatting for testing correlation
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
                                            fruitcomb=c("Cherry", "Cranberry"), trait="fitness")
@@ -417,7 +409,7 @@ DYNAMIQUE_THREE_JOIN <- cowplot::ggdraw() +
  DYNAMIQUE_THREE_JOIN
 
 
-cowplot::save_plot(file =here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
+cowplot::save_plot(file = here::here("figures", "FIG_Adaptation.pdf"), DYNAMIQUE_THREE_JOIN, base_height = 17/cm(1), base_width = 11/cm(1), dpi = 1200)
 
 
 
@@ -483,12 +475,12 @@ data_sum_G29$Line <- factor(data_sum_G29$Line, levels = c("CEA", "CEB", "CEC",
 
 symp_allop_G29 <- ggplot(data = data_sum_G29, 
               aes(x = Line, y=logchange, group = Treatment, 
-                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+                  color =Fruit_s, shape = Treatment, fill =Fruit_s)) + 
       geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
-    geom_point(size =3, position = pd) + 
     geom_errorbar(aes(ymin =  lowCIlogfitnesschange,
                       ymax = upCIlogfitnesschange),
                 width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
+        geom_point(size =3,  fill = "white", position = pd) + 
     ylab("Fitness change between final\nand initial phenotyping steps")  + 
     xlab("Populations") + 
     labs(shape = "Test fruit", color = "Selection fruit") + 
@@ -528,16 +520,20 @@ DIF_FITNESS_G7 <- symp_allop_g7 +
                                 "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_FITNESS_G7
 
-DIF_FITNESS_G29 <- symp_allop_G29 + geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), position = pd, size =3, stroke =1.5) + 
+DIF_FITNESS_G29 <- symp_allop_G29 + 
+  geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)),
+             position = pd, size =3, stroke =1.5, fill = "white") + 
       scale_alpha_manual(values = c(0, 1)) + 
-      scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
+      scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", 
+                                    "#7C2748", "#CA8702", "#328677",
+                                    "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_FITNESS_G29
 
 
 plot_legend <- ggplot(data = data_logchange, aes(x = Line, y=logchange, group = Treatment, 
-                  color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
+                                                 shape = Treatment)) + 
     geom_point(size =3, position = pd) + 
-    labs(shape = "Test fruit", color = "Selection fruit") + 
+    labs(shape = "Test fruit") + 
     scale_shape_manual(values = c(21, 22, 24)) + 
     scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
     theme_LO_sober + 
@@ -567,7 +563,7 @@ SYMP_ALLOP_TOTAL <- cowplot::ggdraw() +
 SYMP_ALLOP_TOTAL
 
 
-cowplot::save_plot(file =here::here("figures", "FIG_Heterogeneity.pdf"),  
+cowplot::save_plot(file = here::here("figures", "FIG_Heterogeneity.pdf"),  
                    SYMP_ALLOP_TOTAL, base_height = 20/cm(1), base_width = 25/cm(1), dpi = 1200)
 
 ```
@@ -609,10 +605,10 @@ symp_allop_G29_FECUNDITY <- ggplot(data = data_sum_G29,
               aes(x = Line, y=logfecundchange, group = Treatment, 
                   color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
       geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
-    geom_point(size =3, position = pd) + 
     geom_errorbar(aes(ymin =lowCIlogfecundchange, ymax =upCIlogfecundchange),
                 width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
-    ylab("Change in log fecundity between\nfinal and initial phenotyping steps")  + 
+        geom_point(size =3, fill = "white",position = pd) + 
+  ylab("Change in log fecundity between\nfinal and initial phenotyping steps")  + 
     xlab("Populations") + 
     labs(shape = "Test fruit", color = "Selection fruit") + 
     guides(fill = FALSE, alpha = FALSE) + 
@@ -641,7 +637,7 @@ DIF_FECUNDITY_G7
 
 DIF_FECUNDITY_G29 <- symp_allop_G29_FECUNDITY + 
   geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), 
-             position = pd, size =3, stroke =1.5) + 
+             position = pd, size =3, stroke =1.5, fill = "white") + 
       scale_alpha_manual(values = c(0, 1)) + 
       scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_FECUNDITY_G29
@@ -697,7 +693,7 @@ symp_allop_g7_VIABILITIY <- ggplot(data = data_sum_G7,
                     ymax =upCIlogeggtoadchange, linetype = "dashed"),
                   width = 0.2, size = 0.5, alpha = 0.6,position = pd) + 
   geom_point(position = pd, fill = "white", size =3) + 
-  ylab("Change in logit egg-to-adult viability\nbetween intermediate and initial phenotyping steps")  + 
+  ylab("Change in logit egg-to-adult viability between\nintermediate and initial phenotyping steps")  + 
   xlab("Populations") + 
   labs(shape = "Test fruit", color = "Selection fruit") + 
   guides(color = FALSE,
@@ -705,7 +701,7 @@ symp_allop_g7_VIABILITIY <- ggplot(data = data_sum_G7,
   scale_shape_manual(values = c(21, 22, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
   scale_fill_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96")) + 
-  theme_LO_sober + theme(axis.text.x  = element_blank()) +
+  theme_LO_sober + theme(axis.text.x  = element_blank(), axis.title.y = element_text(size=10)) +
   coord_cartesian(expand = FALSE, ylim = c(-1.7, 1.6), xlim=c(0, 15),clip = "off") + 
   ggtitle("Intermediate phenotyping step") + 
   annotate("text", x = 2.5, y = 1.4, label = 'bold(" Evolved\non cherry")',
@@ -721,10 +717,11 @@ symp_allop_G29_VIABILITIY <- ggplot(data = data_sum_G29,
               aes(x = Line, y=logeggtoadchange, group = Treatment, 
                   color =Fruit_s, shape = Treatment,fill =Fruit_s)) + 
       geom_hline(yintercept = 0, linetype = "dashed", color = "grey", size = 0.5) + 
-    geom_point(size =3, position = pd) + 
     geom_errorbar(aes(ymin =lowCIlogeggtoadchange, ymax =upCIlogeggtoadchange),
                 width= 0.2, size = 0.5, alpha = 0.6,position = pd) + 
-    ylab("Change in logit egg-to-adult viability\nbetween final and initial phenotyping steps")  + 
+       geom_point(size =3, position = pd, fill = "white") + 
+
+   ylab("Change in logit egg-to-adult viability\nbetween final and initial phenotyping steps")  + 
     xlab("Populations") + 
     labs(shape = "Test fruit", color = "Selection fruit") + 
     guides(fill = FALSE, alpha = FALSE) + 
@@ -753,7 +750,7 @@ DIF_VIABILITY_G7
 
 DIF_VIABILITY_G29 <- symp_allop_G29_VIABILITIY + 
   geom_point(aes(alpha = SA, color = interaction(SA,Fruit_s)), 
-             position = pd, size =3, stroke =1.5) + 
+             position = pd, size =3, stroke =1.5, fill = "white") + 
       scale_alpha_manual(values = c(0, 1)) + 
       scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96", "#7C2748", "#CA8702", "#328677", "#BC3C6D", "#FDB424", "#3FAA96"))  
 DIF_VIABILITY_G29
@@ -811,7 +808,7 @@ DIF_SYMP_ALLOP_TOTAL_SUPPLEMENTS <- cowplot::ggdraw() +
   cowplot::draw_plot(DIF_VIABILITY_G7 + theme(legend.position = 'none', 
                              plot.margin =unit(c(0.5, 3.5, 0.5, 0.5),"cm"), 
                              axis.title.x=element_text(size = 12), 
-                             axis.title.y=element_text(size = 12)),
+                             axis.title.y=element_text(size = 11)),
             x = 0.45, y = 0.45, width = 0.55, height = 0.5) + 
   cowplot::draw_plot(DIF_VIABILITY_G29 + theme(legend.position = 'none', 
                              plot.margin =unit(c(0.5, 3.5, 0.5, 0.5), "cm"), 
@@ -1242,8 +1239,13 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                                Estimates_pairwise$Pairwise == "Cherry_Cranberry" & 
                                Estimates_pairwise$Variables == "slope"],
               colour = "black", size = 0.75) + 
-  geom_text(x = 0, y = 2, 
-            label = eq_r(gen = 7, pair = "Cherry_Cranberry"), parse = TRUE, 
+  geom_text(x = -0.65, y = 2, 
+            label = eq_r(gen = 7, pair = "Cherry_Cranberry"),
+            parse = TRUE, 
+            color="black", size = 3.5) +
+    geom_text(x = -0.65, y = 1.7, 
+            label = eq_r_ci(gen = 7, pair = "Cherry_Cranberry"),
+            parse = TRUE, 
             color="black", size = 3.5) +
   geom_errorbar(aes(x = logchange_symp, ymin = lowCIlogfitnesschange_allop,
                     ymax = upCIlogfitnesschange_allop,
@@ -1275,6 +1277,7 @@ ymin_CranStrawG7=min(min(TEMP_dataG7_CranStraw$lowCIlogfitnesschange_allop, na.r
 ymax_CranStrawG7=max(max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG7_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CranStrawG7+0.99*(ymax_CranStrawG7-ymin_CranStrawG7)
+lim_text_2<-ymin_CranStrawG7+0.90*(ymax_CranStrawG7-ymin_CranStrawG7)
 
 
 CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) + 
@@ -1296,7 +1299,11 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s,
                  fill = Fruit_s, shape = Treatment),
                    size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.25, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = -0.65, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"),
+            parse = TRUE, color="black", size = 3.5) +
+    geom_text(x = -0.65, y = lim_text_2, 
+              label = eq_r_ci(gen = 7, pair = "Cranberry_Strawberry"),
+            parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
      ggtitle("Cranberry vs. Strawberry") + 
@@ -1315,6 +1322,7 @@ ymin_StrawCheG7=min(min(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_allop, na.rm=
 ymax_StrawCheG7=max(max(TEMP_dataG7_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG7_StrawChe$lowCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_StrawCheG7+0.99*(ymax_StrawCheG7-ymin_StrawCheG7)
+lim_text_2<-ymin_StrawCheG7+0.90*(ymax_StrawCheG7-ymin_StrawCheG7)
 
 
 StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) + 
@@ -1335,9 +1343,14 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
                      xmax = upCIlogfitnesschange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x = logchange_symp, y = logchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+  geom_point(aes(x = logchange_symp, y = logchange_allop, 
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.13, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = -0.63, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"),
+            parse = TRUE, color="black", size = 3.5) +
+    geom_text(x = -0.63, y = lim_text_2, 
+              label = eq_r_ci(gen = 7, pair = "Strawberry_Cherry"),
+            parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
@@ -1365,6 +1378,7 @@ ymin_CheCranG29=min(min(TEMP_dataG29_CheCran$lowCIlogfitnesschange_allop, na.rm=
 ymax_CheCranG29=max(max(TEMP_dataG29_CheCran$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG29_CheCran$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CheCranG29+0.99*(ymax_CheCranG29-ymin_CheCranG29)
+lim_text_2<-ymin_CheCranG29+0.9*(ymax_CheCranG29-ymin_CheCranG29)
 
 
 CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) + 
@@ -1385,12 +1399,17 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = 0.33, y = lim_text, label = eq_r(gen = 29, pair = "Cherry_Cranberry"), parse = TRUE, color="black", size = 3.5) +
+  geom_text(x = 0.4, y = lim_text, 
+            label = eq_r(gen = 29, pair = "Cherry_Cranberry"), 
+            parse = TRUE, color="black", size = 3.5) +
+    geom_text(x = 0.4, y = lim_text_2, 
+            label = eq_r_ci(gen = 29, pair = "Cherry_Cranberry"), 
+            parse = TRUE, color="black", size = 3.5) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
   labs(shape = "Test fruit", color = "Evolution fruit") + 
-  scale_shape_manual(values = c(16, 15)) + 
+  scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
                   xlim = c(ymin_CheCranG29, ymax_CheCranG29)) + 
@@ -1405,6 +1424,7 @@ ymin_CranStrawG29=min(min(TEMP_dataG29_CranStraw$lowCIlogfitnesschange_allop, na
 ymax_CranStrawG29=max(max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG29_CranStraw$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
+lim_text_2<-ymin_CranStrawG29+0.90*(ymax_CranStrawG29-ymin_CranStrawG29)
 
 #Plot
  CranStraw_G29 <- ggplot(data = TEMP_dataG29_CranStraw) + 
@@ -1423,17 +1443,22 @@ lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
                       xmax = upCIlogfitnesschange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-   geom_point(aes(x =logchange_symp, y = logchange_allop,  
+   geom_point(aes(x = logchange_symp, y = logchange_allop,  
                   color = Fruit_s,fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-   geom_text(x = -0.45, y = lim_text, label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), parse = TRUE, color="black", size = 3.5) +
+   geom_text(x = -0.55, y = lim_text, 
+             label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), 
+             parse = TRUE, color="black", size = 3.5) +
+      geom_text(x = -0.55, y = lim_text_2, 
+             label = eq_r_ci(gen = 29, pair = "Cranberry_Strawberry"), 
+             parse = TRUE, color="black", size = 3.5) +
    xlab("Fitness change in\nselective environment")  + 
    ylab("Fitness change in\nalternative environment")  + 
    ggtitle("Cranberry vs. Strawberry") + 
    coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
                   xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
    labs(shape = "Test fruit", color = "Selection fruit") + 
-   scale_shape_manual(values = c(15, 17)) + 
+   scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
    theme_LO_sober
  CranStraw_G29
@@ -1447,6 +1472,7 @@ ymin_StrawCheG29=min(min(TEMP_dataG29_StrawChe$lowCIlogfitnesschange_allop, na.r
 ymax_StrawCheG29=max(max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_allop, na.rm= TRUE),
                 max(TEMP_dataG29_StrawChe$upCIlogfitnesschange_symp, na.rm= TRUE))
 lim_text<-ymin_StrawCheG29+0.99*(ymax_StrawCheG29-ymin_StrawCheG29)
+lim_text_2<-ymin_StrawCheG29+0.90*(ymax_StrawCheG29-ymin_StrawCheG29)
 
 
 StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) + 
@@ -1465,11 +1491,14 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
                      xmax = upCIlogfitnesschange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.2, alpha =1) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  
+  geom_point(aes(x = logchange_symp, y = logchange_allop,  
                  color = Fruit_s, fill = Fruit_s, shape = Treatment),
                  size =3, fill = "white", stroke =1.2) + 
-  geom_text(x = -0.2, y = lim_text, 
+  geom_text(x = -0.3, y = lim_text, 
             label = eq_r(gen = 29, pair = "Strawberry_Cherry"), 
+            parse = TRUE, color="black", size = 3.5) +
+    geom_text(x = -0.3, y = lim_text_2, 
+            label = eq_r_ci(gen = 29, pair = "Strawberry_Cherry"), 
             parse = TRUE, color="black", size = 3.5) +
   coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
                   xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
@@ -1477,7 +1506,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
     ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
   labs(shape = "Test fruit", color = "Selection fruit") + 
-  scale_shape_manual(values = c(16, 17)) + 
+  scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   theme_LO_sober
  StrawChe_G29
@@ -1518,8 +1547,8 @@ Slopeestimates_logchange_pairwise_errorbar <- cowplot::ggdraw() +
             x = 0.61, y = 0, width = 0.22, height = 0.45) + 
   cowplot::draw_plot_label(c("Intermediate phenotyping step", "A", "B", "C", " ",
                     "Final phenotyping step", "D", "E", "F", " "),  
-                  x = c(0.30, 0.01, 0.30, 0.61, 0.92, 0.250, 0.01, 0.30, 0.61, 0.92), 
-                  y = c(0.99, 0.95, 0.95, 0.95, 0.95, 0.49, 0.45, 0.45, 0.45, 0.45), 
+                  x = c(0.27, 0.01, 0.30, 0.61, 0.92, 0.23, 0.01, 0.3, 0.61, 0.92), 
+                  y = c(1, 0.95, 0.95, 0.95, 0.95, 0.50, 0.45, 0.45, 0.45, 0.45), 
                   hjust = c(-0.25, -0.25, -0.25, -0.25, -0.25, -0.75, -0.75, -0.75, -0.75, -0.75), 
                   vjust = c(1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5, 1.5),
                   size = 16) 
