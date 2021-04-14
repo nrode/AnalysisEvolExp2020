@@ -1243,7 +1243,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
             label = eq_r(gen = 7, pair = "Cherry_Cranberry"),
             parse = TRUE, 
             color="black", size = 3.5) +
-    geom_text(x = -0.65, y = 1.7, 
+  geom_text(x = -0.65, y = 1.7, 
             label = eq_r_ci(gen = 7, pair = "Cherry_Cranberry"),
             parse = TRUE, 
             color="black", size = 3.5) +
