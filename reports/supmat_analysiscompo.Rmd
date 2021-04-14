@@ -25,31 +25,76 @@ devtools::load_all()
 # DATA
 ## Load data
 ```{r }
-## Longitudinal data
-data_sum <- loadlongitudinaldata(dataset = "DATA_Adults_G1G29.csv", rm_generation1 = 1,rm_generation2 = 7,rm_generation3 = 29)
+## Data longitudinal 
+data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max = 5)
+data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
 
-## Phenotyping steps
-data_G0 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G1")
-data_G7 <- loadfitnessdata(dataset = "Selection_Phenotypage_G0_G7_G8.csv", generation = "G7")
-data_G29 <- loadfitnessdata(dataset = 
-                            "PERFORMANCE_Comptage_adultes_G13G14G15G16G17G18G19G20G21G22G23G24G25G26G27G28G29.csv",
-                            generation = "29")
-head(data_sum)
-head(data_G0)
-head(data_G7)
-head(data_G29)
-dim(data_G29)
 
-## Add line variable
-levels(data_G0$Line) <- rep("Anc", nlevels(data_G0$Line))
+#Data compo
+data_compo<-read.table(file=here::here("data", "Data_compo_fruits.csv"), sep=",", header=TRUE)
+rownames(data_compo) <- data_compo[,1]
+data_compo$Treatment<-as.factor(data_compo$Treatment)
 
-## Combine datsets
-data <- rbind(data_G0, data_G7, data_G29) 
-data <- data.frame(Generation = c(rep("0", nrow(data_G0)), rep("7", nrow(data_G7)), rep("29", nrow(data_G29))), data, Obs= as.factor(1:nrow(data)))
-head(data)
+```
 
-## New variable for analyses
-data$Generation_Fruit_s_Treatment <- as.factor(paste(data$Generation, data$Fruit_s, data$Treatment, sep="_"))
-data$Line_Treatment <- as.factor(paste(data$Line, data$Treatment, sep="_"))
-data$Treatmentrel <- relevel(data$Treatment, ref="Strawberry")
+
+# ACP
+```{r }
+## Make PCA
+PCA <- FactoMineR::PCA(data_compo[,-c(1,2)], graph=FALSE)
+
+## Check eigenvalues and percentage of variance explained
+eig.val <- factoextra::get_eigenvalue(PCA)
+eig.val
+factoextra::fviz_eig(PCA)
+
+
+
+
+
+
+#pdf(file="PCA.pdf")
+## Check position of individuals
+Ind_plot <- factoextra::fviz(PCA, element="ind", pointsize = 3, 
+                   labelsize = 4, #change the size of the pop label
+                   invisible = "quali",
+                  show.legend = FALSE, pointshape = 21, fill = "#00AFBB",
+                  repel = TRUE) + #remove centroid
+  theme_LO_sober 
+Ind_plot         
+
+
+
+factoextra::fviz_pca_biplot(PCA, label = "var", habillage=data_compo$Treatment)
+
+VARIABLES_Plot<-factoextra::fviz_pca_var(PCA, col.var = "contrib",
+                                         gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                                         repel = TRUE) + theme_LO_sober
+VARIABLES_Plot
+
+
+## Check indiivduals
+ind <- factoextra::get_pca_ind(PCA)
+ind
+
+# Coordonnées des individus
+head(ind$coord)
+# Qualité des individus
+head(ind$cos2)
+# Contributions des individus
+head(ind$contrib)
+
+factoextra::fviz_pca_ind(PCA, col.ind = "#00AFBB",
+   repel = TRUE)
+
+
+factoextra::fviz_pca_ind (PCA, col.ind = data_compo[,1] ,
+             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+             repel = TRUE)
+
+
+factoextra::fviz_pca_ind (PCA, pointsize = "cos2",
+             pointshape = 21, fill = "#E7B800",
+             repel = TRUE )
+
 ```

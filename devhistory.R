@@ -68,7 +68,8 @@ usethis::use_package("radiant.data")
 usethis::use_package("sjstats")
 usethis::use_package("sjPlot")
 usethis::use_package("plyr")
-
+usethis::use_package("FactoMineR")
+usethis::use_package("factoextra")
 
 ## Update NAMESPACE file
 devtools::document()
