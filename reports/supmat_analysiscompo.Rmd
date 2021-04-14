@@ -25,10 +25,6 @@ devtools::load_all()
 # DATA
 ## Load data
 ```{r }
-## Data longitudinal 
-data_sum_allfruits <- loadlongitudinaldata_allfruits(dataset = "DATA_Adults_G1G29.csv", rm_generation_max = 5)
-data_sum_allfruits_AN<-data_sum_allfruits[data_sum_allfruits$Generation!=1,]
-
 
 #Data compo
 data_compo<-read.table(file=here::here("data", "Data_compo_fruits.csv"), sep=",", header=TRUE)
@@ -55,46 +51,68 @@ factoextra::fviz_eig(PCA)
 
 #pdf(file="PCA.pdf")
 ## Check position of individuals
-Ind_plot <- factoextra::fviz(PCA, element="ind", pointsize = 3, 
+Ind_plot <- factoextra::fviz(PCA, element="ind", pointsize = 3, axes = c(1, 2),
                    labelsize = 4, #change the size of the pop label
                    invisible = "quali",
-                  show.legend = FALSE, pointshape = 21, fill = "#00AFBB",
-                  repel = TRUE) + #remove centroid
+                  show.legend = FALSE, col.ind = "#00AFBB",
+                  pointshape = 21, 
+                  fill = "#00AFBB",
+                  repel = TRUE) + 
   theme_LO_sober 
 Ind_plot         
 
 
+## Check position of individuals
+Ind_plot2 <- factoextra::fviz(PCA, element="ind", pointsize = 3, axes = c(2,3),
+                   labelsize = 4, #change the size of the pop label
+                   invisible = "quali",
+                  show.legend = FALSE, col.ind = "#00AFBB",
+                  pointshape = 21, 
+                  fill = "#00AFBB",
+                  repel = TRUE) + 
+  theme_LO_sober 
+Ind_plot2       
 
-factoextra::fviz_pca_biplot(PCA, label = "var", habillage=data_compo$Treatment)
 
 VARIABLES_Plot<-factoextra::fviz_pca_var(PCA, col.var = "contrib",
                                          gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
                                          repel = TRUE) + theme_LO_sober
 VARIABLES_Plot
+VARIABLES_Plot2<-factoextra::fviz_pca_var(PCA, col.var = "contrib",axes = c(2,3),
+                                         gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
+                                         repel = TRUE) + theme_LO_sober
+VARIABLES_Plot2
 
 
-## Check indiivduals
-ind <- factoextra::get_pca_ind(PCA)
-ind
 
-# Coordonnées des individus
-head(ind$coord)
-# Qualité des individus
-head(ind$cos2)
-# Contributions des individus
-head(ind$contrib)
 
 factoextra::fviz_pca_ind(PCA, col.ind = "#00AFBB",
    repel = TRUE)
 
 
-factoextra::fviz_pca_ind (PCA, col.ind = data_compo[,1] ,
-             gradient.cols = c("#00AFBB", "#E7B800", "#FC4E07"),
-             repel = TRUE)
 
 
 factoextra::fviz_pca_ind (PCA, pointsize = "cos2",
              pointshape = 21, fill = "#E7B800",
              repel = TRUE )
+
+
+
+
+#Save plot 
+cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind.pdf"),
+                   Ind_plot,
+                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
+cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var.pdf"),
+                   VARIABLES_Plot,
+                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
+
+cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind_axis23.pdf"),
+                   Ind_plot2,
+                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
+cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var23.pdf"),
+                   VARIABLES_Plot2,
+                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
+
 
 ```
