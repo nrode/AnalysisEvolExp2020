@@ -23,7 +23,6 @@ devtools::load_all()
 
 
 # DATA
-## Load data
 ```{r }
 
 #Data compo
@@ -100,19 +99,54 @@ factoextra::fviz_pca_ind (PCA, pointsize = "cos2",
 
 
 #Save plot 
+# cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind.pdf"),
+#                    Ind_plot,
+#                    base_height = 14/cm(1), base_width = 14/cm(1), dpi = 610)
+# cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var.pdf"),
+#                    VARIABLES_Plot,
+#                    base_height = 16/cm(1), base_width = 16/cm(1), dpi = 610)
+# 
+# cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind_axis23.pdf"),
+#                    Ind_plot2,
+#                    base_height = 14/cm(1), base_width = 14/cm(1), dpi = 610)
+# cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var23.pdf"),
+#                    VARIABLES_Plot2,
+#                    base_height = 16/cm(1), base_width = 16/cm(1), dpi = 610)
+# 
+
+
+
+PLOT_VAR <- cowplot::ggdraw() + 
+  cowplot::draw_plot(VARIABLES_Plot2 + theme(plot.title = element_blank()), 
+            x = 0.01, y = 0.01, width = 1, height = 0.5) + 
+  cowplot::draw_plot(VARIABLES_Plot, 
+            x = 0.01, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0, 0), 
+                  y = c(1, 0.5), 
+                  hjust = c(0,0), 
+                  vjust = c(1.5, 1.5),
+                  size = 16) 
+ PLOT_VAR
+
+ cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var.pdf"),
+                   PLOT_VAR,
+                   base_height = 28/cm(1), base_width = 14/cm(1), dpi = 610)
+ 
+ PLOT_IND <- cowplot::ggdraw() + 
+  cowplot::draw_plot(Ind_plot2 + theme(plot.title = element_blank()), 
+            x = 0.01, y = 0.01, width = 1, height = 0.5) + 
+  cowplot::draw_plot(Ind_plot, 
+            x = 0.01, y = 0.5, width = 1, height = 0.5) + 
+  cowplot::draw_plot_label(c("A", "B"),  
+                  x = c(0, 0), 
+                  y = c(1, 0.5), 
+                  hjust = c(0,0), 
+                  vjust = c(1.5, 1.5),
+                  size = 16) 
+ PLOT_IND
+ 
 cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind.pdf"),
-                   Ind_plot,
-                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
-cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var.pdf"),
-                   VARIABLES_Plot,
-                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
-
-cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Ind_axis23.pdf"),
-                   Ind_plot2,
-                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
-cowplot::save_plot(file = here::here("figures", "SUPMAT_ACP_Var23.pdf"),
-                   VARIABLES_Plot2,
-                   base_height = 16/cm(1), base_width = 28/cm(1), dpi = 610)
-
-
+                   PLOT_IND,
+                   base_height = 28/cm(1), base_width = 14/cm(1), dpi = 610)
 ```
