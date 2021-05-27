@@ -1258,7 +1258,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                      color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop,  
-                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop_allop),
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
              size = 3, fill = "white", stroke =1.2) + 
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
@@ -1521,7 +1521,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
                           aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
-                              shape = Treatment_allop)) + 
+                              shape = Treatment)) + 
   geom_point(size =2.5, fill = "white") + 
   labs(shape = "Alternative fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 15, 17)) + 
