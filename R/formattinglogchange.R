@@ -30,6 +30,7 @@ formattinglogchange <- function(logchange_dataset = data_logchange, generation="
   names(TEMP_allop)[6:ncol(TEMP_allop)] <- paste0(names(TEMP_allop)[6:ncol(TEMP_allop)], "_allop")
   ## Sort dataset
   TEMP_allop <- TEMP_allop[order(TEMP_allop$Line),]
+  TEMP_treat_allop <- TEMP_allop$Treatment
 
   ## Combine datasets
   if(identical(TEMP_symp$Line, TEMP_allop$Line)){
@@ -53,6 +54,10 @@ formattinglogchange <- function(logchange_dataset = data_logchange, generation="
   }else{
     print("Error: sympatric and allopatric datasets are not in the same order")
   }
+
+
+  #Add treatment allop:
+  TEMP$Treatment_allop <- TEMP_treat_allop
 
   return(TEMP)
 }

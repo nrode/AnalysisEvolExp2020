@@ -111,7 +111,6 @@ CImegg_to_ad <- confint(megg_to_ad)
 ## Build data_logchange dataset
 ```{r }
 ## Extract all CIs
-## J'ai garder le nom logchange pour que le code pour la Fig. 4 marche, mais je pense que ça vaudrait le coup que le nom soit plus informatif, comme logfitnesschange par exemple
 ## Check that the coef are in the same order
 identical(names(coef(mfitness)), names(coef(mfecundity)))
 identical(names(coef(mfitness)), names(coef(megg_to_ad)))
@@ -168,9 +167,12 @@ head(data_logchange)
 TEMP_dataG7_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
                                            fruitcomb=c("Cherry", "Cranberry"), trait="fitness")
 TEMP_dataG7_CranStraw <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
-                                             fruitcomb=c("Strawberry", "Cranberry"), trait="fitness")
-TEMP_dataG7_StrawChe <- formattinglogchange(logchange_dataset = data_logchange, generation="7", 
-                                            fruitcomb=c("Cherry", "Strawberry"), trait="fitness")
+                                             fruitcomb=c("Strawberry", "Cranberry"),
+                                             trait="fitness")
+TEMP_dataG7_StrawChe <- formattinglogchange(logchange_dataset = data_logchange, 
+                                            generation="7",
+                                            fruitcomb=c("Cherry", "Strawberry"),
+                                            trait="fitness")
 
 TEMP_dataG29_CheCran <- formattinglogchange(logchange_dataset = data_logchange, generation="29", 
                                             fruitcomb=c("Cherry", "Cranberry"), trait="fitness")
@@ -1256,13 +1258,13 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
                      color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop,  
-                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop_allop),
              size = 3, fill = "white", stroke =1.2) + 
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
   theme_LO_sober + 
-  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  labs(shape = "Alternative fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
@@ -1297,7 +1299,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s,
-                 fill = Fruit_s, shape = Treatment),
+                 fill = Fruit_s, shape = Treatment_allop),
                    size =3, fill = "white", stroke =1.2) + 
   geom_text(x = -0.65, y = lim_text, label = eq_r(gen = 7, pair = "Cranberry_Strawberry"),
             parse = TRUE, color="black", size = 3.5) +
@@ -1309,7 +1311,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
      ggtitle("Cranberry vs. Strawberry") + 
   coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
                   xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
-   labs(shape = "Test fruit", color = "Selection fruit") + 
+   labs(shape = "Alternative fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
   theme_LO_sober
@@ -1344,7 +1346,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop, 
-                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   geom_text(x = -0.63, y = lim_text, label = eq_r(gen = 7, pair = "Strawberry_Cherry"),
             parse = TRUE, color="black", size = 3.5) +
@@ -1354,7 +1356,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Test fruit", color = "Selection fruit") + 
+  labs(shape = "Alternative fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
@@ -1397,7 +1399,7 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
                      xmax = upCIlogfitnesschange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
+  geom_point(aes(x =logchange_symp, y = logchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   geom_text(x = 0.4, y = lim_text, 
             label = eq_r(gen = 29, pair = "Cherry_Cranberry"), 
@@ -1408,7 +1410,7 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
-  labs(shape = "Test fruit", color = "Evolution fruit") + 
+  labs(shape = "Alternative fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
@@ -1444,7 +1446,7 @@ lim_text_2<-ymin_CranStrawG29+0.90*(ymax_CranStrawG29-ymin_CranStrawG29)
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
    geom_point(aes(x = logchange_symp, y = logchange_allop,  
-                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
    geom_text(x = -0.55, y = lim_text, 
              label = eq_r(gen = 29, pair = "Cranberry_Strawberry"), 
@@ -1457,7 +1459,7 @@ lim_text_2<-ymin_CranStrawG29+0.90*(ymax_CranStrawG29-ymin_CranStrawG29)
    ggtitle("Cranberry vs. Strawberry") + 
    coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
                   xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
-   labs(shape = "Test fruit", color = "Selection fruit") + 
+   labs(shape = "Alternative fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
    theme_LO_sober
@@ -1492,7 +1494,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
                  color = Fruit_s),
                  height = 0.02, size = 0.2, alpha =1) + 
   geom_point(aes(x = logchange_symp, y = logchange_allop,  
-                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   geom_text(x = -0.3, y = lim_text, 
             label = eq_r(gen = 29, pair = "Strawberry_Cherry"), 
@@ -1505,7 +1507,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
     xlab("Fitness change in\nselective environment")  + 
     ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Test fruit", color = "Selection fruit") + 
+  labs(shape = "Alternative fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   theme_LO_sober
@@ -1519,9 +1521,9 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
  
 legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "29",],
                           aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
-                              shape = Treatment)) + 
+                              shape = Treatment_allop)) + 
   geom_point(size =2.5, fill = "white") + 
-  labs(shape = "Test fruit", color = "Selection fruit") + 
+  labs(shape = "Alternative fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 15, 17)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   theme_LO_sober
