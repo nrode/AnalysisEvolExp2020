@@ -1053,7 +1053,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran_Fecundity) +
                      color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logfecundchange_symp, y = logfecundchange_allop,  
-                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
              size = 3, fill = "white", stroke =1.2) + 
   xlab("Log fecundity change in\nselective environment")  + 
   ylab("Log fecundity change in\nalternative environment")  + 
@@ -1086,7 +1086,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw_Fecundity) +
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s,
-                 fill = Fruit_s, shape = Treatment),
+                 fill = Fruit_s, shape = Treatment_allop),
                    size =3, fill = "white", stroke =1.2) + 
   xlab("Log fecundity change in\nselective environment")  + 
   ylab("Log fecundity change in\nalternative environment")  + 
@@ -1119,7 +1119,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe_Fecundity) +
                      xmax = upCIlogfecundchange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x = logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+  geom_point(aes(x = logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   xlab("Log fecundity change in\nselective environment")  + 
   ylab("Log fecundity change in\nalternative environment")  + 
@@ -1159,7 +1159,7 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran_Fecundity) +
                      xmax = upCIlogfecundchange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s, fill = "white",  shape = Treatment),
+  geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  color = Fruit_s, fill = "white",  shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   xlab("Log fecundity change in\nselective environment")  + 
   ylab("Log fecundity change in\nalternative environment")  + 
@@ -1192,7 +1192,7 @@ lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
    geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  
-                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
    xlab("Log fecundity change in\nselective environment")  + 
    ylab("Log fecundity change in\nalternative environment")  + 
@@ -1226,7 +1226,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe_Fecundity) +
                  color = Fruit_s),
                  height = 0.02, size = 0.2, alpha =1) + 
   geom_point(aes(x =logfecundchange_symp, y = logfecundchange_allop,  
-                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
                   xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 
@@ -1324,7 +1324,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran_Viability) +
                      color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logeggtoadchange_symp, y = logeggtoadchange_allop,  
-                 color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
              size = 3, fill = "white", stroke =1.2) + 
   xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
   ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
@@ -1357,7 +1357,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw_Viability) +
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  color = Fruit_s,
-                 fill = Fruit_s, shape = Treatment),
+                 fill = Fruit_s, shape = Treatment_allop),
                    size =3, fill = "white", stroke =1.2) + 
   xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
   ylab("Logit egg-to-adult viability\nchange in alternative environment")  +  
@@ -1391,7 +1391,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe_Viability) +
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
   geom_point(aes(x = logeggtoadchange_symp, y = logeggtoadchange_allop,  
-                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
   ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
@@ -1431,7 +1431,7 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran_Viability) +
                      xmax = upCIlogeggtoadchange_symp, 
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
-  geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment),
+  geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
   ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
@@ -1464,7 +1464,7 @@ lim_text<-ymin_CranStrawG29+0.99*(ymax_CranStrawG29-ymin_CranStrawG29)
                  color = Fruit_s),
                  height = 0.02, size = 0.3, alpha = 0.8) + 
    geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  
-                  color = Fruit_s,fill = Fruit_s, shape = Treatment),
+                  color = Fruit_s,fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   xlab("Logit egg-to-adult viability\nchange in selective environment")  + 
   ylab("Logit egg-to-adult viability\nchange in alternative environment")  + 
@@ -1498,7 +1498,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe_Viability) +
                  color = Fruit_s),
                  height = 0.02, size = 0.2, alpha =1) + 
   geom_point(aes(x =logeggtoadchange_symp, y = logeggtoadchange_allop,  
-                 color = Fruit_s, fill = Fruit_s, shape = Treatment),
+                 color = Fruit_s, fill = Fruit_s, shape = Treatment_allop),
                  size =3, fill = "white", stroke =1.2) + 
   coord_cartesian(ylim = c(ymin_StrawCheG29, ymax_StrawCheG29), 
                   xlim = c(ymin_StrawCheG29, ymax_StrawCheG29)) + 

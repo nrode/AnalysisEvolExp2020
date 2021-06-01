@@ -1264,7 +1264,7 @@ CheCran_G7 <- ggplot(data = TEMP_dataG7_CheCran) +
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
   theme_LO_sober + 
-  labs(shape = "Alternative fruit", color = "Evolution fruit") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG7, ymax_CheCranG7), 
@@ -1311,7 +1311,7 @@ CranStraw_G7 <-  ggplot(data = TEMP_dataG7_CranStraw) +
      ggtitle("Cranberry vs. Strawberry") + 
   coord_cartesian(ylim = c(ymin_CranStrawG7, ymax_CranStrawG7), 
                   xlim = c(ymin_CranStrawG7, ymax_CranStrawG7)) + 
-   labs(shape = "Alternative fruit", color = "Selection fruit") + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
   theme_LO_sober
@@ -1356,7 +1356,7 @@ StrawChe_G7 <-  ggplot(data = TEMP_dataG7_StrawChe) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Alternative fruit", color = "Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   coord_cartesian(ylim = c(ymin_StrawCheG7, ymax_StrawCheG7), 
@@ -1410,7 +1410,7 @@ CheCran_G29 <- ggplot(data = TEMP_dataG29_CheCran) +
   xlab("Fitness change in\nselective environment")  + 
   ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Cherry vs. Cranberry") + 
-  labs(shape = "Alternative fruit", color = "Evolution fruit") + 
+  labs(shape = "Test fruit", color = "Evolution fruit") + 
   scale_shape_manual(values = c(21, 22)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424"))  + 
   coord_cartesian(ylim = c(ymin_CheCranG29, ymax_CheCranG29), 
@@ -1459,7 +1459,7 @@ lim_text_2<-ymin_CranStrawG29+0.90*(ymax_CranStrawG29-ymin_CranStrawG29)
    ggtitle("Cranberry vs. Strawberry") + 
    coord_cartesian(ylim = c(ymin_CranStrawG29, ymax_CranStrawG29), 
                   xlim = c(ymin_CranStrawG29, ymax_CranStrawG29)) + 
-   labs(shape = "Alternative fruit", color = "Selection fruit") + 
+   labs(shape = "Test fruit", color = "Selection fruit") + 
    scale_shape_manual(values = c(22, 24)) + 
    scale_color_manual(values = c("#FDB424", "#3FAA96"))  + 
    theme_LO_sober
@@ -1507,7 +1507,7 @@ StrawChe_G29 <- ggplot(data = TEMP_dataG29_StrawChe) +
     xlab("Fitness change in\nselective environment")  + 
     ylab("Fitness change in\nalternative environment")  + 
   ggtitle("Strawberry vs. Cherry") + 
-  labs(shape = "Alternative fruit", color = "Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(21, 24)) + 
   scale_color_manual(values = c("#BC3C6D", "#3FAA96"))  + 
   theme_LO_sober
@@ -1523,7 +1523,7 @@ legend_tradevide <-  ggplot(data = data_logchange[data_logchange$Generation == "
                           aes(x =logchange, y = logchange,  color = Fruit_s, fill = Fruit_s, 
                               shape = Treatment)) + 
   geom_point(size =2.5, fill = "white") + 
-  labs(shape = "Alternative fruit", color = "Selection fruit") + 
+  labs(shape = "Test fruit", color = "Selection fruit") + 
   scale_shape_manual(values = c(16, 15, 17)) + 
   scale_color_manual(values = c("#BC3C6D", "#FDB424", "#3FAA96"))  + 
   theme_LO_sober
